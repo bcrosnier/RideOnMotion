@@ -20,9 +20,9 @@ namespace Microsoft.Samples.Kinect.ControlsBasics
     {
         /// <summary>
         /// IsHandPointerOver dependency property for use in the control template triggers
-        /// </summary>
+        /// </summary>   
         public static readonly DependencyProperty IsHandPointerOverProperty = DependencyProperty.Register(
-            "IsHandPointerOver", typeof(bool), typeof(KinectHoverButton), new PropertyMetadata(false));
+            "IsHandPointerOver", typeof(bool), typeof(KinectHoverButton), new PropertyMetadata(false)); 
 
         // Trigger a click 60 times per second
         private const int ButtonRepeatIntervalMilliseconds = 1000 / 60;
