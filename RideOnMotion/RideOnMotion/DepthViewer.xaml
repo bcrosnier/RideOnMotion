@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="640">
-    <Grid Width="640" Height="480" Background="Fuchsia">
+    <Grid Width="640" Height="480" Background="DarkSlateGray">
         <Image Width="640" Height="480"/>
     </Grid>
 </UserControl>
