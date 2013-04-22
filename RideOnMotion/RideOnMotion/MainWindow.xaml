@@ -1,8 +1,46 @@
 ﻿<Window x:Name="MainWindow1" x:Class="RideOnMotion.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="RideOn[Motion]" Height="350" Width="525" Loaded="MainWindow_Loaded">
+        Title="RideOn[Motion]" Height="600" Width="800" Loaded="MainWindow_Loaded">
     <Grid>
-        
+        <DockPanel LastChildFill="False">
+            <StackPanel x:Name="LeftSidebar" VerticalAlignment="Top" Width="300" DockPanel.Dock="Left">
+                <Label Content="Label"/>
+                <Label Content="Label"/>
+            </StackPanel>
+            <StackPanel x:Name="LogPanel" VerticalAlignment="Top" DockPanel.Dock="Bottom">
+                <Label Content="Log lol"/>
+            </StackPanel>
+            <Grid Name="MainViewerHost">
+                <Grid Name="ColorVis" Background="{StaticResource DarkNeutralBrush}">
+                    <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform">
+                        <!-- Make the colorViewer and skeletonViewer overlap entirely. -->
+                        <Grid>
+                            <kt:KinectColorViewer x:Name="ColorViewer" KinectSensorManager="{Binding KinectSensorManager}" CollectFrameRate="True" RetainImageOnSensorChange="True" />
+                            <Canvas>
+                                <kt:KinectSkeletonViewer 
+                                    KinectSensorManager="{Binding KinectSensorManager}"
+                                    Visibility="{Binding KinectSensorManager.ColorStreamEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Width="{Binding ElementName=ColorViewer,Path=ActualWidth}"
+                                    Height="{Binding ElementName=ColorViewer,Path=ActualHeight}"
+                                    ImageType="Color" />
+                            </Canvas>
+                        </Grid>
+                    </Viewbox>
+                    <Border 
+                        TextBlock.Foreground="{StaticResource LabelForegroundBrush}" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top" 
+                        Background="{StaticResource MediumNeutralBrush}"
+                        Width="50" Height="50">
+                        <StackPanel Orientation="Vertical" >
+                            <TextBlock FontSize="{StaticResource HeaderFontSize}" Text="{Binding ElementName=ColorViewer, Path=FrameRate}" HorizontalAlignment="Center" Margin="-2"/>
+                            <TextBlock FontSize="{StaticResource FPSFontSize}" HorizontalAlignment="Center" Margin="-2">FPS</TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <Rectangle Fill="#7777" Visibility="{Binding KinectSensorManager.ColorStreamEnabled, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}" SnapsToDevicePixels="True"/>
+                </Grid>
+            </Grid>
+        </DockPanel>
+
     </Grid>
 </Window>
