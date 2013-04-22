@@ -29,13 +29,42 @@ namespace RideOnMotion.KinectModule
 		}
 
 		public void StartSensor()
-	{
+		{
 			_kinectSensor.Start();
+		}
+
+		public void AttachPositionTracker( IPositionTracker positionTracker )
+		{
+			if( positionTracker == null ) throw new ArgumentNullException( "positionTracker cannot be null" );
+			if( !_positionTrackers.Contains( positionTracker ) ) _positionTrackers.Add( positionTracker );
+		}
+
+		public void DetachPositionTracker( IPositionTracker positionTracker )
+		{
+			if( positionTracker == null ) throw new ArgumentNullException( "positionTracker cannot be null" );
+			if( _positionTrackers.Contains( positionTracker ) ) _positionTrackers.Remove( positionTracker );
 		}
 
 		private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
 		{
-			throw new NotImplementedException();
+			Skeleton[] totalSkeleton = new Skeleton[6];
+			using( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
+			{
+
+				// copy the frame data in to the collection
+				skeletonFrame.CopySkeletonDataTo( totalSkeleton );
+
+				Skeleton firstSkeleton = ( from trackskeleton in totalSkeleton
+										   where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
+										   select trackskeleton ).FirstOrDefault();
+
+				NotifyPositionTrackers( firstSkeleton );
+			}
+		}
+
+		private void NotifyPositionTrackers( Skeleton skeleton )
+		{
+			foreach( IPositionTracker positionTracker in _positionTrackers ) positionTracker.HookingSkeleton( skeleton );
 		}
 
 	}
