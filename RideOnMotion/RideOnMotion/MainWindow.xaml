@@ -7,10 +7,12 @@
         <Grid.RowDefinitions>
             <RowDefinition MinHeight="75" Height="Auto" />
             <RowDefinition Height="*"/>
-            <RowDefinition Height="100" />
+            <RowDefinition Height="3"/>
+            <RowDefinition Height="0.5*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="100" />
+            <ColumnDefinition Width="3" />
             <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
         <StackPanel x:Name="DepthViewerPanel" MinHeight="150" Grid.Row="0" Grid.Column="0">
@@ -19,22 +21,22 @@
             </Viewbox>
         </StackPanel>
 
-        <StackPanel x:Name="InfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2">
+        <StackPanel x:Name="InfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
             <TextBlock Text="Insert info here" />
         </StackPanel>
 
-        <GridSplitter Grid.Column="0" Width="3" Grid.RowSpan="3" />
+        <GridSplitter Grid.Column="1" Width="3" Grid.RowSpan="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
         
-        <StackPanel Background="DarkSlateGray" x:Name="MainPanel" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+        <StackPanel Background="DarkSlateGray" x:Name="MainPanel" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
             <Viewbox>
                 <Image/>
             </Viewbox>
         </StackPanel>
         
-        <StackPanel x:Name="LogPanel" VerticalAlignment="Top"  Grid.Row="2" Grid.Column="1">
+        <StackPanel x:Name="LogPanel" VerticalAlignment="Top"  Grid.Row="3" Grid.Column="2">
             <Label Content="Insert log here"/>
         </StackPanel>
         
-        <GridSplitter Grid.Row="2" Grid.Column="1" Height="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" ResizeDirection="Rows" />
+        <GridSplitter Grid.Row="2" Grid.Column="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" ResizeDirection="Rows" />
     </Grid>
 </Window>
