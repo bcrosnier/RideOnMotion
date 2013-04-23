@@ -52,6 +52,7 @@ namespace RideOnMotion
                 this.sensorController.StartSensor(); // Blocking.
             }
             this.StatusText.Text = sensorController.SensorStatus;
+            this.DepthViewer.initializeViewer( this.sensorController );
 		}
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

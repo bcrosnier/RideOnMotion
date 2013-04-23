@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using RideOnMotion;
 
 namespace RideOnMotion.KinectModule
 {
@@ -14,6 +15,9 @@ namespace RideOnMotion.KinectModule
         private KinectSensor _kinectSensor = null;
         private bool _depthFrameIsReady = false;
         private BitmapSource _depthBitmapSource = null;
+
+        public event BitmapSourceHandler DepthBitmapSourceReady;
+        public delegate void BitmapSourceHandler( object sender, BitmapSourceEventArgs e );
 
         public BitmapSource DepthBitmapSource
         {
@@ -59,22 +63,52 @@ namespace RideOnMotion.KinectModule
 
             if ( deviceCount > 0 )
             {
-                _kinectSensor = KinectSensor.KinectSensors.Where( item => item.Status == KinectStatus.Connected ).FirstOrDefault();
-
-                if ( _kinectSensor.SkeletonStream.IsEnabled )
-                {
-                    _kinectSensor.SkeletonStream.Enable();
-                    //connect event
-                    _kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
-                }
-
-                if ( !_kinectSensor.DepthStream.IsEnabled )
-                {
-                    _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
-                    _kinectSensor.DepthFrameReady += sensor_DepthFrameReady;
-                }
+                KinectSensor kinectSensor = KinectSensor.KinectSensors.Where( item => item.Status == KinectStatus.Connected ).FirstOrDefault();
+                initializeKinectSensor( kinectSensor );
             }
+
+            KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
 		}
+
+        private void initializeKinectSensor( KinectSensor sensor )
+        {
+            if ( sensor == null )
+            {
+                return;
+            }
+
+            _kinectSensor = sensor;
+
+            if ( !_kinectSensor.SkeletonStream.IsEnabled )
+            {
+                _kinectSensor.SkeletonStream.Enable();
+                //connect event
+                _kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
+            }
+
+            if ( !_kinectSensor.DepthStream.IsEnabled )
+            {
+                _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
+                _kinectSensor.DepthFrameReady += sensor_DepthFrameReady;
+            }
+
+            _kinectSensor.DepthStream.Range = DepthRange.Default; // Change to Near mode here
+
+            // Call StartSensor(); from outside.
+        }
+
+        /// <summary>
+        /// Remove bindings on sensor disconnection
+        /// </summary>
+        private void cleanupKinectSensor()
+        {
+            StopSensor();
+
+            _kinectSensor.DepthFrameReady -= sensor_DepthFrameReady;
+            _kinectSensor.SkeletonFrameReady -= sensor_SkeletonFrameReady;
+
+            _kinectSensor = null;
+        }
 
         /// <summary>
         /// Attempts to start the detected Kinect sensor.
@@ -102,9 +136,9 @@ namespace RideOnMotion.KinectModule
         /// Converts a depth image frame to a Bitmap source.
         /// From http://www.i-programmer.info/ebooks/practical-windows-kinect-in-c/3802-using-the-kinect-depth-sensor.html?start=1
         /// </summary>
-        /// <param name="imageFrame">image frame to convert</param>
+        /// <param name="imageFrame">Image frame to convert</param>
         /// <returns>Bitmap source</returns>
-        private BitmapSource DepthToBitmapSource( DepthImageFrame imageFrame)
+        private static BitmapSource DepthToBitmapSource( DepthImageFrame imageFrame )
         {
             short[] pixelData = new short[imageFrame.PixelDataLength];
             imageFrame.CopyPixelDataTo(pixelData);
@@ -127,11 +161,49 @@ namespace RideOnMotion.KinectModule
 
         private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )
         {
-            _depthFrameIsReady = true;
             DepthImageFrame imageFrame = e.OpenDepthImageFrame();
+            if ( imageFrame == null )
+            {
+                return; // Already opened
+            }
+
+            _depthFrameIsReady = true;
             _depthBitmapSource = DepthToBitmapSource( imageFrame );
+
+            if ( DepthBitmapSourceReady != null )
+            {
+                DepthBitmapSourceReady( this, new BitmapSourceEventArgs(_depthBitmapSource) );
+            }
+        }
+
+        private void sensors_StatusChanged(object sender, StatusChangedEventArgs e) {
+            if ( e.Status != KinectStatus.Connected && e.Sensor == _kinectSensor )
+            {
+                // Current sensor is gone, clean up
+                cleanupKinectSensor();
+            }
+
+            if ( e.Status == KinectStatus.Connected && _kinectSensor == null )
+            {
+                // New sensor has appeared
+                initializeKinectSensor( e.Sensor );
+            }
         }
 	}
 
+    public class BitmapSourceEventArgs : EventArgs
+    {
+        private BitmapSource _bitmapSource;
+
+        public BitmapSource BitmapSource
+        {
+            get { return _bitmapSource; }
+        }
+
+        public BitmapSourceEventArgs( BitmapSource source )
+        {
+            _bitmapSource = source;
+        }
+    }
 	
 }

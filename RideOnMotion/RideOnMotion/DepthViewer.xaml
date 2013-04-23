@@ -6,6 +6,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="640">
     <Grid Width="640" Height="480" Background="DarkSlateGray">
-        <Image Width="640" Height="480"/>
+        <Image Name="DepthImage" Width="640" Height="480"/>
     </Grid>
 </UserControl>

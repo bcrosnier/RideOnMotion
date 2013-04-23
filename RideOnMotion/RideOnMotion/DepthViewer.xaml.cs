@@ -21,7 +21,7 @@ namespace RideOnMotion
     /// </summary>
     public partial class DepthViewer : UserControl
     {
-        KinectSensorController _sensorController = null;
+        private KinectSensorController _sensorController = null;
 
         public DepthViewer()
         {
@@ -31,7 +31,21 @@ namespace RideOnMotion
         public void initializeViewer( KinectSensorController sensorController )
         {
             _sensorController = sensorController;
+            _sensorController.DepthBitmapSourceReady += _sensorController_DepthBitmapSourceReady;
+
+            updateImageBitmapSource(_sensorController.DepthBitmapSource);
         }
+
+        void _sensorController_DepthBitmapSourceReady( object sender, BitmapSourceEventArgs e )
+        {
+            updateImageBitmapSource(e.BitmapSource);
+        }
+
+        private void updateImageBitmapSource( BitmapSource source )
+        {
+            this.DepthImage.Source = source;
+        }
+
     }
 
 }

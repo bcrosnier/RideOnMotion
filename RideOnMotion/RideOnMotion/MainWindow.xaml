@@ -21,7 +21,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel x:Name="DepthViewerPanel" MinHeight="150" Grid.Row="0" Grid.Column="0">
                 <Viewbox>
-                    <local:DepthViewer/>
+                    <local:DepthViewer x:Name="DepthViewer"/>
                 </Viewbox>
             </StackPanel>
 
