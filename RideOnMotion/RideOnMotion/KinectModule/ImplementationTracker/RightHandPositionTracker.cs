@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RideOnMotion.KinectModule
+namespace RideOnMotion.KinectModule.ImplementationTracker
 {
-	public class LeftHandPositionTracker : IPositionTracker
+	public class RightHandPositionTracker : IPositionTracker
 	{
 		IList<ICaptionArea> _captionAreas;
 
@@ -17,7 +17,7 @@ namespace RideOnMotion.KinectModule
 			get { return new ReadOnlyCollection<ICaptionArea>( _captionAreas ); }
 		}
 
-		public LeftHandPositionTracker()
+		public RightHandPositionTracker()
 		{
 			_captionAreas = new List<ICaptionArea>();
 		}

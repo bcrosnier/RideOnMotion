@@ -7,18 +7,13 @@ using System.Threading.Tasks;
 
 namespace RideOnMotion.KinectModule
 {
-	interface IPositionTracker
+	public interface IPositionTracker
 	{
-		public int PositionX { get; }
-		public int PositionY { get; }
-		public int PositionZ { get; }
+		IList<ICaptionArea> CaptionAreas { get; }
 
-		public IList<ICaptionArea> CaptionAreas { get; }
+		void HookingSkeleton( Skeleton skeleton );
 
-		public void HookingSkeleton( Skeleton skeleton );
-
-		public void AttachCaptionArea( ICaptionArea captionArea );
-		public void DetachCaptionArea( ICaptionArea captionArea );
-		private void ValidateCaptionArea( Joint skeletonJoint );
+		void AttachCaptionArea( ICaptionArea captionArea );
+		void DetachCaptionArea( ICaptionArea captionArea );
 	}
 }

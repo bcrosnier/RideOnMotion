@@ -1,5 +1,5 @@
 ﻿using Microsoft.Kinect;
-using RideOnMotion.KinectModule.Tracker;
+using RideOnMotion.KinectModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace RideOnMotion.KinectModule
 		public KinectSensorController()
 		{
 			_kinectSensor = KinectSensor.KinectSensors.Where( item => item.Status == KinectStatus.Connected ).FirstOrDefault();
-
+			_positionTrackers = new List<IPositionTracker>();
 			if( _kinectSensor.SkeletonStream.IsEnabled )
 			{
 				_kinectSensor.SkeletonStream.Enable();
