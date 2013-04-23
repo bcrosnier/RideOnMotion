@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using KinectInfo;
+﻿using System.Windows;
 using Microsoft.Kinect;
 using KinectStatusNotifier;
 
@@ -69,13 +55,13 @@ namespace RideOnMotion
 		/// <param name="e">Event Args</param>
 		void KinectSensors_StatusChanged( object sender, StatusChangedEventArgs e )
 		{
-			//this.MyNewStatusString = e.Status.ToString();
+            StatusText.Text = e.Status.ToString();
 		}
 
 		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
 		{
             // Start first detected sensor
-			int deviceCount = KinectSensor.KinectSensors.Count;
+			int deviceCount = KinectSensor.KinectSensors.Count; // Blocking.
 			if (deviceCount > 0)
 			{
 				this.notifier.Sensors = KinectSensor.KinectSensors;
@@ -83,7 +69,8 @@ namespace RideOnMotion
 				
                 this.sensor = KinectSensor.KinectSensors[0];
 
-				this.StartSensor();
+				this.StartSensor(); // Blocking.
+
                 // We don't use these for now, but we will. -- BC
                 /*
 				this.sensor.ColorStream.Enable();
