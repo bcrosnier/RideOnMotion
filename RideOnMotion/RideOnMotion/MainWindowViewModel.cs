@@ -4,6 +4,7 @@
 
 	/// <summary>
 	/// Class MainWindowViewModel
+    /// Example class. For reference usage only. Unused.
 	/// </summary>
 	public class MainWindowViewModel : INotifyPropertyChanged
 	{
