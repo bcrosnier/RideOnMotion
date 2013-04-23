@@ -12,7 +12,7 @@ namespace RideOnMotion
     /// First version of the logger on 23.04.2013
     /// Wait for the new version, by now, I don't have the time to make something cool..
     /// </summary>
-    class Logger
+    public class Logger
     {
 
         MemoryStream memoryStick = new MemoryStream();
@@ -24,9 +24,8 @@ namespace RideOnMotion
 
             log = new StreamWriter( this.memoryStick );
 
-            log.WriteLine( DateTime.Now );
+            log.WriteLine( DateTime.Now + " : " );
             log.WriteLine( toLog );
-            log.WriteLine();
 
             log.Close();
         }
