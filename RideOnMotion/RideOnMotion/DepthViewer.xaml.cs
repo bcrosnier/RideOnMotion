@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RideOnMotion.KinectModule;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,17 @@ namespace RideOnMotion
     /// </summary>
     public partial class DepthViewer : UserControl
     {
+        KinectSensorController _sensorController = null;
+
         public DepthViewer()
         {
             InitializeComponent();
         }
+
+        public void initializeViewer( KinectSensorController sensorController )
+        {
+            _sensorController = sensorController;
+        }
     }
+
 }

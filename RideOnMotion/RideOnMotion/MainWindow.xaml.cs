@@ -42,15 +42,16 @@ namespace RideOnMotion
             if ( !this.sensorController.HasSensor )
             {
                 MessageBox.Show( "No Kinect device detected.\nPlease ensure it is plugged in and correctly installed.", "No Kinect detected" );
-                StatusText.Text = "No Kinect device.";
-                return;
             }
+            else
+            {
+                // Subscribe to Kinect events here until we can do it in the controller
+                this.notifier.Sensors = KinectSensor.KinectSensors;
+                KinectSensor.KinectSensors.StatusChanged += new System.EventHandler<StatusChangedEventArgs>( KinectSensors_StatusChanged );
 
-		    this.notifier.Sensors = KinectSensor.KinectSensors;
-		    KinectSensor.KinectSensors.StatusChanged += new System.EventHandler<StatusChangedEventArgs>( KinectSensors_StatusChanged );
-
-            this.sensorController.StartSensor(); // Blocking.
-
+                this.sensorController.StartSensor(); // Blocking.
+            }
+            this.StatusText.Text = sensorController.SensorStatus;
 		}
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

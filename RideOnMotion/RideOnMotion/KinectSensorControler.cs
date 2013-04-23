@@ -1,9 +1,8 @@
 ﻿using Microsoft.Kinect;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace RideOnMotion.KinectModule
 {
@@ -12,7 +11,24 @@ namespace RideOnMotion.KinectModule
 	// gerer le renvoi de status du sensor
 	public class KinectSensorController
 	{
-        KinectSensor _kinectSensor = null;
+        private KinectSensor _kinectSensor = null;
+        private bool _depthFrameIsReady = false;
+        private BitmapSource _depthBitmapSource = null;
+
+        public BitmapSource DepthBitmapSource
+        {
+          get { return _depthBitmapSource; }
+        }
+
+        public bool DepthFrameIsReady
+        {
+            get { return _depthFrameIsReady; }
+        }
+
+        public KinectSensor Sensor
+        {
+            get { return _kinectSensor; }
+        }
 
         /// <summary>
         /// Indicates whether the sensor has been started. Returns false when no sensor was detected.
@@ -32,6 +48,11 @@ namespace RideOnMotion.KinectModule
             get { return _kinectSensor != null ? true : false; }
         }
 
+        public string SensorStatus
+        {
+            get { return _kinectSensor != null ? _kinectSensor.Status.ToString() : "No Kinect detected."; }
+        }
+
 		public KinectSensorController()
         {
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call.
@@ -49,7 +70,8 @@ namespace RideOnMotion.KinectModule
 
                 if ( !_kinectSensor.DepthStream.IsEnabled )
                 {
-                    _kinectSensor.DepthStream.Enable();
+                    _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
+                    _kinectSensor.DepthFrameReady += sensor_DepthFrameReady;
                 }
             }
 		}
@@ -76,11 +98,39 @@ namespace RideOnMotion.KinectModule
             }
         }
 
+        /// <summary>
+        /// Converts a depth image frame to a Bitmap source.
+        /// From http://www.i-programmer.info/ebooks/practical-windows-kinect-in-c/3802-using-the-kinect-depth-sensor.html?start=1
+        /// </summary>
+        /// <param name="imageFrame">image frame to convert</param>
+        /// <returns>Bitmap source</returns>
+        private BitmapSource DepthToBitmapSource( DepthImageFrame imageFrame)
+        {
+            short[] pixelData = new short[imageFrame.PixelDataLength];
+            imageFrame.CopyPixelDataTo(pixelData);
+
+            BitmapSource bmap = BitmapSource.Create(
+                imageFrame.Width,
+                imageFrame.Height,
+                96, 96,
+                PixelFormats.Gray16,
+                null,
+                pixelData,
+                imageFrame.Width*imageFrame.BytesPerPixel);
+            return bmap;
+        }
+
 		private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
 		{
 			throw new NotImplementedException();
 		}
 
+        private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )
+        {
+            _depthFrameIsReady = true;
+            DepthImageFrame imageFrame = e.OpenDepthImageFrame();
+            _depthBitmapSource = DepthToBitmapSource( imageFrame );
+        }
 	}
 
 	
