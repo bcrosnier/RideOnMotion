@@ -15,27 +15,23 @@ namespace RideOnMotion
     public class Logger
     {
 
-        MemoryStream memoryStick = new MemoryStream();
-
-        public void writeLog( String toLog )
+		static Stream memoryStick = new MemoryStream();
+		StreamWriter memoryStickWriter = new StreamWriter( memoryStick );
+		//FileStream fs = File.Create( "test.txt" );
+		
+		
+        public void writeLog( String Message )
         {
-
-            StreamWriter log;
-
-            log = new StreamWriter( this.memoryStick );
-
-            log.WriteLine( DateTime.Now + " : " );
-            log.WriteLine( toLog );
-
-            log.Close();
-        }
+			memoryStickWriter.Write( DateTime.Now + " : " );
+			memoryStickWriter.WriteLine( Message );
+			memoryStickWriter.Flush();
+		}
 
         public String readLog()
         {
-            StreamReader logReader;
-
-            logReader = new StreamReader( this.memoryStick );
-            String something = logReader.ReadToEnd();
+			memoryStick.Seek( 0, SeekOrigin.Begin );
+			StreamReader memoryStickReader = new StreamReader( memoryStick );
+			String something = memoryStickReader.ReadLine();
             return something;
         }
     }

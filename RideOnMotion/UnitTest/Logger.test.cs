@@ -12,18 +12,18 @@ namespace RideOnMotion.test
     class LoggerTest
     {
 		Logger logger = new Logger();
+		String thisIsAString = "Hello, I'm testing this shit v2!";
 
 		[Test]
-		public void writeTest()
+		public void writeAndReadTest()
 		{
-			logger.writeLog( "Hello, I'm testing this shit !" );
-		}
+			Console.WriteLine( "Entered : " + DateTime.Now + " : " + thisIsAString );
+			logger.writeLog( thisIsAString );
+			Console.WriteLine( "Result : " + logger.readLog() );
+			Console.WriteLine();
 
-		[Test]
-		public void readTest()
-		{
-			String stringToTest = logger.readLog();
-			Console.WriteLine( stringToTest );
+			//StringAssert. DateTime.Now + "";
+			StringAssert.Contains( DateTime.Now + " : " +thisIsAString, logger.readLog() );
 		}
 
     }
