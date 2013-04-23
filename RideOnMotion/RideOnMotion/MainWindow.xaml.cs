@@ -101,7 +101,6 @@ namespace RideOnMotion
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.StopSensor();
-            this.Close();
         }
 
 	}
