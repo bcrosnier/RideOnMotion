@@ -52,6 +52,9 @@ namespace RideOnMotion.KinectModule
             get { return _kinectSensor != null ? true : false; }
         }
 
+        /// <summary>
+        /// Kinect status text
+        /// </summary>
         public string SensorStatus
         {
             get { return _kinectSensor != null ? _kinectSensor.Status.ToString() : "No Kinect detected."; }
@@ -70,6 +73,11 @@ namespace RideOnMotion.KinectModule
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
 		}
 
+        /// <summary>
+        /// Prepares a Kinect to be started. Enables streams, among other things.
+        /// Call StartSensor(); from outside after this.
+        /// </summary>
+        /// <param name="sensor">Kinect to set as active</param>
         private void initializeKinectSensor( KinectSensor sensor )
         {
             if ( sensor == null )
@@ -83,7 +91,7 @@ namespace RideOnMotion.KinectModule
             {
                 _kinectSensor.SkeletonStream.Enable();
                 //connect event
-                _kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
+                //_kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
             }
 
             if ( !_kinectSensor.DepthStream.IsEnabled )
