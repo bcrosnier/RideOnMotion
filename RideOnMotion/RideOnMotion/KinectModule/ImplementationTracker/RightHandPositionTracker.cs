@@ -5,16 +5,17 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CK.Core;
 
 namespace RideOnMotion.KinectModule.ImplementationTracker
 {
 	public class RightHandPositionTracker : IPositionTracker
 	{
-		IList<ICaptionArea> _captionAreas;
+		readonly IList<ICaptionArea> _captionAreas;
 
-		public IList<ICaptionArea> CaptionAreas
+		public IReadOnlyList<ICaptionArea> CaptionAreas
 		{
-			get { return new ReadOnlyCollection<ICaptionArea>( _captionAreas ); }
+			get { return _captionAreas.AsReadOnlyList(); }
 		}
 
 		public RightHandPositionTracker()

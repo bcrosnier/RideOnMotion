@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CK.Core;
 
 namespace RideOnMotion.KinectModule
 {
@@ -12,9 +13,9 @@ namespace RideOnMotion.KinectModule
 	{
 		IList<ICaptionArea> _captionAreas;
 
-		public IList<ICaptionArea> CaptionAreas
+		public IReadOnlyList<ICaptionArea> CaptionAreas
 		{
-			get { return new ReadOnlyCollection<ICaptionArea>( _captionAreas ); }
+			get { return _captionAreas.AsReadOnlyList(); }
 		}
 
 		public LeftHandPositionTracker()

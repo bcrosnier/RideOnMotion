@@ -9,6 +9,8 @@ namespace RideOnMotion.KinectModule
 {
 	public interface ICaptionArea
 	{
+		IReadOnlyList<Point> Points;
 		void CheckPosition( Joint joint );
+		IReadOnlyList<Action> AssociateFunctions;
 	}
 }

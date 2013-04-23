@@ -9,7 +9,7 @@ namespace RideOnMotion.KinectModule
 {
 	public interface IPositionTracker
 	{
-		IList<ICaptionArea> CaptionAreas { get; }
+		IReadOnlyList<ICaptionArea> CaptionAreas { get; }
 
 		void HookingSkeleton( Skeleton skeleton );
 
