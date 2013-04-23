@@ -72,6 +72,7 @@
     <Compile Include="DepthViewer.xaml.cs">
       <DependentUpon>DepthViewer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="KinectSensorControler.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
