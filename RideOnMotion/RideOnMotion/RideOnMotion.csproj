@@ -75,6 +75,7 @@
     <Compile Include="KinectModule\ImplementationTracker\LeftHandPositionTracker.cs" />
     <Compile Include="KinectModule\Tracker\ICaptionArea.cs" />
     <Compile Include="KinectModule\Tracker\IPositionTracker.cs" />
+    <Compile Include="KinectModule\Tracker\Point.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

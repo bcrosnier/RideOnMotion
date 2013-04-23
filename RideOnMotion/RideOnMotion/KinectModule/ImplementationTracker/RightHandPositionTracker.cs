@@ -25,7 +25,7 @@ namespace RideOnMotion.KinectModule.ImplementationTracker
 
 		public void HookingSkeleton( Microsoft.Kinect.Skeleton skeleton )
 		{
-			ValidateCaptionArea( skeleton.Joints[JointType.HandLeft] );
+			ValidateCaptionArea( skeleton.Joints[JointType.HandRight] );
 		}
 
 		public void AttachCaptionArea( ICaptionArea captionArea )
