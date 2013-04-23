@@ -4,6 +4,9 @@
         xmlns:local="clr-namespace:RideOnMotion" x:Name="MainWindow1" x:Class="RideOnMotion.MainWindow"
         Title="RideOn[Motion]" Height="600" Width="800" Loaded="MainWindow_Loaded" MinWidth="800" MinHeight="600" Closing="MainWindow_Closing">
     <DockPanel>
+        <DockPanel.Background>
+            <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+        </DockPanel.Background>
         <StatusBar DockPanel.Dock="Bottom">
             <Image Height="16" VerticalAlignment="Center" Source="Images/KinectIcon.png" />
             <TextBlock x:Name="KinectStatusText">No Kinect</TextBlock>
@@ -41,7 +44,7 @@
             </StackPanel>
 
             <StackPanel x:Name="InfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
-                <TextBlock Text="Insert info here" />
+                <local:DeviceInformation x:Name="DeviceInfo" />
             </StackPanel>
 
             <GridSplitter Grid.Column="1" Width="3" Grid.RowSpan="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
@@ -53,7 +56,7 @@
             </StackPanel>
 
             <StackPanel x:Name="LogPanel" VerticalAlignment="Top"  Grid.Row="3" Grid.Column="2">
-                <Label Content="Insert log here"/>
+                <DataGrid x:Name="LogDataGrid" />
             </StackPanel>
 
             <GridSplitter Grid.Row="2" Grid.Column="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" ResizeDirection="Rows" />
