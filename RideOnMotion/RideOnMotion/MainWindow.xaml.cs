@@ -81,7 +81,8 @@ namespace RideOnMotion
 			else
 			{
 				// No sensor detected. Take appropriate action
-				MessageBox.Show( "No Kinect device detected. Please ensure it is plugged in and correctly installed." );
+                MessageBox.Show("No Kinect device detected.\nPlease ensure it is plugged in and correctly installed.", "No Kinect detected");
+                StatusText.Text = "No Kinect device.";
 			}
 		}
 
