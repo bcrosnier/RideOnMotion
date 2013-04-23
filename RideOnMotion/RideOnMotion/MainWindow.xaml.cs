@@ -34,7 +34,7 @@ namespace RideOnMotion
 		/// <param name="e">Event Args</param>
 		void KinectSensors_StatusChanged( object sender, StatusChangedEventArgs e )
 		{
-            StatusText.Text = e.Status.ToString();
+            KinectStatusText.Text = e.Status.ToString();
 		}
 
 		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
@@ -51,13 +51,18 @@ namespace RideOnMotion
 
                 this.sensorController.StartSensor(); // Blocking.
             }
-            this.StatusText.Text = sensorController.SensorStatus;
+            this.KinectStatusText.Text = sensorController.SensorStatus;
             this.DepthViewer.initializeViewer( this.sensorController );
 		}
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.sensorController.StopSensor();
+        }
+
+        private void MenuItem_Quit_Click( object sender, RoutedEventArgs e )
+        {
+            this.Close();
         }
 
 	}

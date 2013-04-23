@@ -94,13 +94,14 @@ namespace RideOnMotion.KinectModule
                 //_kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
             }
 
+
             if ( !_kinectSensor.DepthStream.IsEnabled )
             {
-                _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
+                _kinectSensor.DepthStream.Range = DepthRange.Default; // Change to Near mode here
                 _kinectSensor.DepthFrameReady += sensor_DepthFrameReady;
+                _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
             }
 
-            _kinectSensor.DepthStream.Range = DepthRange.Default; // Change to Near mode here
 
             // Call StartSensor(); from outside.
         }
@@ -115,7 +116,20 @@ namespace RideOnMotion.KinectModule
             _kinectSensor.DepthFrameReady -= sensor_DepthFrameReady;
             _kinectSensor.SkeletonFrameReady -= sensor_SkeletonFrameReady;
 
+            _kinectSensor.DepthStream.Disable();
+            _kinectSensor.SkeletonStream.Disable();
+
             _kinectSensor = null;
+        }
+
+        public void resetSensor()
+        {
+            KinectSensor sensor = _kinectSensor;
+
+            cleanupKinectSensor();
+            initializeKinectSensor( sensor );
+
+            StartSensor();
         }
 
         /// <summary>

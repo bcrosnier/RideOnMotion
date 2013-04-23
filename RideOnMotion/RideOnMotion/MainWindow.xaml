@@ -5,8 +5,23 @@
         Title="RideOn[Motion]" Height="600" Width="800" Loaded="MainWindow_Loaded" MinWidth="800" MinHeight="600" Closing="MainWindow_Closing">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
-            <TextBlock Name="StatusText"></TextBlock>
+            <Image Height="16" VerticalAlignment="Center" Source="Images/KinectIcon.png" />
+            <TextBlock x:Name="KinectStatusText">No Kinect</TextBlock>
+            <Separator />
+            <Image Height="16" VerticalAlignment="Center" Source="Images/HelicopterIcon.png" />
+            <TextBlock x:Name="DroneStatusText">No drone</TextBlock>
         </StatusBar>
+
+        <Menu DockPanel.Dock="Top">
+            <Menu.Background>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.MenuBarColorKey}}"/>
+            </Menu.Background>
+            <MenuItem Header="File">
+                <MenuItem Header="Quit" Click="MenuItem_Quit_Click"/>
+            </MenuItem>
+
+        </Menu>
+
         <Grid ShowGridLines="False">
             <Grid.RowDefinitions>
                 <RowDefinition MinHeight="75" Height="Auto" />
