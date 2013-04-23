@@ -15,7 +15,7 @@ namespace RideOnMotion.KinectModule
         private KinectSensor _kinectSensor = null;
         private bool _depthFrameIsReady = false;
         private BitmapSource _depthBitmapSource = null;
-
+        
         public event BitmapSourceHandler DepthBitmapSourceReady;
         public delegate void BitmapSourceHandler( object sender, BitmapSourceEventArgs e );
 
