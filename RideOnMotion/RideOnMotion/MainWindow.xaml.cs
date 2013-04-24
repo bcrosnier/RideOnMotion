@@ -16,6 +16,9 @@ namespace RideOnMotion
         /// </summary>
         private KinectSensorController sensorController;
 
+        /// <summary>
+        /// Model view for this window.
+        /// </summary>
         private MainWindowViewModel mainWindowViewModel;
 
 		/// <summary>
@@ -28,18 +31,8 @@ namespace RideOnMotion
             InitializeComponent();
 
             this.sensorController = new KinectSensorController();
-            this.mainWindowViewModel = new MainWindowViewModel();
+            this.mainWindowViewModel = new MainWindowViewModel( sensorController );
             this.DataContext = this.mainWindowViewModel;
-		}
-
-		/// <summary>
-		/// Status changed for Kinect sensor
-		/// </summary>
-		/// <param name="sender">Kinect Sensor</param>
-		/// <param name="e">Event Args</param>
-		void KinectSensors_StatusChanged( object sender, StatusChangedEventArgs e )
-		{
-            KinectStatusText.Text = e.Status.ToString();
 		}
 
 		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
@@ -62,23 +55,7 @@ namespace RideOnMotion
             {
                 // Start Kinect
                 this.sensorController.StartSensor(); // Blocking.
-                this.prepareDepthCamera();
             }
-        }
-
-        private void prepareDepthCamera()
-        {
-            sensorController.DepthBitmapSourceReady += (sender, e) => this.DepthImage.Source = e.BitmapSource;
-        }
-
-        private void UpdateSensorInfo()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void UpdateDroneInfo()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

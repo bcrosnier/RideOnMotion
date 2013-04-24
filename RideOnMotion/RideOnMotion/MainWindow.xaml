@@ -50,7 +50,7 @@
                 </Grid.RowDefinitions>
                 
                 <GroupBox Header="Kinect device" Grid.Row="0">
-                    <TextBlock x:Name="KinectStatusInfo">No kinect device</TextBlock>
+                    <TextBlock x:Name="KinectStatusInfo" Text="{Binding SensorStatusInfoString}"/>
                 </GroupBox>
                 <GroupBox Header="Drone status" Grid.Row="1">
                     <TextBlock x:Name="DroneStatusInfo">No drone</TextBlock>

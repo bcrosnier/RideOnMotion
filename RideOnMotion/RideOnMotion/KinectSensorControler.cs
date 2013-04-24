@@ -15,8 +15,10 @@ namespace RideOnMotion.KinectModule
         private KinectSensor _kinectSensor = null;
         private bool _depthFrameIsReady = false;
         private BitmapSource _depthBitmapSource = null;
-        
+
         public event BitmapSourceHandler DepthBitmapSourceReady;
+        public event EventHandler<KinectSensor> SensorChanged;
+
         public delegate void BitmapSourceHandler( object sender, BitmapSourceEventArgs e );
 
         public BitmapSource DepthBitmapSource
@@ -29,6 +31,9 @@ namespace RideOnMotion.KinectModule
             get { return _depthFrameIsReady; }
         }
 
+        /// <summary>
+        /// Active Kinect sensor. Can be null (No sensor connected).
+        /// </summary>
         public KinectSensor Sensor
         {
             get { return _kinectSensor; }
@@ -112,6 +117,13 @@ namespace RideOnMotion.KinectModule
         private void cleanupKinectSensor()
         {
             StopSensor();
+            
+            // Throw last BitmapSource to blank picture
+            _depthBitmapSource = null;
+            if ( DepthBitmapSourceReady != null )
+            {
+                DepthBitmapSourceReady( this, new BitmapSourceEventArgs( null ) );
+            }
 
             _kinectSensor.DepthFrameReady -= sensor_DepthFrameReady;
             _kinectSensor.SkeletonFrameReady -= sensor_SkeletonFrameReady;
@@ -122,9 +134,12 @@ namespace RideOnMotion.KinectModule
             _kinectSensor = null;
         }
 
+        /// <summary>
+        /// Resets the sensor (clean up, stop, reinitialize and start)
+        /// </summary>
         public void resetSensor()
         {
-            KinectSensor sensor = _kinectSensor;
+            KinectSensor sensor = _kinectSensor; // To keep the reference locally once nulled
 
             cleanupKinectSensor();
             initializeKinectSensor( sensor );
@@ -139,7 +154,11 @@ namespace RideOnMotion.KinectModule
         {
             if ( !SensorIsRunning && HasSensor )
             {
-                _kinectSensor.Start(); // Blocking call.
+                Sensor.Start(); // Blocking call.
+                if ( SensorChanged != null )
+                {
+                    SensorChanged( this, Sensor );
+                }
             }
         }
 
@@ -151,7 +170,12 @@ namespace RideOnMotion.KinectModule
             if ( SensorIsRunning )
             {
                 _kinectSensor.Stop();
+                if ( SensorChanged != null )
+                {
+                    SensorChanged( this, Sensor );
+                }
             }
+
         }
 
         /// <summary>
@@ -199,16 +223,30 @@ namespace RideOnMotion.KinectModule
         }
 
         private void sensors_StatusChanged(object sender, StatusChangedEventArgs e) {
-            if ( e.Status != KinectStatus.Connected && e.Sensor == _kinectSensor )
+
+            if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
+                && e.Sensor == _kinectSensor )
             {
                 // Current sensor is gone, clean up
                 cleanupKinectSensor();
             }
-
-            if ( e.Status == KinectStatus.Connected && _kinectSensor == null )
+            else if ( e.Status == KinectStatus.Connected )
             {
-                // New sensor has appeared
                 initializeKinectSensor( e.Sensor );
+                // New sensor has appeared
+                StartSensor();
+            }
+
+            // Attach Kinect sensor if it doesn't exist
+            if ( _kinectSensor == null && e.Sensor != null )
+            {
+                _kinectSensor = e.Sensor;
+            }
+
+            // Throw event
+            if ( SensorChanged != null )
+            {
+                SensorChanged( this, e.Sensor );
             }
         }
 	}
