@@ -6,16 +6,13 @@ using System.Threading.Tasks;
 
 namespace RideOnMotion.KinectModule
 {
-	public class Point
+	public struct Point
 	{
-		public float X { get; set; }
-		public float Y { get; set; }
+		public float X;
+		public float Y;
 
 		public Point( float x, float y )
 		{
-			if( x < 0 ) throw new ArgumentNullException( "x cannot be negative" );
-			if( y < 0 ) throw new ArgumentNullException( "y cannot be negative" );
-
 			X = x;
 			Y = y;
 		}

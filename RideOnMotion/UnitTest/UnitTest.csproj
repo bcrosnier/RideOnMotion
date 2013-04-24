@@ -46,6 +46,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="KinectModuleTests\TrackerTests\CaptionAreaTests.cs" />
+    <Compile Include="KinectModuleTests\TrackerTests\PointTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

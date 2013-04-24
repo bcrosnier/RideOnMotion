@@ -39,7 +39,6 @@ namespace RideOnMotion.KinectModule
 
 		public CaptionArea(Point topLeftPoint, float length, float width)
 		{
-            if (topLeftPoint == null) throw new ArgumentNullException("point cannot be null");
 			_associateFunctions = new List<Action>();
             _topLeftPoint = topLeftPoint;
             _length = length;
