@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RideOnMotion.KinectModule.ImplementationTracker
+namespace RideOnMotion.KinectModule
 {
-    class CaptionArea : ICaptionArea
+    public class CaptionArea : ICaptionArea
     {
         IList<Action> _associateFunctions;
         IList<Point> _points;
