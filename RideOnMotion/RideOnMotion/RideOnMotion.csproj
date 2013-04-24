@@ -70,6 +70,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Logger.cs" />
     <Compile Include="KinectModule\ImplementationTracker\RightHandPositionTracker.cs" />
     <Compile Include="KinectModule\KinectSensorControler.cs" />
     <Compile Include="KinectModule\ImplementationTracker\LeftHandPositionTracker.cs" />
