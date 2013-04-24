@@ -1,4 +1,5 @@
 ﻿using Microsoft.Kinect;
+using CK.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace RideOnMotion.KinectModule.ImplementationTracker
 
         public IReadOnlyList<Point> Points
         {
-            get
+            get           
             {
                 _points = new List<Point>();
                 _points.Add(_topLeftPoint);
