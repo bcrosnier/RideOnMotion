@@ -60,7 +60,7 @@ namespace RideOnMotion.KinectModule
 
         public void CheckPosition(Joint joint)
         {
-            if (joint.Position.X > _points[0].X && joint.Position.X < _points[1].X && joint.Position.Y > _points[2].Y && joint.Position.Y < _points[0].Y)
+            if (joint.Position.X > _topLeftPoint.X && joint.Position.X < _topLeftPoint.X + _length && joint.Position.Y > _topLeftPoint.Y && joint.Position.Y < _topLeftPoint.Y + _width)
             {
                 foreach (Action action in _associateFunctions)
                 {
