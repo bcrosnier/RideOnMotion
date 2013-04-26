@@ -61,6 +61,7 @@ namespace RideOnMotion.KinectModule
         {
             if (joint.Position.X > _topLeftPoint.X && joint.Position.X < _topLeftPoint.X + _length && joint.Position.Y > _topLeftPoint.Y && joint.Position.Y < _topLeftPoint.Y + _width)
             {
+				//il va y avoir un probleme d'appel repete des fonctions associe
                 foreach (Action action in _associateFunctions)
                 {
                     action();

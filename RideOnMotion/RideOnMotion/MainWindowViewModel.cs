@@ -1,252 +1,141 @@
-﻿namespace KinectInfo
+﻿using Microsoft.Kinect;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
+
+namespace RideOnMotion
 {
-	using System.ComponentModel;
+    /// <summary>
+    /// View model for main window. Contains displayed properties.
+    /// </summary>
+    class MainWindowViewModel : INotifyPropertyChanged
+    {
+        /// <summary>
+        /// Kinect model : Handles data in and out of the Kinect
+        /// </summary>
+        private KinectModule.KinectSensorController _sensorController;
 
-	/// <summary>
-	/// Class MainWindowViewModel
-	/// </summary>
-	public class MainWindowViewModel : INotifyPropertyChanged
-	{
-		/// <summary>
-		/// Sensor Status
-		/// </summary>
-		private string sensorStatusValue;
+        #region Values
 
-		/// <summary>
-		/// Connection ID
-		/// </summary>
-		private string connectionIDValue;
+        private BitmapSource _droneBitmapSource;
+        private BitmapSource _depthBitmapSource;
 
-		/// <summary>
-		/// Unique Device ID
-		/// </summary>
-		private string deviceIdValue;
+        private Dictionary<String, String> _droneStatusInfo;
 
-		/// <summary>
-		/// Is Color Stream Enabled
-		/// </summary>
-		private bool isColorStreamEnabledValue;
+        private List<String> _logList;
 
-		/// <summary>
-		/// Is Depth Stream Enabled
-		/// </summary>
-		private bool isDepthStreamEnabledValue;
+        public enum KinectStatusInfoKeys { STATUS, ELEVATION_ANGLE }
 
-		/// <summary>
-		/// Is Skeleton Stream Enabled
-		/// </summary>
-		private bool isSkeletonStreamEnabledValue;
+        #endregion Values
 
-		/// <summary>
-		/// sensor elevation angle
-		/// </summary>
-		private int sensorAngleValue;
+        #region GettersSetters
 
-		/// <summary>
-		/// Can Start the sensor
-		/// </summary>
-		private bool canStartValue;
+        public BitmapSource DepthBitmapSource
+        {
+            get
+            {
+                return this._depthBitmapSource;
+            }
 
-		/// <summary>
-		/// Can Stop the sensor
-		/// </summary>
-		private bool canStopValue;
+            set
+            {
+                if ( this._depthBitmapSource != value )
+                {
+                    this._depthBitmapSource = value;
+                    this.OnNotifyPropertyChange( "DepthBitmapSource" );
+                }
+            }
+        }
 
-		/// <summary>
-		/// Occurs when [property changed].
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
+        public BitmapSource DroneBitmapSource
+        {
+            get
+            {
+                return this._droneBitmapSource;
+            }
 
-		/// <summary>
-		/// Gets or sets the connection ID.
-		/// </summary>
-		/// <value>The connection ID.</value>
-		public string ConnectionID
-		{
-			get
-			{
-				return this.connectionIDValue;
-			}
+            set
+            {
+                if ( this._droneBitmapSource != value )
+                {
+                    this._droneBitmapSource = value;
+                    this.OnNotifyPropertyChange( "DroneBitmapSource" );
+                }
+            }
+        }
 
-			set
-			{
-				if ( this.connectionIDValue != value )
-				{
-					this.connectionIDValue = value;
-					this.OnNotifyPropertyChange( "ConnectionID" );
-				}
-			}
-		}
+        public List<String> LogList
+        {
+            get
+            {
+                return this._logList;
+            }
 
-		/// <summary>
-		/// Gets or sets the device ID.
-		/// </summary>
-		/// <value>The device ID.</value>
-		public string DeviceID
-		{
-			get
-			{
-				return this.deviceIdValue;
-			}
+            set
+            {
+                if ( this._logList != value )
+                {
+                    this._logList = value;
+                    this.OnNotifyPropertyChange( "LogList" );
+                }
+            }
+        }
 
-			set
-			{
-				if ( this.deviceIdValue != value )
-				{
-					this.deviceIdValue = value;
-					this.OnNotifyPropertyChange( "DeviceID" );
-				}
-			}
-		}
+        public Dictionary<String, String> DroneStatusInfo
+        {
+            get
+            {
+                return this._droneStatusInfo;
+            }
 
-		/// <summary>
-		/// Gets or sets the sensor status.
-		/// </summary>
-		/// <value>The sensor status.</value>
-		public string SensorStatus
-		{
-			get
-			{
-				return this.sensorStatusValue;
-			}
+            set
+            {
+                if ( this._droneStatusInfo != value )
+                {
+                    this._droneStatusInfo = value;
+                    this.OnNotifyPropertyChange( "DroneStatusInfo" );
+                }
+            }
+        }
 
-			set
-			{
-				if ( this.sensorStatusValue != value )
-				{
-					this.sensorStatusValue = value;
-					this.OnNotifyPropertyChange( "SensorStatus" );
-				}
-			}
-		}
+        public Dictionary<KinectStatusInfoKeys, string> SensorStatusInfo
+        {
+            get
+            {
+                return this.generateKinectStatusInfo();
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether this instance is color stream enabled.
-		/// </summary>
-		/// <value><c>true</c> if this instance is color stream enabled; otherwise, <c>false</c>.</value>
-		public bool IsColorStreamEnabled
-		{
-			get
-			{
-				return this.isColorStreamEnabledValue;
-			}
+        public string SensorStatusInfoString
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach ( KeyValuePair<KinectStatusInfoKeys, String> entry in SensorStatusInfo )
+                {
+                    sb.Append( entry.Key.ToString() );
+                    sb.Append( " : " );
+                    sb.Append( entry.Value );
 
-			set
-			{
-				if ( this.isColorStreamEnabledValue != value )
-				{
-					this.isColorStreamEnabledValue = value;
-					this.OnNotifyPropertyChange( "IsColorStreamEnabled" );
-				}
-			}
-		}
+                    sb.Append( '\n' );
+                }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether this instance is depth stream enabled.
-		/// </summary>
-		/// <value><c>true</c> if this instance is depth stream enabled; otherwise, <c>false</c>.</value>
-		public bool IsDepthStreamEnabled
-		{
-			get
-			{
-				return this.isDepthStreamEnabledValue;
-			}
+                return sb.ToString().TrimEnd( '\n' );
+            }
+        }
 
-			set
-			{
-				if ( this.isDepthStreamEnabledValue != value )
-				{
-					this.isDepthStreamEnabledValue = value;
-					this.OnNotifyPropertyChange( "IsDepthStreamEnabled" );
-				}
-			}
-		}
+        #endregion GettersSetters
 
-		/// <summary>
-		/// Gets or sets a value indicating whether this instance is skeleton stream enabled.
-		/// </summary>
-		/// <value><c>true</c> if this instance is skeleton stream enabled; otherwise, <c>false</c>.</value>
-		public bool IsSkeletonStreamEnabled
-		{
-			get
-			{
-				return this.isSkeletonStreamEnabledValue;
-			}
+        /// <summary>
+        /// Occurs when [property changed].
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
-			set
-			{
-				if ( this.isSkeletonStreamEnabledValue != value )
-				{
-					this.isSkeletonStreamEnabledValue = value;
-					this.OnNotifyPropertyChange( "IsSkeletonStreamEnabled" );
-				}
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the sensor angle.
-		/// </summary>
-		/// <value>The sensor angle.</value>
-		public int SensorAngle
-		{
-			get
-			{
-				return this.sensorAngleValue;
-			}
-
-			set
-			{
-				if ( this.sensorAngleValue != value )
-				{
-					this.sensorAngleValue = value;
-					this.OnNotifyPropertyChange( "SensorAngle" );
-				}
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this instance can start.
-		/// </summary>
-		/// <value><c>true</c> if this instance can start; otherwise, <c>false</c>.</value>
-		public bool CanStart
-		{
-			get
-			{
-				return this.canStartValue;
-			}
-
-			set
-			{
-				if ( this.canStartValue != value )
-				{
-					this.canStartValue = value;
-					this.OnNotifyPropertyChange( "CanStart" );
-				}
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this instance can stop.
-		/// </summary>
-		/// <value><c>true</c> if this instance can stop; otherwise, <c>false</c>.</value>
-		public bool CanStop
-		{
-			get
-			{
-				return this.canStopValue;
-			}
-
-			set
-			{
-				if ( this.canStopValue != value )
-				{
-					this.canStopValue = value;
-					this.OnNotifyPropertyChange( "CanStop" );
-				}
-			}
-		}
-
-		/// <summary>
+        /// <summary>
 		/// Called when [notify property change].
 		/// </summary>
 		/// <param name="propertyName">Name of the property.</param>
@@ -257,5 +146,52 @@
 				this.PropertyChanged.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
 			}
 		}
-	}
+
+        /// <summary>
+        /// Initializes the ViewModel with the given KinectSensorController.
+        /// </summary>
+        /// <param name="sensorController">Kinect model : Handles data in and out of the Kinect</param>
+        public MainWindowViewModel( KinectModule.KinectSensorController sensorController )
+        {
+            _sensorController = sensorController;
+
+            initializeBindings();
+        }
+
+        /// <summary>
+        /// Creates the event bindings with the model.
+        /// </summary>
+        private void initializeBindings() {
+            // Bind depth image changes
+            _sensorController.DepthBitmapSourceReady += OnDepthBitmapSourceChanged;
+
+            // Bind sensor status
+            _sensorController.SensorChanged += ( sender, e ) => { this.OnNotifyPropertyChange( "SensorStatusInfo" ); this.OnNotifyPropertyChange( "SensorStatusInfoString" ); };
+        }
+
+        /// <summary>
+        /// Create a dictionary with the Sensor's status, elevation angle, etc.
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<KinectStatusInfoKeys, string> generateKinectStatusInfo()
+        {
+            Dictionary<KinectStatusInfoKeys, string> dict = new Dictionary<KinectStatusInfoKeys, string>();
+
+            string statusString = !this._sensorController.HasSensor ? KinectStatus.Disconnected.ToString() : _sensorController.Sensor.Status.ToString();
+
+            dict.Add( KinectStatusInfoKeys.STATUS, statusString );
+
+            if ( _sensorController.SensorIsRunning )
+            {
+                dict.Add( KinectStatusInfoKeys.ELEVATION_ANGLE, _sensorController.Sensor.ElevationAngle.ToString() );
+            }
+
+            return dict;
+        }
+
+        private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )
+        {
+            DepthBitmapSource = e.BitmapSource;
+        }
+    } 
 }
