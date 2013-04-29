@@ -5,16 +5,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace RideOnMotion.KinectModule
 {
-    public class CaptionArea : ICaptionArea
+	public class CaptionArea : ICaptionArea
     {
         IList<Action> _associateFunctions;
         IList<Point> _points;
         Point _topLeftPoint;
         float _length;
         float _width;
+		bool _isActive;
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		public bool IsActive
+		{
+			get { return _isActive; }
+			set { _isActive = value; OnPropertyChanged( "IsActive" ); }
+		}
         
 		public IReadOnlyList<Action> AssociateFunctions
 		{
@@ -43,6 +53,7 @@ namespace RideOnMotion.KinectModule
             _topLeftPoint = topLeftPoint;
             _length = length;
             _width = width;
+			IsActive = false;
 		}
 
         public void AddFunction(Action action)
@@ -59,14 +70,28 @@ namespace RideOnMotion.KinectModule
 
         public void CheckPosition(Joint joint)
         {
-            if (joint.Position.X > _topLeftPoint.X && joint.Position.X < _topLeftPoint.X + _length && joint.Position.Y > _topLeftPoint.Y && joint.Position.Y < _topLeftPoint.Y + _width)
+            if( joint.Position.X > _topLeftPoint.X && joint.Position.X < _topLeftPoint.X + _length && joint.Position.Y > _topLeftPoint.Y && joint.Position.Y < _topLeftPoint.Y + _width )
             {
-				//il va y avoir un probleme d'appel repete des fonctions associe
+				IsActive = true;
+				//il va y avoir un probleme d'appel repete des fonctions associees
                 foreach (Action action in _associateFunctions)
                 {
                     action();
                 }
             }
+			else if( IsActive == true )
+			{
+				IsActive = false;
+			}
         }
+
+		protected void OnPropertyChanged( string name )
+		{
+			PropertyChangedEventHandler handler = PropertyChanged;
+			if( handler != null )
+			{
+				handler( this, new PropertyChangedEventArgs( name ) );
+			}
+		}
     }
 }

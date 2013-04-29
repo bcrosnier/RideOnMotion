@@ -15,6 +15,9 @@ namespace RideOnMotion.KinectModule
         private KinectSensor _kinectSensor = null;
         private bool _depthFrameIsReady = false;
         private BitmapSource _depthBitmapSource = null;
+		Skeleton[] _totalSkeleton;
+
+		PositionTrackerController _positionTrackerController;
 
         public event BitmapSourceHandler DepthBitmapSourceReady;
         public event EventHandler<KinectSensor> SensorChanged;
@@ -23,7 +26,7 @@ namespace RideOnMotion.KinectModule
 
         public BitmapSource DepthBitmapSource
         {
-          get { return _depthBitmapSource; }
+			get { return _depthBitmapSource; }
         }
 
         public bool DepthFrameIsReady
@@ -65,6 +68,14 @@ namespace RideOnMotion.KinectModule
             get { return _kinectSensor != null ? _kinectSensor.Status.ToString() : "No Kinect detected."; }
         }
 
+		/// <summary>
+		///
+		/// </summary>
+		public PositionTrackerController PositionTrackerController
+		{
+			get { return _positionTrackerController; }
+		}
+
 		public KinectSensorController()
         {
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call.
@@ -94,9 +105,10 @@ namespace RideOnMotion.KinectModule
 
             if ( !_kinectSensor.SkeletonStream.IsEnabled )
             {
+				_totalSkeleton = new Skeleton[6];
                 _kinectSensor.SkeletonStream.Enable();
-                //connect event
-                //_kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
+
+                _kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
             }
 
 
@@ -110,6 +122,14 @@ namespace RideOnMotion.KinectModule
 
             // Call StartSensor(); from outside.
         }
+
+		/// <summary>
+		/// Créer les PositionTracker et les CaptionArea associe
+		/// </summary>
+		private void initializePositionTrackerController()
+		{
+
+		}
 
         /// <summary>
         /// Remove bindings on sensor disconnection
@@ -202,7 +222,17 @@ namespace RideOnMotion.KinectModule
 
 		private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
 		{
-			throw new NotImplementedException();
+			using( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
+			{
+				// copy the frame data in to the collection
+				skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
+
+				Skeleton firstSkeleton = ( from trackskeleton in _totalSkeleton
+										   where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
+										   select trackskeleton ).FirstOrDefault();
+
+				_positionTrackerController.NotifyPositionTrackers( firstSkeleton );
+			}
 		}
 
         private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )
@@ -229,7 +259,7 @@ namespace RideOnMotion.KinectModule
             {
                 // Current sensor is gone, clean up
                 cleanupKinectSensor();
-            }
+            } 
             else if ( e.Status == KinectStatus.Connected )
             {
                 initializeKinectSensor( e.Sensor );

@@ -11,7 +11,7 @@ namespace RideOnMotion.KinectModule
 {
 	public class LeftHandPositionTracker : IPositionTracker
 	{
-		IList<ICaptionArea> _captionAreas;
+		readonly IList<ICaptionArea> _captionAreas;
 
 		public IReadOnlyList<ICaptionArea> CaptionAreas
 		{
@@ -19,8 +19,13 @@ namespace RideOnMotion.KinectModule
 		}
 
 		public LeftHandPositionTracker()
+			: this( new List<ICaptionArea>() )
 		{
-			_captionAreas = new List<ICaptionArea>();
+		}
+
+		public LeftHandPositionTracker(IList<ICaptionArea> listOfCaptionAreas)
+		{
+			_captionAreas = listOfCaptionAreas;
 		}
 
 		public void HookingSkeleton( Microsoft.Kinect.Skeleton skeleton )

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CK.Core;
 
-namespace RideOnMotion.KinectModule.ImplementationTracker
+namespace RideOnMotion.KinectModule
 {
 	public class RightHandPositionTracker : IPositionTracker
 	{
@@ -19,8 +19,13 @@ namespace RideOnMotion.KinectModule.ImplementationTracker
 		}
 
 		public RightHandPositionTracker()
+			: this( new List<ICaptionArea>() )
 		{
-			_captionAreas = new List<ICaptionArea>();
+		}
+
+		public RightHandPositionTracker( IList<ICaptionArea> listOfCaptionAreas )
+		{
+			_captionAreas = listOfCaptionAreas;
 		}
 
 		public void HookingSkeleton( Microsoft.Kinect.Skeleton skeleton )

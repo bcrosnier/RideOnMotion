@@ -76,10 +76,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="KinectModule\ImplementationTracker\CaptionArea.cs" />
+    <Compile Include="KinectModule\PositionTrackerController.cs" />
     <Compile Include="KinectSensorControler.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="KinectModule\ImplementationTracker\RightHandPositionTracker.cs" />
-    <Compile Include="KinectModule\KinectSensorControler.cs" />
     <Compile Include="KinectModule\ImplementationTracker\LeftHandPositionTracker.cs" />
     <Compile Include="KinectModule\Tracker\ICaptionArea.cs" />
     <Compile Include="KinectModule\Tracker\IPositionTracker.cs" />
@@ -109,6 +109,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
