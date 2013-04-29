@@ -10,7 +10,7 @@
         
         <StatusBar DockPanel.Dock="Bottom">
             <Image Height="16" VerticalAlignment="Center" Source="Images/KinectIcon.png" />
-            <TextBlock x:Name="KinectStatusText">No Kinect</TextBlock>
+            <TextBlock x:Name="KinectStatusText" Text="{Binding SensorStatusInfo}"></TextBlock>
             <Separator />
             <Image Height="16" VerticalAlignment="Center" Source="Images/HelicopterIcon.png" />
             <TextBlock x:Name="DroneStatusText">No drone</TextBlock>
@@ -43,19 +43,11 @@
                 </Viewbox>
             </StackPanel>
 
-            <Grid x:Name="InfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                
-                <GroupBox Header="Kinect device" Grid.Row="0">
-                    <TextBlock x:Name="KinectStatusInfo" Text="{Binding SensorStatusInfoString}"/>
+                <GroupBox Header="Status information" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
+                    <StackPanel>
+                        <TextBlock x:Name="KinectStatusInfo" Text="{Binding SensorStatusInfo}"/>
+                    </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Drone status" Grid.Row="1">
-                    <TextBlock x:Name="DroneStatusInfo">No drone</TextBlock>
-                </GroupBox>
-            </Grid>
 
             <GridSplitter Grid.Column="1" Width="3" Grid.RowSpan="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
 

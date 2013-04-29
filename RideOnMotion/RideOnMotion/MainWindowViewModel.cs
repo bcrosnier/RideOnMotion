@@ -24,11 +24,7 @@ namespace RideOnMotion
         private BitmapSource _droneBitmapSource;
         private BitmapSource _depthBitmapSource;
 
-        private Dictionary<String, String> _droneStatusInfo;
-
         private List<String> _logList;
-
-        public enum KinectStatusInfoKeys { STATUS, ELEVATION_ANGLE }
 
         #endregion Values
 
@@ -85,46 +81,12 @@ namespace RideOnMotion
             }
         }
 
-        public Dictionary<String, String> DroneStatusInfo
+        public String SensorStatusInfo
         {
             get
             {
-                return this._droneStatusInfo;
-            }
-
-            set
-            {
-                if ( this._droneStatusInfo != value )
-                {
-                    this._droneStatusInfo = value;
-                    this.OnNotifyPropertyChange( "DroneStatusInfo" );
-                }
-            }
-        }
-
-        public Dictionary<KinectStatusInfoKeys, string> SensorStatusInfo
-        {
-            get
-            {
-                return this.generateKinectStatusInfo();
-            }
-        }
-
-        public string SensorStatusInfoString
-        {
-            get
-            {
-                StringBuilder sb = new StringBuilder();
-                foreach ( KeyValuePair<KinectStatusInfoKeys, String> entry in SensorStatusInfo )
-                {
-                    sb.Append( entry.Key.ToString() );
-                    sb.Append( " : " );
-                    sb.Append( entry.Value );
-
-                    sb.Append( '\n' );
-                }
-
-                return sb.ToString().TrimEnd( '\n' );
+                string statusString = !this._sensorController.HasSensor ? KinectStatus.Disconnected.ToString() : _sensorController.Sensor.Status.ToString();
+                return "Kinect device: " + statusString;
             }
         }
 
@@ -166,40 +128,12 @@ namespace RideOnMotion
             _sensorController.DepthBitmapSourceReady += OnDepthBitmapSourceChanged;
 
             // Bind sensor status
-            _sensorController.SensorChanged += ( sender, e ) => { this.OnNotifyPropertyChange( "SensorStatusInfo" ); this.OnNotifyPropertyChange( "SensorStatusInfoString" ); };
-        }
-
-        /// <summary>
-        /// Create a dictionary with the Sensor's status, elevation angle, etc.
-        /// </summary>
-        /// <returns></returns>
-        private Dictionary<KinectStatusInfoKeys, string> generateKinectStatusInfo()
-        {
-            Dictionary<KinectStatusInfoKeys, string> dict = new Dictionary<KinectStatusInfoKeys, string>();
-
-            string statusString = !this._sensorController.HasSensor ? KinectStatus.Disconnected.ToString() : _sensorController.Sensor.Status.ToString();
-
-            dict.Add( KinectStatusInfoKeys.STATUS, statusString );
-
-            if ( _sensorController.SensorIsRunning )
-            {
-                dict.Add( KinectStatusInfoKeys.ELEVATION_ANGLE, _sensorController.Sensor.ElevationAngle.ToString() );
-            }
-
-            return dict;
+            _sensorController.SensorChanged += ( sender, e ) => { this.OnNotifyPropertyChange( "SensorStatusInfo" ); };
         }
 
         private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )
         {
             DepthBitmapSource = e.BitmapSource;
         }
-    }
-
-    public class KinectSensorInfo
-    {
-        private KinectStatus _status;
-        private int _elevationAngle;
-        private string _deviceConnectionId;
-        private Microsoft.Kinect.Vector4 _accelerometerInfo;
     }
 }
