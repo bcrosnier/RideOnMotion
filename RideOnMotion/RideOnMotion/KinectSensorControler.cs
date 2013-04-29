@@ -1,4 +1,4 @@
-﻿using Microsoft.Kinect;
+using Microsoft.Kinect;
 using System;
 using System.Linq;
 using System.Windows.Media;
