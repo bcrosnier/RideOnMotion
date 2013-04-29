@@ -65,9 +65,9 @@
             <!-- Main panel - Background -->
             <StackPanel Background="Black" x:Name="MainPanel" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
             </StackPanel>
-            <!-- Main panel - Canvas -->
+            <!-- Main panel - Point Canvas -->
             <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <Canvas Background="#7F00FF00" Width="640" Height="480" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Canvas Width="640" Height="480" Background="#7F00FF00">
                     <!-- Blue Left hand point -->
                     <Ellipse Visibility="{Binding LeftHandVisibility}"
                                 Canvas.Left="{Binding LeftHandX}" Canvas.Top="{Binding LeftHandY}"
@@ -76,18 +76,29 @@
                     <Ellipse Visibility="{Binding RightHandVisibility}"
                                 Canvas.Left="{Binding RightHandX}" Canvas.Top="{Binding RightHandY}"
                                 Fill="Red" Height="15" Name="rightHand" Width="15" />
-                    <!-- Test rectangles -->
-                    <Rectangle Width="200" Height="50" Canvas.Left="60" Canvas.Top="140" Fill="#7FFF00A2"></Rectangle>
-                    <Rectangle Width="200" Height="50" Canvas.Left="60" Canvas.Top="290" Fill="#7FFF00A2"></Rectangle>
-                    <Rectangle Width="50" Height="200" Canvas.Left="60" Canvas.Top="140" Fill="#7FFF00A2"></Rectangle>
-                    <Rectangle Width="50" Height="200" Canvas.Left="210" Canvas.Top="140" Fill="#7FFF00A2"></Rectangle>
-                    
-                    <Rectangle Width="200" Height="50" Canvas.Left="380" Canvas.Top="140" Fill="#7FFF00A2"></Rectangle>
-                    <Rectangle Width="200" Height="50" Canvas.Left="380" Canvas.Top="290" Fill="#7FFF00A2"></Rectangle>
-                    <Rectangle Width="50" Height="200" Canvas.Left="380" Canvas.Top="140" Fill="#7FFF00A2"></Rectangle>
-                    <Rectangle Width="50" Height="200" Canvas.Left="530" Canvas.Top="140" Fill="#7FFF00A2"></Rectangle>
-                    
                 </Canvas>
+            </Viewbox>
+            <!-- Main panel - Rectangle Canvas -->
+            <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
+                <ItemsControl ItemsSource="{Binding TriggerZoneCollection}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas Width="640" Height="480" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <!-- ItemTemplate -->
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Rectangle Width="{Binding Width}" Height="{Binding Height}" Fill="#7FFF00A2"></Rectangle>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding X}" />
+                            <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
             </Viewbox>
 
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >

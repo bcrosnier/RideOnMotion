@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Collections.ObjectModel;
 
 namespace RideOnMotion
 {
@@ -29,6 +30,7 @@ namespace RideOnMotion
 
         private BitmapSource _droneBitmapSource;
         private BitmapSource _depthBitmapSource;
+        public ObservableCollection<TriggerZone> TriggerZoneCollection { get; private set; }
 
         private Point _leftHandPoint = new Point( 0, 0 );
         private Point _rightHandPoint = new Point( 0, 0 );
@@ -200,6 +202,7 @@ namespace RideOnMotion
                 this.CanExecuteKinectCommands );
 
             initializeBindings();
+            initTriggerZones( 320, 75 );
         }
 
         /// <summary>
@@ -240,6 +243,89 @@ namespace RideOnMotion
             DepthBitmapSource = e.BitmapSource;
         }
 
+        private void initTriggerZones( int zoneWidth, int zoneHeight )
+        {
+            int baseWidth = 640;
+            int baseHeight = 480;
+            int horizontalMargin = (baseWidth / 2 - zoneWidth) / 2;
+            int verticalMargin = (baseHeight - zoneWidth) / 2;
+
+            TriggerZoneCollection = new ObservableCollection<TriggerZone>();
+
+            TriggerZone leftUpZone = new TriggerZone
+            {
+                Height = zoneHeight,
+                Width = zoneWidth,
+                X = horizontalMargin,
+                Y = verticalMargin
+            };
+
+            TriggerZone leftLeftZone = new TriggerZone
+            {
+                Height = zoneWidth,
+                Width = zoneHeight,
+                X = horizontalMargin,
+                Y = verticalMargin
+            };
+
+            TriggerZone leftDownZone = new TriggerZone
+            {
+                Height = zoneHeight,
+                Width = zoneWidth,
+                X = horizontalMargin,
+                Y = verticalMargin + zoneWidth - zoneHeight
+            };
+
+            TriggerZone leftRightZone = new TriggerZone
+            {
+                Height = zoneWidth,
+                Width = zoneHeight,
+                X = baseWidth / 2 + horizontalMargin + zoneWidth - zoneHeight,
+                Y = verticalMargin
+            };
+
+            TriggerZone rightUpZone = new TriggerZone
+            {
+                Height = zoneHeight,
+                Width = zoneWidth,
+                X = baseWidth / 2 + horizontalMargin,
+                Y = verticalMargin
+            };
+
+            TriggerZone rightLeftZone = new TriggerZone
+            {
+                Height = zoneWidth,
+                Width = zoneHeight,
+                X = baseWidth / 2 + horizontalMargin,
+                Y = verticalMargin
+            };
+
+            TriggerZone rightDownZone = new TriggerZone
+            {
+                Height = zoneHeight,
+                Width = zoneWidth,
+                X = baseWidth / 2 + horizontalMargin,
+                Y = verticalMargin + zoneWidth - zoneHeight
+            };
+
+            TriggerZone rightRightZone = new TriggerZone
+            {
+                Height = zoneWidth,
+                Width = zoneHeight,
+                X = horizontalMargin + zoneWidth - zoneHeight,
+                Y = verticalMargin
+            };
+
+            TriggerZoneCollection.Add( leftLeftZone );
+            TriggerZoneCollection.Add( leftUpZone );
+            TriggerZoneCollection.Add( leftDownZone );
+            TriggerZoneCollection.Add( leftRightZone );
+            TriggerZoneCollection.Add( rightLeftZone );
+            TriggerZoneCollection.Add( rightUpZone );
+            TriggerZoneCollection.Add( rightDownZone );
+            TriggerZoneCollection.Add( rightRightZone );
+        }
+
         #endregion Contructor/initializers/event handlers
 
         #region Commands/command helpers
@@ -273,5 +359,13 @@ namespace RideOnMotion
             e.Handled = true;
         }
         #endregion Commands/command helpers
+    }
+
+    public class TriggerZone
+    {
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Width { get; set; }
+        public float Height { get; set; }
     }
 }
