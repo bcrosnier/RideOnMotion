@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CK.Core;
 
 namespace RideOnMotion
 {
@@ -14,25 +15,5 @@ namespace RideOnMotion
     /// </summary>
     public class Logger
     {
-
-		static Stream memoryStick = new MemoryStream();
-		StreamWriter memoryStickWriter = new StreamWriter( memoryStick );
-		//FileStream fs = File.Create( "test.txt" );
-		
-		
-        public void writeLog( String Message )
-        {
-			memoryStickWriter.Write( DateTime.Now + " : " );
-			memoryStickWriter.WriteLine( Message );
-			memoryStickWriter.Flush();
-		}
-
-        public String readLog()
-        {
-			memoryStick.Seek( 0, SeekOrigin.Begin );
-			StreamReader memoryStickReader = new StreamReader( memoryStick );
-			String something = memoryStickReader.ReadLine();
-            return something;
-        }
     }
 }
