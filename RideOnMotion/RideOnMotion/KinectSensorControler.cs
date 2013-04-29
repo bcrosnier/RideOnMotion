@@ -22,6 +22,9 @@ namespace RideOnMotion.KinectModule
         public event BitmapSourceHandler DepthBitmapSourceReady;
         public event EventHandler<KinectSensor> SensorChanged;
 
+        public event EventHandler<System.Windows.Point> LeftHandPointReady;
+        public event EventHandler<System.Windows.Point> RightHandPointReady;
+
         public delegate void BitmapSourceHandler( object sender, BitmapSourceEventArgs e );
 
         public BitmapSource DepthBitmapSource
@@ -245,11 +248,29 @@ namespace RideOnMotion.KinectModule
 				    Skeleton firstSkeleton = ( from trackskeleton in _totalSkeleton
 										       where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
 										       select trackskeleton ).FirstOrDefault();
+                    if ( firstSkeleton != null )
+                    {
+                        _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
 
-                    _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
+                        if ( LeftHandPointReady != null )
+                        {
+                            LeftHandPointReady( this, ScalePosition( firstSkeleton.Joints[JointType.HandLeft].Position ) );
+                        }
+                        if ( RightHandPointReady != null )
+                        {
+                            RightHandPointReady( this, ScalePosition( firstSkeleton.Joints[JointType.HandRight].Position ) );
+                        }
+                    }
                 }
 			}
 		}
+
+        private System.Windows.Point ScalePosition( SkeletonPoint skeletonPoint )
+        {
+            DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
+                skeletonPoint, DepthImageFormat.Resolution640x480Fps30 );
+            return new System.Windows.Point( depthPoint.X, depthPoint.Y );
+        }
 
         private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )
         {

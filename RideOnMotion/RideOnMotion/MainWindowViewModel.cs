@@ -30,6 +30,9 @@ namespace RideOnMotion
         private BitmapSource _droneBitmapSource;
         private BitmapSource _depthBitmapSource;
 
+        private Point _leftHandPoint;
+        private Point _rightHandPoint;
+
         private List<String> _logList;
 
         #endregion Values
@@ -68,6 +71,26 @@ namespace RideOnMotion
                     this.OnNotifyPropertyChange( "DroneBitmapSource" );
                 }
             }
+        }
+
+        public int LeftHandX
+        {
+            get { return (int)this._leftHandPoint.X; }
+        }
+
+        public int LeftHandY
+        {
+            get { return (int)this._leftHandPoint.Y; }
+        }
+
+        public int RightHandX
+        {
+            get { return (int)this._rightHandPoint.X; }
+        }
+
+        public int RightHandY
+        {
+            get { return (int)this._rightHandPoint.Y; }
         }
 
         public List<String> LogList
@@ -160,6 +183,23 @@ namespace RideOnMotion
                 this.OnNotifyPropertyChange( "SensorStatusInfo" );
                 this.OnNotifyPropertyChange( "CanUseSensor" );
             };
+
+            _sensorController.LeftHandPointReady += OnLeftHandPoint;
+            _sensorController.RightHandPointReady += OnRightHandPoint;
+        }
+
+        private void OnRightHandPoint( object sender, Point e )
+        {
+            this._rightHandPoint = e;
+            this.OnNotifyPropertyChange( "LeftHandX" );
+            this.OnNotifyPropertyChange( "LeftHandY" );
+        }
+
+        private void OnLeftHandPoint( object sender, Point e )
+        {
+            this._leftHandPoint = e;
+            this.OnNotifyPropertyChange( "RightHandX" );
+            this.OnNotifyPropertyChange( "RightHandY" );
         }
 
         private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )
