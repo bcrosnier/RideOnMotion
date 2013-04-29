@@ -2,7 +2,13 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:RideOnMotion" x:Name="MainWindow1" x:Class="RideOnMotion.MainWindow"
-        Title="RideOn[Motion]" Height="600" Width="800" Loaded="MainWindow_Loaded" MinWidth="800" MinHeight="600" Closing="MainWindow_Closing"> 
+        Title="RideOn[Motion]" Height="600" Width="800"
+        Loaded="MainWindow_Loaded" MinWidth="800" MinHeight="600"
+        Closing="MainWindow_Closing">
+
+    <Window.CommandBindings>
+    </Window.CommandBindings>
+
     <DockPanel>
         <DockPanel.Background>
             <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
@@ -22,6 +28,11 @@
             </Menu.Background>
             <MenuItem Header="File">
                 <MenuItem Header="Quit" Click="MenuItem_Quit_Click" />
+            </MenuItem>
+            <MenuItem Header="Kinect">
+                <MenuItem Header="Kinect settings" Command="{Binding OpenKinectSettingsCommand}" />
+                <Separator />
+                <MenuItem Header="Reset Kinect" Command="{Binding ResetSensorCommand}" />
             </MenuItem>
         </Menu>
 

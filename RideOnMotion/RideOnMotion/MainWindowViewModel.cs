@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace RideOnMotion
@@ -20,6 +22,10 @@ namespace RideOnMotion
         private KinectModule.KinectSensorController _sensorController;
 
         #region Values
+        public CommandBinding ResetSensorCommandBinding { get; private set; }
+        public RoutedCommand ResetSensorCommand { get; private set; }
+        public CommandBinding OpenKinectSettingsCommandBinding { get; private set; }
+        public RoutedCommand OpenKinectSettingsCommand { get; private set; }
 
         private BitmapSource _droneBitmapSource;
         private BitmapSource _depthBitmapSource;
@@ -90,8 +96,17 @@ namespace RideOnMotion
             }
         }
 
+        public bool CanUseSensor
+        {
+            get
+            {
+                return ( this._sensorController.HasSensor && this._sensorController.SensorIsRunning );
+            }
+        }
+
         #endregion GettersSetters
 
+        #region INotifyPropertyChanged utilities
         /// <summary>
         /// Occurs when [property changed].
         /// </summary>
@@ -109,6 +124,9 @@ namespace RideOnMotion
 			}
 		}
 
+        #endregion INotifyPropertyChanged utilities
+
+        #region Contructor/initializers/event handlers
         /// <summary>
         /// Initializes the ViewModel with the given KinectSensorController.
         /// </summary>
@@ -116,6 +134,16 @@ namespace RideOnMotion
         public MainWindowViewModel( KinectModule.KinectSensorController sensorController )
         {
             _sensorController = sensorController;
+            ResetSensorCommand = new RoutedCommand();
+            OpenKinectSettingsCommand = new RoutedCommand();
+
+            this.ResetSensorCommandBinding = new CommandBinding( ResetSensorCommand,
+                this.ResetSensorExecuted,
+                this.CanExecuteKinectCommands );
+
+            this.OpenKinectSettingsCommandBinding = new CommandBinding( OpenKinectSettingsCommand,
+                this.OpenKinectSettingsExecuted,
+                this.CanExecuteKinectCommands );
 
             initializeBindings();
         }
@@ -128,12 +156,49 @@ namespace RideOnMotion
             _sensorController.DepthBitmapSourceReady += OnDepthBitmapSourceChanged;
 
             // Bind sensor status
-            _sensorController.SensorChanged += ( sender, e ) => { this.OnNotifyPropertyChange( "SensorStatusInfo" ); };
+            _sensorController.SensorChanged += ( sender, e ) => {
+                this.OnNotifyPropertyChange( "SensorStatusInfo" );
+                this.OnNotifyPropertyChange( "CanUseSensor" );
+            };
         }
 
         private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )
         {
             DepthBitmapSource = e.BitmapSource;
         }
+
+        #endregion Contructor/initializers/event handlers
+
+        #region Commands/command helpers
+        public void CanExecuteKinectCommands(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = this.CanUseSensor;
+            e.Handled = true;
+        }
+
+        public void ResetSensorExecuted( object sender, ExecutedRoutedEventArgs e )
+        {
+            if ( !this.CanUseSensor )
+            {
+                return; // Command should be disabled anyway
+            }
+            this._sensorController.resetSensor();
+
+            e.Handled = true;
+        }
+
+        public void OpenKinectSettingsExecuted( object sender, ExecutedRoutedEventArgs e )
+        {
+            if ( !this.CanUseSensor )
+            {
+                return; // Command should be disabled anyway
+            }
+
+            Window deviceSettingsWindow = new KinectDeviceSettings( this._sensorController );
+            deviceSettingsWindow.Show();
+
+            e.Handled = true;
+        }
+        #endregion Commands/command helpers
     }
 }

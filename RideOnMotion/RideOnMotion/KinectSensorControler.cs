@@ -116,6 +116,11 @@ namespace RideOnMotion.KinectModule
         /// </summary>
         private void cleanupKinectSensor()
         {
+            if( _kinectSensor == null )
+            {
+                // Nothing to clean up.
+                return;
+            }
             StopSensor();
             
             // Throw last BitmapSource to blank picture
@@ -128,8 +133,14 @@ namespace RideOnMotion.KinectModule
             _kinectSensor.DepthFrameReady -= sensor_DepthFrameReady;
             _kinectSensor.SkeletonFrameReady -= sensor_SkeletonFrameReady;
 
-            _kinectSensor.DepthStream.Disable();
-            _kinectSensor.SkeletonStream.Disable();
+            if ( _kinectSensor.DepthStream != null )
+            {
+                _kinectSensor.DepthStream.Disable();
+            }
+            if ( _kinectSensor.SkeletonStream != null )
+            {
+                _kinectSensor.SkeletonStream.Disable();
+            }
 
             _kinectSensor = null;
         }

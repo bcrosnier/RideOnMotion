@@ -3,6 +3,7 @@ using Microsoft.Kinect;
 using KinectStatusNotifier;
 using RideOnMotion.KinectModule;
 using System;
+using System.Windows.Input;
 
 namespace RideOnMotion
 {
@@ -24,7 +25,8 @@ namespace RideOnMotion
 		/// <summary>
 		/// Kinect Status Notifier. Notably used by the Kinect system tray icon.
 		/// </summary>
-		private StatusNotifier notifier = new StatusNotifier();
+        private StatusNotifier notifier = new StatusNotifier();
+
 
 		public MainWindow()
 		{
@@ -33,6 +35,9 @@ namespace RideOnMotion
             this.sensorController = new KinectSensorController();
             this.mainWindowViewModel = new MainWindowViewModel( sensorController );
             this.DataContext = this.mainWindowViewModel;
+
+            CommandBindings.Add( this.mainWindowViewModel.OpenKinectSettingsCommandBinding );
+            CommandBindings.Add( this.mainWindowViewModel.ResetSensorCommandBinding );
 		}
 
 		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
@@ -65,5 +70,11 @@ namespace RideOnMotion
         {
             this.Close();
         }
+
+        private void MenuItem_KinectSettings_Click( object sender, RoutedEventArgs e )
+        {
+        }
+
+
 	}
 }
