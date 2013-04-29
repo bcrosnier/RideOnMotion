@@ -36,10 +36,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Reference Include="Accessibility" />
+=======
     <Reference Include="CK.Core">
-      <HintPath>..\packages\CK.Core.2.8.7-develop\lib\net45\CK.Core.dll</HintPath>
+      <HintPath>..\packages\CK.Core.2.8.6-develop\lib\net45\CK.Core.dll</HintPath>
     </Reference>
+>>>>>>> origin/f-hands-tracker
     <Reference Include="KinectStatusNotifier">
       <HintPath>.\KinectStatusNotifier.dll</HintPath>
     </Reference>
@@ -85,11 +88,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+<<<<<<< HEAD
     <Compile Include="KinectDeviceSettings.xaml.cs">
       <DependentUpon>KinectDeviceSettings.xaml</DependentUpon>
     </Compile>
+=======
     <Compile Include="KinectModule\ImplementationTracker\CaptionArea.cs" />
     <Compile Include="KinectModule\PositionTrackerController.cs" />
+>>>>>>> origin/f-hands-tracker
     <Compile Include="KinectSensorControler.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="KinectModule\ImplementationTracker\RightHandPositionTracker.cs" />
