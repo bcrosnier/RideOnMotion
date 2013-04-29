@@ -64,9 +64,9 @@
 
             <StackPanel Background="Black" x:Name="MainPanel" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
                 <Viewbox Stretch="Uniform">
-                    <Canvas Width="640" Height="480" Background="LightCoral">
-                        <Ellipse Canvas.Left="{Binding LeftHandX}" Canvas.Top="{Binding LeftHandY}" Fill="Blue" Height="15" Name="leftHand" Width="15" />
-                        <Ellipse Canvas.Left="{Binding RightHandX}" Canvas.Top="{Binding RightHandY}" Fill="Red" Height="15" Name="rightHand" Width="15" />
+                    <Canvas Width="640" Height="480" Background="Pink">
+                        <Ellipse Visibility="{Binding LeftHandVisibility}" Canvas.Left="{Binding LeftHandX}" Canvas.Top="{Binding LeftHandY}" Fill="Blue" Height="15" Name="leftHand" Width="15" />
+                        <Ellipse Visibility="{Binding RightHandVisibility}" Canvas.Left="{Binding RightHandX}" Canvas.Top="{Binding RightHandY}" Fill="Red" Height="15" Name="rightHand" Width="15" />
                     </Canvas>
                 </Viewbox>
             </StackPanel>

@@ -30,8 +30,8 @@ namespace RideOnMotion
         private BitmapSource _droneBitmapSource;
         private BitmapSource _depthBitmapSource;
 
-        private Point _leftHandPoint;
-        private Point _rightHandPoint;
+        private Point _leftHandPoint = new Point( 0, 0 );
+        private Point _rightHandPoint = new Point( 0, 0 );
 
         private List<String> _logList;
 
@@ -83,6 +83,21 @@ namespace RideOnMotion
             get { return (int)this._leftHandPoint.Y; }
         }
 
+        public Visibility LeftHandVisibility
+        {
+            get {
+                bool exists = ( this._leftHandPoint.Y == 0.0 && this._leftHandPoint.X == 0.0)  ? false : true;
+                if ( exists )
+                {
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    return Visibility.Collapsed;
+                }
+            }
+        }
+
         public int RightHandX
         {
             get { return (int)this._rightHandPoint.X; }
@@ -91,6 +106,22 @@ namespace RideOnMotion
         public int RightHandY
         {
             get { return (int)this._rightHandPoint.Y; }
+        }
+
+        public Visibility RightHandVisibility
+        {
+            get
+            {
+                bool exists = ( this._rightHandPoint.Y == 0.0 && this._rightHandPoint.X == 0.0 ) ? false : true;
+                if ( exists )
+                {
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    return Visibility.Collapsed;
+                }
+            }
         }
 
         public List<String> LogList
@@ -193,6 +224,7 @@ namespace RideOnMotion
             this._rightHandPoint = e;
             this.OnNotifyPropertyChange( "LeftHandX" );
             this.OnNotifyPropertyChange( "LeftHandY" );
+            this.OnNotifyPropertyChange( "LeftHandVisibility" );
         }
 
         private void OnLeftHandPoint( object sender, Point e )
@@ -200,6 +232,7 @@ namespace RideOnMotion
             this._leftHandPoint = e;
             this.OnNotifyPropertyChange( "RightHandX" );
             this.OnNotifyPropertyChange( "RightHandY" );
+            this.OnNotifyPropertyChange( "RightHandVisibility" );
         }
 
         private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )

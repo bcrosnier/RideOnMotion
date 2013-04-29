@@ -261,6 +261,17 @@ namespace RideOnMotion.KinectModule
                             RightHandPointReady( this, ScalePosition( firstSkeleton.Joints[JointType.HandRight].Position ) );
                         }
                     }
+                    else
+                    { // Send empty points to notify view for it to clear.
+                        if ( LeftHandPointReady != null )
+                        {
+                            LeftHandPointReady( this, new System.Windows.Point(0, 0) );
+                        }
+                        if ( RightHandPointReady != null )
+                        {
+                            RightHandPointReady( this, new System.Windows.Point( 0, 0 ) );
+                        }
+                    }
                 }
 			}
 		}
