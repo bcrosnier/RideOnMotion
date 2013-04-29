@@ -176,6 +176,11 @@ namespace RideOnMotion
         }
 
         public void applySettings() {
+            if ( _controller.Sensor.Status != Microsoft.Kinect.KinectStatus.Connected )
+            {
+                return; // Fuck you
+            }
+
             if ( this.NearModeIsEnabled )
             {
                 _controller.Sensor.DepthStream.Range = Microsoft.Kinect.DepthRange.Near;

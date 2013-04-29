@@ -231,6 +231,7 @@ namespace RideOnMotion.KinectModule
             {
                 DepthBitmapSourceReady( this, new BitmapSourceEventArgs(_depthBitmapSource) );
             }
+            imageFrame.Dispose();
         }
 
         private void sensors_StatusChanged(object sender, StatusChangedEventArgs e) {
@@ -249,7 +250,7 @@ namespace RideOnMotion.KinectModule
             }
 
             // Attach Kinect sensor if it doesn't exist
-            if ( _kinectSensor == null && e.Sensor != null )
+            if ( _kinectSensor == null && e.Sensor != null && e.Status != KinectStatus.Disconnected )
             {
                 _kinectSensor = e.Sensor;
             }

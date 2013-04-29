@@ -22,7 +22,7 @@
                 </DockPanel>
             </GroupBox>
             <GroupBox Header="Device settings">
-                <CheckBox Content="Enable near mode" IsChecked="{Binding NearModeIsEnabled, TargetNullValue=false}"/>
+                <CheckBox Content="Enable near mode" IsChecked="{Binding NearModeIsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </GroupBox>
         </StackPanel>
     </DockPanel>
