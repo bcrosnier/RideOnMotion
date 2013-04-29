@@ -193,5 +193,13 @@ namespace RideOnMotion
         {
             DepthBitmapSource = e.BitmapSource;
         }
-    } 
+    }
+
+    public class KinectSensorInfo
+    {
+        private KinectStatus _status;
+        private int _elevationAngle;
+        private string _deviceConnectionId;
+        private Microsoft.Kinect.Vector4 _accelerometerInfo;
+    }
 }
