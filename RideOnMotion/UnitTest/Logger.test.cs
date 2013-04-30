@@ -4,27 +4,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using RideOnMotion;
+using CK.Core;
+using System.IO;
 
 namespace RideOnMotion.test
 {
 	[TestFixture]
-    class LoggerTest
-    {
-		Logger logger = new Logger();
-		String thisIsAString = "Hello, I'm testing this shit v2!";
-
+	class LoggerTest
+	{
 		[Test]
-		public void writeAndReadTest()
+		public void logtest()
 		{
-			Console.WriteLine( "Entered : " + DateTime.Now + " : " + thisIsAString );
-			logger.writeLog( thisIsAString );
-			Console.WriteLine( "Result : " + logger.readLog() );
-			Console.WriteLine();
+			IDefaultActivityLogger Logger = new DefaultActivityLogger();
+			Logger.Tap.Register( new StringImpl() );
 
-			//StringAssert. DateTime.Now + "";
-			StringAssert.Contains( DateTime.Now + " : " +thisIsAString, logger.readLog() );
+			var tag1 = ActivityLogger.RegisteredTags.FindOrCreate( "Product" );
+			var tag2 = ActivityLogger.RegisteredTags.FindOrCreate( "Sql" );
+			var tag3 = ActivityLogger.RegisteredTags.FindOrCreate( "Combined Tag|Sql|Engine V2|Product" );
+
+			Logger.UnfilteredLog( tag1, LogLevel.Fatal, "Fatal Log ", DateTime.UtcNow );
+			Logger.UnfilteredLog( tag1, LogLevel.Fatal, "Fatal Log ", DateTime.UtcNow );
+			Logger.UnfilteredLog( tag3, LogLevel.Trace, "Trace Log ", DateTime.UtcNow );
+
+			Console.WriteLine( Logger.Tap.RegisteredSinks.OfType<StringImpl>().Single().Writer );
+			Logger.UnfilteredLog( tag2, LogLevel.Info, "Info Log ", DateTime.UtcNow );
+			Console.WriteLine( Logger.Tap.RegisteredSinks.OfType<StringImpl>().Single().Writer );
 		}
-
-    }
+		[Test]
+		public void LogTest()
+		{
+			Logger.Instance.NewEntry( LogLevel.Info, CKTraitTags.Application, "Try again" );
+			Console.WriteLine( Logger.Instance.Output() );
+		}
+	}
 }

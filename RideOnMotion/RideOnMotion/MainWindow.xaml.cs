@@ -4,6 +4,7 @@ using KinectStatusNotifier;
 using RideOnMotion.KinectModule;
 using System;
 using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace RideOnMotion
 {
@@ -73,6 +74,14 @@ namespace RideOnMotion
 
         private void MenuItem_KinectSettings_Click( object sender, RoutedEventArgs e )
         {
+        }
+
+        private void LogString_TextChanged( object sender, System.Windows.Controls.TextChangedEventArgs e )
+        {
+            TextBox tb = (TextBox)sender;
+
+            //tb.SelectionStart = tb.Text.Length;
+            tb.ScrollToEnd();
         }
 
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -16,7 +16,7 @@ namespace RideOnMotion
     /// <summary>
     /// View model for main window. Contains displayed properties.
     /// </summary>
-    class MainWindowViewModel : INotifyPropertyChanged
+	class MainWindowViewModel : IViewModel, INotifyPropertyChanged
     {
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
@@ -46,7 +46,7 @@ namespace RideOnMotion
         private System.Windows.Point _leftHandPoint = new System.Windows.Point( 0, 0 );
         private System.Windows.Point _rightHandPoint = new System.Windows.Point( 0, 0 );
 
-        private List<String> _logList;
+        private String _logString;
 
         #endregion Values
 
@@ -137,19 +137,19 @@ namespace RideOnMotion
             }
         }
 
-        public List<String> LogList
+        public String LogString
         {
             get
             {
-                return this._logList;
+                return this._logString;
             }
 
             set
             {
-                if ( this._logList != value )
+                if ( this._logString != value )
                 {
-                    this._logList = value;
-                    this.OnNotifyPropertyChange( "LogList" );
+                    this._logString = value;
+                    this.OnNotifyPropertyChange( "LogString" );
                 }
             }
         }
@@ -219,18 +219,23 @@ namespace RideOnMotion
         /// <summary>
         /// Creates the event bindings with the model.
         /// </summary>
-        private void initializeBindings() {
+        private void initializeBindings()
+        {
             // Bind depth image changes
             _sensorController.DepthBitmapSourceReady += OnDepthBitmapSourceChanged;
 
             // Bind sensor status
-            _sensorController.SensorChanged += ( sender, e ) => {
+            _sensorController.SensorChanged += ( sender, e ) =>
+            {
                 this.OnNotifyPropertyChange( "SensorStatusInfo" );
                 this.OnNotifyPropertyChange( "CanUseSensor" );
             };
 
             _sensorController.LeftHandPointReady += OnLeftHandPoint;
             _sensorController.RightHandPointReady += OnRightHandPoint;
+
+            // LOGGER DEMO
+			Logger.Instance.NewLogStringReady += OnLogStringReceived; // Event binding
         }
 
         private void OnRightHandPoint( object sender, System.Windows.Point e )
@@ -252,6 +257,11 @@ namespace RideOnMotion
         private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )
         {
             DepthBitmapSource = e.BitmapSource;
+        }
+
+        private void OnLogStringReceived( object sender, String e )
+        {
+            this.LogString = e; // Will fire NotifyPropertyChanged
         }
 
         private void initTriggerZones( int buttonWidth, int buttonHeight )

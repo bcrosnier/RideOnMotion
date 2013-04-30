@@ -62,7 +62,7 @@ namespace RideOnMotion.KinectModule
         public bool HasSensor
         {
             // If _kinectSensor exists, return true, else return false
-            get { return _kinectSensor != null ? true : false; }
+            get { return (_kinectSensor != null && _kinectSensor.Status != KinectStatus.Disconnected) ? true : false; }
         }
 
         /// <summary>
@@ -211,11 +211,14 @@ namespace RideOnMotion.KinectModule
         {
             if ( !SensorIsRunning && HasSensor )
             {
-                Sensor.Start(); // Blocking call.
-                if ( SensorChanged != null )
-                {
-                    SensorChanged( this, Sensor );
-                }
+				try
+				{
+					Sensor.Start(); // Blocking call.
+				}
+				catch
+				{
+					Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Unexpected API error, replug the Kinect." );
+				}
             }
         }
 
@@ -227,10 +230,6 @@ namespace RideOnMotion.KinectModule
             if ( SensorIsRunning )
             {
                 _kinectSensor.Stop();
-                if ( SensorChanged != null )
-                {
-                    SensorChanged( this, Sensor );
-                }
             }
         }
 
@@ -348,6 +347,7 @@ namespace RideOnMotion.KinectModule
         }
 
         private void sensors_StatusChanged(object sender, StatusChangedEventArgs e) {
+
 
             if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
                 && e.Sensor == _kinectSensor )
