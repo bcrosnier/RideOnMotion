@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Kinect;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -60,6 +61,8 @@ namespace RideOnMotion
         private int _maximumElevationAngle;
         private int _currentElevationAngle;
         private bool _nearModeIsEnabled;
+        private bool _seatingModeIsEnabled;
+        private bool _skeletonSmoothingIsEnabled;
 
         public KinectDeviceSettingsViewModel( KinectModule.KinectSensorController controller )
         {
@@ -82,12 +85,33 @@ namespace RideOnMotion
                 this.CurrentElevationAngle = this._controller.Sensor.ElevationAngle;
             }
 
-            if( this._controller.Sensor.DepthStream.Range == Microsoft.Kinect.DepthRange.Near )
+            if ( this._controller.Sensor.DepthStream.Range == Microsoft.Kinect.DepthRange.Near )
             {
                 this.NearModeIsEnabled = true;
-            } else {
+            }
+            else
+            {
                 this.NearModeIsEnabled = false;
             }
+
+            if ( this._controller.Sensor.SkeletonStream.TrackingMode == Microsoft.Kinect.SkeletonTrackingMode.Seated )
+            {
+                this.SeatingModeIsEnabled = true;
+            }
+            else
+            {
+                this.SeatingModeIsEnabled = false;
+            }
+
+            if ( this._controller.Sensor.SkeletonStream.IsSmoothingEnabled )
+            {
+                this.SkeletonSmoothingIsEnabled = true;
+            }
+            else
+            {
+                this.SkeletonSmoothingIsEnabled = false;
+            }
+
         }
 
         /// <summary>
@@ -175,12 +199,47 @@ namespace RideOnMotion
             }
         }
 
+        public bool SeatingModeIsEnabled
+        {
+            get
+            {
+                return this._seatingModeIsEnabled;
+            }
+
+            set
+            {
+                if ( this._seatingModeIsEnabled != value )
+                {
+                    this._seatingModeIsEnabled = value;
+                    this.OnNotifyPropertyChange( "SeatingModeIsEnabled" );
+                }
+            }
+        }
+
+        public bool SkeletonSmoothingIsEnabled
+        {
+            get
+            {
+                return this._skeletonSmoothingIsEnabled;
+            }
+
+            set
+            {
+                if ( this._skeletonSmoothingIsEnabled != value )
+                {
+                    this._skeletonSmoothingIsEnabled = value;
+                    this.OnNotifyPropertyChange( "SkeletonSmoothingIsEnabled" );
+                }
+            }
+        }
+
         public void applySettings() {
             if ( _controller.Sensor.Status != Microsoft.Kinect.KinectStatus.Connected )
             {
                 return; // Fuck you
             }
 
+            // Near mode
             if ( this.NearModeIsEnabled )
             {
                 _controller.Sensor.DepthStream.Range = Microsoft.Kinect.DepthRange.Near;
@@ -189,6 +248,28 @@ namespace RideOnMotion
             {
                 _controller.Sensor.DepthStream.Range = Microsoft.Kinect.DepthRange.Default;
             }
+
+            // Seating mode
+            if ( this.SeatingModeIsEnabled )
+            {
+                _controller.Sensor.SkeletonStream.TrackingMode = Microsoft.Kinect.SkeletonTrackingMode.Seated;
+            }
+            else
+            {
+                _controller.Sensor.SkeletonStream.TrackingMode = Microsoft.Kinect.SkeletonTrackingMode.Default;
+            }
+
+            // Smoothing
+            if ( this.SkeletonSmoothingIsEnabled )
+            {
+                _controller.SetSkeletonSmoothingEnabled( true );
+            }
+            else
+            {
+                _controller.SetSkeletonSmoothingEnabled( false );
+            }
+
+            _controller.resetSensor();
 
             Task.Factory.StartNew( () =>
             {

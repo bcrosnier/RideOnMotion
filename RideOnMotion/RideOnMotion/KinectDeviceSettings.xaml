@@ -22,7 +22,11 @@
                 </DockPanel>
             </GroupBox>
             <GroupBox Header="Device settings">
-                <CheckBox Content="Enable near mode" IsChecked="{Binding NearModeIsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <StackPanel>
+                    <CheckBox Content="Enable near mode" IsChecked="{Binding NearModeIsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Content="Enable seating tracking mode" IsChecked="{Binding SeatingModeIsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Content="Enable smoothing" IsChecked="{Binding SkeletonSmoothingIsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
             </GroupBox>
         </StackPanel>
     </DockPanel>
