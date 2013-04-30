@@ -25,15 +25,6 @@ namespace RideOnMotion
 			_logger.Tap.Register( new StringImpl() );
 		}
 
-		public void RegisterTag( String name )
-		{
-			var tag = ActivityLogger.RegisteredTags.FindOrCreate( name );
-			if(Tags.Where(ExistingTag => ExistingTag.AtomicTraits == tag.AtomicTraits).Any() == false)
-			{
-				Tags.Add( tag );
-			}
-		}
-
 		public void NewEntry(LogLevel logLevel, CKTrait tag, String text)
 		{
 			_logger.UnfilteredLog( tag, logLevel, text, DateTime.UtcNow );
@@ -44,6 +35,15 @@ namespace RideOnMotion
 		}
     }
 
+	public class CKTraitTags
+	{
+		public static CKTrait None = ActivityLogger.RegisteredTags.FindOrCreate( "None" );
+		public static CKTrait UnknownSensor = ActivityLogger.RegisteredTags.FindOrCreate( "UnknownSensor" );
+		public static CKTrait UnknownDrone = ActivityLogger.RegisteredTags.FindOrCreate( "UnknownDrone" );
+		public static CKTrait Application = ActivityLogger.RegisteredTags.FindOrCreate( "Application" );
+		public static CKTrait Kinect = ActivityLogger.RegisteredTags.FindOrCreate( "Kinect" );
+		public static CKTrait ARDrone = ActivityLogger.RegisteredTags.FindOrCreate( "ARDrone" );
+	}
 
 	public class StringImpl : IActivityLoggerSink
 	{
