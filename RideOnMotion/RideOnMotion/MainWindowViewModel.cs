@@ -33,7 +33,7 @@ namespace RideOnMotion
         private Point _leftHandPoint = new Point( 0, 0 );
         private Point _rightHandPoint = new Point( 0, 0 );
 
-        private List<String> _logList;
+        private String _logString;
 
         #endregion Values
 
@@ -124,19 +124,19 @@ namespace RideOnMotion
             }
         }
 
-        public List<String> LogList
+        public String LogString
         {
             get
             {
-                return this._logList;
+                return this._logString;
             }
 
             set
             {
-                if ( this._logList != value )
+                if ( this._logString != value )
                 {
-                    this._logList = value;
-                    this.OnNotifyPropertyChange( "LogList" );
+                    this._logString = value;
+                    this.OnNotifyPropertyChange( "LogString" );
                 }
             }
         }
@@ -217,6 +217,11 @@ namespace RideOnMotion
 
             _sensorController.LeftHandPointReady += OnLeftHandPoint;
             _sensorController.RightHandPointReady += OnRightHandPoint;
+
+            // TODO : DEMO
+            //Logger myLogger = new Logger();
+            //myLogger.NewLogStringReady += OnLogStringReceived; // Event binding
+            //myLogger.NewEntry( CK.Core.LogLevel.Fatal, MyTag, "Test message" ); 
         }
 
         private void OnRightHandPoint( object sender, Point e )
@@ -238,6 +243,11 @@ namespace RideOnMotion
         private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )
         {
             DepthBitmapSource = e.BitmapSource;
+        }
+
+        private void OnLogStringReceived( object sender, String e )
+        {
+            this.LogString = e; // Will fire NotifyPropertyChanged
         }
 
         #endregion Contructor/initializers/event handlers

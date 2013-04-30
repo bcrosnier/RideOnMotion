@@ -11,13 +11,14 @@ namespace RideOnMotion
 
     /// <summary>
     /// First version of the logger on 23.04.2013
-    /// Wait for the new version, by now, I don't have the time to make something cool..
+    /// Wait for the new version, right now I don't have time to make something cool.
     /// </summary>
     public class Logger
     {
 		IDefaultActivityLogger _logger;
 
 		public List<CKTrait> Tags = new List<CKTrait>();
+        public event EventHandler<String> NewLogStringReady;
 
 		public void StartLogger()
 		{
@@ -37,6 +38,11 @@ namespace RideOnMotion
 		public void NewEntry(LogLevel logLevel, CKTrait tag, String text)
 		{
 			_logger.UnfilteredLog( tag, logLevel, text, DateTime.UtcNow );
+
+            if ( NewLogStringReady != null )
+            {
+                NewLogStringReady( this, Output() );
+            }
 		}
 		public String Output()
 		{
