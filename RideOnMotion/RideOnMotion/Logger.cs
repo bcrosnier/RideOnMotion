@@ -79,6 +79,7 @@ namespace RideOnMotion
 		public static CKTrait Application = ActivityLogger.RegisteredTags.FindOrCreate( "Application" );
 		public static CKTrait Kinect = ActivityLogger.RegisteredTags.FindOrCreate( "Kinect" );
 		public static CKTrait ARDrone = ActivityLogger.RegisteredTags.FindOrCreate( "ARDrone" );
+		public static CKTrait User = ActivityLogger.RegisteredTags.FindOrCreate( "User" );
 	}
 
 	public class StringImpl : IActivityLoggerSink

@@ -262,14 +262,14 @@ namespace RideOnMotion.KinectModule
                     }
                     else
                     { // Send empty points to notify view for it to clear.
-                        if ( LeftHandPointReady != null )
-                        {
-                            LeftHandPointReady( this, new System.Windows.Point(0, 0) );
-                        }
-                        if ( RightHandPointReady != null )
-                        {
-                            RightHandPointReady( this, new System.Windows.Point( 0, 0 ) );
-                        }
+						//if ( LeftHandPointReady != null )
+						//{
+						//	LeftHandPointReady( this, new System.Windows.Point(0, 0) );
+						//}
+						//if ( RightHandPointReady != null )
+						//{
+						//	RightHandPointReady( this, new System.Windows.Point( 0, 0 ) );
+						//}
                     }
                 }
 			}
@@ -302,7 +302,7 @@ namespace RideOnMotion.KinectModule
 
         private void sensors_StatusChanged(object sender, StatusChangedEventArgs e) {
 
-
+			Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.Kinect, "Status changed to : " + e.Status.ToString() );
             if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
                 && e.Sensor == _kinectSensor )
             {

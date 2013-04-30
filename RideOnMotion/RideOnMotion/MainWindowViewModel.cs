@@ -107,19 +107,30 @@ namespace RideOnMotion
         {
             get { return (int)this._rightHandPoint.Y; }
         }
-
+		private Visibility _rightHandVisibility;
         public Visibility RightHandVisibility
         {
             get
             {
-                bool exists = ( this._rightHandPoint.Y == 0.0 && this._rightHandPoint.X == 0.0 ) ? false : true;
+				bool exists = this._rightHandPoint.Y != 0.0 && this._rightHandPoint.X != 0.0 ;
                 if ( exists )
-                {
-                    return Visibility.Visible;
+				{
+					if ( _rightHandVisibility != Visibility.Visible )
+					{
+						Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Right hand visible" );
+					}
+					_rightHandVisibility = Visibility.Visible;
+					return _rightHandVisibility;
                 }
                 else
-                {
-                    return Visibility.Collapsed;
+				{
+					if ( _rightHandVisibility != Visibility.Collapsed
+						)
+					{
+						Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Right hand not visible" );
+					}
+					_rightHandVisibility = Visibility.Collapsed;
+					return _rightHandVisibility;
                 }
             }
         }
