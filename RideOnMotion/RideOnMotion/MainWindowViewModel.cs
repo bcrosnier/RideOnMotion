@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Collections.ObjectModel;
+using System.Drawing;
 
 namespace RideOnMotion
 {
@@ -30,10 +31,20 @@ namespace RideOnMotion
 
         private BitmapSource _droneBitmapSource;
         private BitmapSource _depthBitmapSource;
-        public ObservableCollection<TriggerZone> TriggerZoneCollection { get; private set; }
 
-        private Point _leftHandPoint = new Point( 0, 0 );
-        private Point _rightHandPoint = new Point( 0, 0 );
+        public TriggerArea LeftTriggerArea { get; private set; }
+        public TriggerArea RightTriggerArea { get; private set; }
+        public List<Rectangle> TriggerZoneCollection {
+            get {
+                return LeftTriggerArea.TriggerZoneCollection.Values
+                    .Union(
+                        RightTriggerArea.TriggerZoneCollection.Values
+                    ).ToList();
+            }
+        }
+
+        private System.Windows.Point _leftHandPoint = new System.Windows.Point( 0, 0 );
+        private System.Windows.Point _rightHandPoint = new System.Windows.Point( 0, 0 );
 
         private List<String> _logList;
 
@@ -182,7 +193,7 @@ namespace RideOnMotion
 
         #endregion INotifyPropertyChanged utilities
 
-        #region Contructor/initializers/event handlers
+        #region Contructor/initializers/event handlers/methods
         /// <summary>
         /// Initializes the ViewModel with the given KinectSensorController.
         /// </summary>
@@ -202,7 +213,7 @@ namespace RideOnMotion
                 this.CanExecuteKinectCommands );
 
             initializeBindings();
-            initTriggerZones( 320, 75 );
+            initTriggerZones( 300, 100 );
         }
 
         /// <summary>
@@ -222,7 +233,7 @@ namespace RideOnMotion
             _sensorController.RightHandPointReady += OnRightHandPoint;
         }
 
-        private void OnRightHandPoint( object sender, Point e )
+        private void OnRightHandPoint( object sender, System.Windows.Point e )
         {
             this._rightHandPoint = e;
             this.OnNotifyPropertyChange( "LeftHandX" );
@@ -230,7 +241,7 @@ namespace RideOnMotion
             this.OnNotifyPropertyChange( "LeftHandVisibility" );
         }
 
-        private void OnLeftHandPoint( object sender, Point e )
+        private void OnLeftHandPoint( object sender, System.Windows.Point e )
         {
             this._leftHandPoint = e;
             this.OnNotifyPropertyChange( "RightHandX" );
@@ -243,87 +254,13 @@ namespace RideOnMotion
             DepthBitmapSource = e.BitmapSource;
         }
 
-        private void initTriggerZones( int zoneWidth, int zoneHeight )
+        private void initTriggerZones( int buttonWidth, int buttonHeight )
         {
-            int baseWidth = 640;
-            int baseHeight = 480;
-            int horizontalMargin = (baseWidth / 2 - zoneWidth) / 2;
-            int verticalMargin = (baseHeight - zoneWidth) / 2;
+            int zoneWidth = 640 / 2;
+            int zoneHeight = 480;
 
-            TriggerZoneCollection = new ObservableCollection<TriggerZone>();
-
-            TriggerZone leftUpZone = new TriggerZone
-            {
-                Height = zoneHeight,
-                Width = zoneWidth,
-                X = horizontalMargin,
-                Y = verticalMargin
-            };
-
-            TriggerZone leftLeftZone = new TriggerZone
-            {
-                Height = zoneWidth,
-                Width = zoneHeight,
-                X = horizontalMargin,
-                Y = verticalMargin
-            };
-
-            TriggerZone leftDownZone = new TriggerZone
-            {
-                Height = zoneHeight,
-                Width = zoneWidth,
-                X = horizontalMargin,
-                Y = verticalMargin + zoneWidth - zoneHeight
-            };
-
-            TriggerZone leftRightZone = new TriggerZone
-            {
-                Height = zoneWidth,
-                Width = zoneHeight,
-                X = baseWidth / 2 + horizontalMargin + zoneWidth - zoneHeight,
-                Y = verticalMargin
-            };
-
-            TriggerZone rightUpZone = new TriggerZone
-            {
-                Height = zoneHeight,
-                Width = zoneWidth,
-                X = baseWidth / 2 + horizontalMargin,
-                Y = verticalMargin
-            };
-
-            TriggerZone rightLeftZone = new TriggerZone
-            {
-                Height = zoneWidth,
-                Width = zoneHeight,
-                X = baseWidth / 2 + horizontalMargin,
-                Y = verticalMargin
-            };
-
-            TriggerZone rightDownZone = new TriggerZone
-            {
-                Height = zoneHeight,
-                Width = zoneWidth,
-                X = baseWidth / 2 + horizontalMargin,
-                Y = verticalMargin + zoneWidth - zoneHeight
-            };
-
-            TriggerZone rightRightZone = new TriggerZone
-            {
-                Height = zoneWidth,
-                Width = zoneHeight,
-                X = horizontalMargin + zoneWidth - zoneHeight,
-                Y = verticalMargin
-            };
-
-            TriggerZoneCollection.Add( leftLeftZone );
-            TriggerZoneCollection.Add( leftUpZone );
-            TriggerZoneCollection.Add( leftDownZone );
-            TriggerZoneCollection.Add( leftRightZone );
-            TriggerZoneCollection.Add( rightLeftZone );
-            TriggerZoneCollection.Add( rightUpZone );
-            TriggerZoneCollection.Add( rightDownZone );
-            TriggerZoneCollection.Add( rightRightZone );
+            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight );
+            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight );
         }
 
         #endregion Contructor/initializers/event handlers
@@ -361,11 +298,84 @@ namespace RideOnMotion
         #endregion Commands/command helpers
     }
 
-    public class TriggerZone
+    /**
+     * Trigger zone, reprensenting 4 overlayed rectangles (here, 'buttons') as sides of a square.
+     * Centered in a given area.
+     **/
+    public class TriggerArea
     {
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Width { get; set; }
-        public float Height { get; set; }
+        public enum Buttons { Up = 0, Down = 1, Left = 2, Right = 3 };
+
+        public int AreaWidth { get; private set; }
+        public int AreaHeight { get; private set; }
+        public int OffsetX { get; private set; }
+        public int OffsetY { get; private set; }
+        public int ButtonWidth { get; private set; }
+        public int ButtonHeight { get; private set; }
+
+        public Rectangle LeftButton { get { return this.TriggerZoneCollection[Buttons.Left]; } }
+        public Rectangle RightButton { get { return this.TriggerZoneCollection[Buttons.Right]; } }
+        public Rectangle UpButton { get { return this.TriggerZoneCollection[Buttons.Up]; } }
+        public Rectangle DownButton { get { return this.TriggerZoneCollection[Buttons.Down]; } }
+
+        public Dictionary<Buttons, Rectangle> TriggerZoneCollection { get; private set; }
+
+        public TriggerArea(int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight)
+        {
+            this.AreaHeight = areaHeight;
+            this.AreaWidth = areaWidth;
+            this.OffsetX = offsetX;
+            this.OffsetY = offsetY;
+            this.ButtonWidth = buttonWidth;
+            this.ButtonHeight = buttonHeight;
+
+            TriggerZoneCollection = new Dictionary<Buttons, Rectangle>();
+            generateButtonRectangles();
+        }
+
+        public void generateButtonRectangles()
+        {
+            int horizontalMargin = ( AreaWidth - ButtonWidth ) / 2;
+            int verticalMargin = ( AreaHeight - ButtonWidth ) / 2;
+
+            Rectangle upZone = new Rectangle
+            {
+                Height = ButtonHeight,
+                Width = ButtonWidth,
+                X = OffsetX + horizontalMargin,
+                Y = OffsetY + verticalMargin
+            };
+
+            Rectangle leftZone = new Rectangle
+            {
+                Height = ButtonWidth,
+                Width = ButtonHeight,
+                X = OffsetX + horizontalMargin,
+                Y = OffsetY + verticalMargin
+            };
+
+            Rectangle downZone = new Rectangle
+            {
+                Height = ButtonHeight,
+                Width = ButtonWidth,
+                X = OffsetX + horizontalMargin,
+                Y = OffsetY + verticalMargin + ButtonWidth - ButtonHeight
+            };
+
+            Rectangle rightZone = new Rectangle
+            {
+                Height = ButtonWidth,
+                Width = ButtonHeight,
+                X = OffsetX + horizontalMargin + ButtonWidth - ButtonHeight,
+                Y = OffsetY + verticalMargin
+            };
+
+            TriggerZoneCollection.Add( Buttons.Up, upZone );
+            TriggerZoneCollection.Add( Buttons.Down, downZone );
+            TriggerZoneCollection.Add( Buttons.Left, leftZone );
+            TriggerZoneCollection.Add( Buttons.Right, rightZone );
+
+            // Fire stuff to update rectangles here. --BC
+        }
     }
 }
