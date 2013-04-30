@@ -15,6 +15,8 @@ namespace RideOnMotion.KinectModule
         private KinectSensor _kinectSensor = null;
         private bool _depthFrameIsReady = false;
         private BitmapSource _depthBitmapSource = null;
+        private TransformSmoothParameters _smoothingParam;
+        private bool _enableSmoothing;
 		Skeleton[] _totalSkeleton;
 
 		PositionTrackerController _positionTrackerController;
@@ -86,8 +88,8 @@ namespace RideOnMotion.KinectModule
             if ( deviceCount > 0 )
             {
                 KinectSensor kinectSensor = KinectSensor.KinectSensors.Where( item => item.Status == KinectStatus.Connected ).FirstOrDefault();
+                SetSkeletonSmoothingEnabled(false);
                 initializeKinectSensor( kinectSensor );
-                initializePositionTrackerController();
             }
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
@@ -107,23 +109,43 @@ namespace RideOnMotion.KinectModule
 
             _kinectSensor = sensor;
 
+
             if ( !_kinectSensor.SkeletonStream.IsEnabled )
             {
-				_totalSkeleton = new Skeleton[6];
-                _kinectSensor.SkeletonStream.Enable();
-
                 _kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
+            }
+            else
+            {
+                _kinectSensor.SkeletonStream.Disable();
+            }
+
+			_totalSkeleton = new Skeleton[6];
+
+            if ( this._enableSmoothing == true )
+            {
+                System.Diagnostics.Debug.Assert( this._enableSmoothing == true && this._smoothingParam != null );
+                _kinectSensor.SkeletonStream.Enable( _smoothingParam );
+            }
+            else
+            {
+                _kinectSensor.SkeletonStream.Enable();
             }
 
 
             if ( !_kinectSensor.DepthStream.IsEnabled )
             {
-                _kinectSensor.DepthStream.Range = DepthRange.Default; // Change to Near mode here
                 _kinectSensor.DepthFrameReady += sensor_DepthFrameReady;
-                _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
+            }
+            else
+            {
+                _kinectSensor.DepthStream.Disable();
             }
 
+            _kinectSensor.DepthStream.Range = DepthRange.Default; // Change to Near mode here
+            _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
+            
 
+            initializePositionTrackerController();
             // Call StartSensor(); from outside.
         }
 
@@ -210,7 +232,31 @@ namespace RideOnMotion.KinectModule
                     SensorChanged( this, Sensor );
                 }
             }
+        }
 
+        public void SetSkeletonSmoothingEnabled( bool enabled )
+        {
+            if ( !enabled )
+            {
+                this._enableSmoothing = false;
+            }
+            else if ( enabled )
+            {
+                this._enableSmoothing = true;
+                // Smoothed with some latency.
+                // Filters out medium jitters.
+                // Good for a menu system that needs to be smooth but
+                // doesn't need the reduced latency as much as gesture recognition does.
+                // From: http://msdn.microsoft.com/en-us/library/jj131024.aspx
+                this._smoothingParam = new TransformSmoothParameters();
+                {
+                    _smoothingParam.Smoothing = 0.5f;
+                    _smoothingParam.Correction = 0.1f;
+                    _smoothingParam.Prediction = 0.5f;
+                    _smoothingParam.JitterRadius = 0.1f;
+                    _smoothingParam.MaxDeviationRadius = 0.1f;
+                };
+            }
         }
 
         /// <summary>
