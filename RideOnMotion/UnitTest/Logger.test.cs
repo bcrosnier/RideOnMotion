@@ -13,7 +13,7 @@ namespace RideOnMotion.test
 	class LoggerTest
 	{
 		[Test]
-		void logtest()
+		public void logtest()
 		{
 			IDefaultActivityLogger Logger = new DefaultActivityLogger();
 			Logger.Tap.Register( new StringImpl() );
@@ -22,12 +22,12 @@ namespace RideOnMotion.test
 			var tag2 = ActivityLogger.RegisteredTags.FindOrCreate( "Sql" );
 			var tag3 = ActivityLogger.RegisteredTags.FindOrCreate( "Combined Tag|Sql|Engine V2|Product" );
 
-			Logger.UnfilteredLog( tag1, LogLevel.Fatal, "Fatal Biatch ", DateTime.UtcNow );
-			Logger.UnfilteredLog( tag1, LogLevel.Fatal, "Fatal Biatch ", DateTime.UtcNow );
-			Logger.UnfilteredLog( tag3, LogLevel.Trace, "Trace Biatch ", DateTime.UtcNow );
+			Logger.UnfilteredLog( tag1, LogLevel.Fatal, "Fatal Log ", DateTime.UtcNow );
+			Logger.UnfilteredLog( tag1, LogLevel.Fatal, "Fatal Log ", DateTime.UtcNow );
+			Logger.UnfilteredLog( tag3, LogLevel.Trace, "Trace Log ", DateTime.UtcNow );
 
 			Console.WriteLine( Logger.Tap.RegisteredSinks.OfType<StringImpl>().Single().Writer );
-			Logger.UnfilteredLog( tag2, LogLevel.Info, "Info Biatch ", DateTime.UtcNow );
+			Logger.UnfilteredLog( tag2, LogLevel.Info, "Info Log ", DateTime.UtcNow );
 			Console.WriteLine( Logger.Tap.RegisteredSinks.OfType<StringImpl>().Single().Writer );
 		}
 		[Test]
@@ -35,8 +35,7 @@ namespace RideOnMotion.test
 		{
 			Logger l = new Logger();
 			l.StartLogger();
-			l.RegisterTag( "Test" );
-			l.NewEntry( LogLevel.Info, l.Tags[0], "Try again" );
+			l.NewEntry( LogLevel.Info, CKTraitTags.Application, "Try again" );
 			Console.WriteLine( l.Output() );
 		}
 	}
