@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -205,12 +205,14 @@ namespace RideOnMotion
         /// <summary>
         /// Creates the event bindings with the model.
         /// </summary>
-        private void initializeBindings() {
+        private void initializeBindings()
+        {
             // Bind depth image changes
             _sensorController.DepthBitmapSourceReady += OnDepthBitmapSourceChanged;
 
             // Bind sensor status
-            _sensorController.SensorChanged += ( sender, e ) => {
+            _sensorController.SensorChanged += ( sender, e ) =>
+            {
                 this.OnNotifyPropertyChange( "SensorStatusInfo" );
                 this.OnNotifyPropertyChange( "CanUseSensor" );
             };
@@ -218,10 +220,16 @@ namespace RideOnMotion
             _sensorController.LeftHandPointReady += OnLeftHandPoint;
             _sensorController.RightHandPointReady += OnRightHandPoint;
 
-            // TODO : DEMO
-            //Logger myLogger = new Logger();
-            //myLogger.NewLogStringReady += OnLogStringReceived; // Event binding
-            //myLogger.NewEntry( CK.Core.LogLevel.Fatal, MyTag, "Test message" ); 
+            // LOGGER DEMO
+            Logger myLogger = new Logger();
+            myLogger.NewLogStringReady += OnLogStringReceived; // Event binding
+            myLogger.StartLogger();
+            myLogger.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Application, "Test message" );
+            Timer EXTREMETIMER = new Timer( 500 );
+            EXTREMETIMER.Elapsed += ( sender, e ) => {
+                myLogger.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Application, "TICK" );
+            };
+            EXTREMETIMER.Enabled = true;
         }
 
         private void OnRightHandPoint( object sender, Point e )
