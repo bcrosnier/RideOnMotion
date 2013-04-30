@@ -14,7 +14,7 @@ namespace RideOnMotion
     /// <summary>
     /// View model for main window. Contains displayed properties.
     /// </summary>
-    class MainWindowViewModel : INotifyPropertyChanged
+	class MainWindowViewModel : IViewModel
     {
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
@@ -221,15 +221,9 @@ namespace RideOnMotion
             _sensorController.RightHandPointReady += OnRightHandPoint;
 
             // LOGGER DEMO
-            Logger myLogger = new Logger();
+            Logger myLogger = Logger.Instance;
             myLogger.NewLogStringReady += OnLogStringReceived; // Event binding
-            myLogger.StartLogger();
             myLogger.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Application, "Test message" );
-            Timer EXTREMETIMER = new Timer( 500 );
-            EXTREMETIMER.Elapsed += ( sender, e ) => {
-                myLogger.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Application, "TICK" );
-            };
-            EXTREMETIMER.Enabled = true;
         }
 
         private void OnRightHandPoint( object sender, Point e )

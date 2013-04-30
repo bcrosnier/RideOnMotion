@@ -15,17 +15,41 @@ namespace RideOnMotion
     /// </summary>
     public class Logger
     {
+		private static Logger instance = new Logger();
+		public static Logger Instance
+		{
+			get
+			{
+				if ( instance == null )
+				{
+					instance = new Logger();
+				}
+				return instance;
+			}
+		}
+
 		IDefaultActivityLogger _logger;
 
 		public List<CKTrait> Tags = new List<CKTrait>();
         public event EventHandler<String> NewLogStringReady;
 
-		public void StartLogger()
+		/// <summary>
+		/// Start the logger and use the string implementation
+		/// </summary>
+		private Logger()
 		{
 			_logger = new DefaultActivityLogger();
 			_logger.Tap.Register( new StringImpl() );
+			
 		}
 
+
+		/// <summary>
+		/// Log a new line in the logger
+		/// </summary>
+		/// <param name="logLevel">The level of the log</param>
+		/// <param name="tag">The tags the log should be associated with, using CKTraitTags extensions</param>
+		/// <param name="text">The text to log</param>
 		public void NewEntry(LogLevel logLevel, CKTrait tag, String text)
 		{
 			_logger.UnfilteredLog( tag, logLevel, text, DateTime.UtcNow );
@@ -35,10 +59,16 @@ namespace RideOnMotion
                 NewLogStringReady( this, Output() );
             }
 		}
+
+		/// <summary>
+		/// Output the current logger in it's integrity
+		/// </summary>
+		/// <returns>the logger output as a String</returns>
 		public String Output()
 		{
 			return _logger.Tap.RegisteredSinks.OfType<StringImpl>().Single().Writer.ToString();
 		}
+
     }
 
 	public class CKTraitTags
