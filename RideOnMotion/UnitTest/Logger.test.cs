@@ -33,9 +33,8 @@ namespace RideOnMotion.test
 		[Test]
 		public void LogTest()
 		{
-			Logger l = Logger.Instance;
-			l.NewEntry( LogLevel.Info, CKTraitTags.Application, "Try again" );
-			Console.WriteLine( l.Output() );
+			Logger.Instance.NewEntry( LogLevel.Info, CKTraitTags.Application, "Try again" );
+			Console.WriteLine( Logger.Instance.Output() );
 		}
 	}
 }

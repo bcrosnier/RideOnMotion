@@ -221,9 +221,7 @@ namespace RideOnMotion
             _sensorController.RightHandPointReady += OnRightHandPoint;
 
             // LOGGER DEMO
-            Logger myLogger = Logger.Instance;
-            myLogger.NewLogStringReady += OnLogStringReceived; // Event binding
-            myLogger.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Application, "Test message" );
+			Logger.Instance.NewLogStringReady += OnLogStringReceived; // Event binding
         }
 
         private void OnRightHandPoint( object sender, Point e )
