@@ -72,7 +72,8 @@
             </StackPanel>
 
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >
-                <TextBox x:Name="LogString" Text="{Binding LogString}" VerticalAlignment="Stretch" />
+                <TextBox x:Name="LogString" Text="{Binding LogString}" VerticalAlignment="Stretch"
+                         ScrollViewer.VerticalScrollBarVisibility="Visible" TextChanged="LogString_TextChanged"/>
             </DockPanel>
 
             <GridSplitter Grid.Row="2" Grid.Column="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" ResizeDirection="Rows" />
