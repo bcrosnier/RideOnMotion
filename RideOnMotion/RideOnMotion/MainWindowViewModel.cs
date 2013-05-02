@@ -34,6 +34,7 @@ namespace RideOnMotion
 
         public TriggerArea LeftTriggerArea { get; private set; }
         public TriggerArea RightTriggerArea { get; private set; }
+
         public List<Rectangle> TriggerZoneCollection {
             get {
                 return LeftTriggerArea.TriggerZoneCollection.Values
@@ -234,8 +235,14 @@ namespace RideOnMotion
             _sensorController.LeftHandPointReady += OnLeftHandPoint;
             _sensorController.RightHandPointReady += OnRightHandPoint;
 
-            // LOGGER DEMO
+            _sensorController.PositionTrackerController.AreaActived += OnButtonActivated;
+
 			Logger.Instance.NewLogStringReady += OnLogStringReceived; // Event binding
+        }
+
+        private void OnButtonActivated( object sender, KinectModule.AreaActivedEventArgs e )
+        {
+            throw new NotImplementedException();
         }
 
         private void OnRightHandPoint( object sender, System.Windows.Point e )
@@ -387,5 +394,14 @@ namespace RideOnMotion
 
             // Fire stuff to update rectangles here. --BC
         }
+    }
+
+    public class TriggerButton // Rectangle can't be extended as it is a struct
+    {
+        public int Height { get; set; }
+        public int Width { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public bool Activated { get; set; }
     }
 }
