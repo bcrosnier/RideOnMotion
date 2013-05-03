@@ -33,8 +33,8 @@ namespace RideOnMotion
         private BitmapSource _droneBitmapSource;
         private BitmapSource _depthBitmapSource;
 
-        private System.Windows.Point _leftHandPoint = new System.Windows.Point( 0, 0 );
-        private System.Windows.Point _rightHandPoint = new System.Windows.Point( 0, 0 );
+        private System.Windows.Point _leftHandPoint = new System.Windows.Point( -1, -1 );
+		private System.Windows.Point _rightHandPoint = new System.Windows.Point( -1, -1 );
 		private Visibility _handsVisibility = Visibility.Collapsed;
 
 		private string _sensorStatusInfo = "No Kinect detected.";

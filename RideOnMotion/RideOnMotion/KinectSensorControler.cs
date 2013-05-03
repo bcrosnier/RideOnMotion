@@ -251,6 +251,7 @@ namespace RideOnMotion.KinectModule
 				try
 				{
 					Sensor.Start(); // Blocking call.
+					SensorChanged( this,Sensor ); //
 				}
 				catch
 				{
