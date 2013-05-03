@@ -35,6 +35,7 @@ namespace RideOnMotion
 
         private System.Windows.Point _leftHandPoint = new System.Windows.Point( 0, 0 );
         private System.Windows.Point _rightHandPoint = new System.Windows.Point( 0, 0 );
+		private Visibility _handsVisibility = Visibility.Collapsed;
 
         private String _logString;
 
@@ -86,22 +87,7 @@ namespace RideOnMotion
             get { return (int)this._leftHandPoint.Y; }
         }
 
-        public Visibility LeftHandVisibility
-        {
-            get
             {
-                bool exists = ( this._leftHandPoint.Y == 0.0 && this._leftHandPoint.X == 0.0 ) ? false : true;
-                if ( exists )
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
-        }
-
         public int RightHandX
         {
             get { return (int)this._rightHandPoint.X; }
@@ -111,32 +97,13 @@ namespace RideOnMotion
         {
             get { return (int)this._rightHandPoint.Y; }
         }
-        private Visibility _rightHandVisibility;
-        public Visibility RightHandVisibility
+
+        public Visibility HandsVisibility
         {
-            get
-            {
-                bool exists = this._rightHandPoint.Y != 0.0 && this._rightHandPoint.X != 0.0;
-                if ( exists )
-                {
-                    if ( _rightHandVisibility != Visibility.Visible )
-                    {
-                        Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Right hand visible" );
-                    }
-                    _rightHandVisibility = Visibility.Visible;
-                    return _rightHandVisibility;
-                }
-                else
-                {
-                    if ( _rightHandVisibility != Visibility.Collapsed
-                        )
-                    {
-                        Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Right hand not visible" );
-                    }
-                    _rightHandVisibility = Visibility.Collapsed;
-                    return _rightHandVisibility;
-                }
-            }
+			get
+			{
+				return _handsVisibility;
+			}
         }
 
         public String LogString
@@ -241,26 +208,30 @@ namespace RideOnMotion
                 this.OnNotifyPropertyChange( "TriggerButtons" );
             };
 
-            _sensorController.LeftHandPointReady += OnLeftHandPoint;
-            _sensorController.RightHandPointReady += OnRightHandPoint;
+            _sensorController.HandsPointReady += OnHandsPoint;
 
             Logger.Instance.NewLogStringReady += OnLogStringReceived;
         }
 
-        private void OnRightHandPoint( object sender, System.Windows.Point e )
+        private void OnHandsPoint( object sender, System.Windows.Point[] e )
         {
-            this._rightHandPoint = e;
+			if ( this._rightHandPoint.Y != -1.0 && _handsVisibility == Visibility.Collapsed )
+			{
+				_handsVisibility = Visibility.Visible;
+				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands visible" );
+			}
+			else if ( this._rightHandPoint.Y == -1.0 && _handsVisibility == Visibility.Visible )
+			{
+				_handsVisibility = Visibility.Collapsed;
+				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands not visible" );
+			}
+            this._rightHandPoint = e[0];
             this.OnNotifyPropertyChange( "LeftHandX" );
             this.OnNotifyPropertyChange( "LeftHandY" );
-            this.OnNotifyPropertyChange( "LeftHandVisibility" );
-        }
-
-        private void OnLeftHandPoint( object sender, System.Windows.Point e )
-        {
-            this._leftHandPoint = e;
+            this._leftHandPoint = e[1];
             this.OnNotifyPropertyChange( "RightHandX" );
             this.OnNotifyPropertyChange( "RightHandY" );
-            this.OnNotifyPropertyChange( "RightHandVisibility" );
+            this.OnNotifyPropertyChange( "HandsVisibility" );
         }
 
         private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )
