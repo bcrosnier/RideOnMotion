@@ -87,7 +87,6 @@ namespace RideOnMotion
             get { return (int)this._leftHandPoint.Y; }
         }
 
-            {
         public int RightHandX
         {
             get { return (int)this._rightHandPoint.X; }
