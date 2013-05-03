@@ -4,12 +4,10 @@ using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using RideOnMotion;
+using System.Collections.ObjectModel;
 
 namespace RideOnMotion.KinectModule
 {
-
-	// ToDo
-	// gerer le renvoi de status du sensor
 	public class KinectSensorController
 	{
         private KinectSensor _kinectSensor = null;
@@ -17,7 +15,12 @@ namespace RideOnMotion.KinectModule
         private BitmapSource _depthBitmapSource = null;
         private TransformSmoothParameters _smoothingParam;
         private bool _enableSmoothing;
-		Skeleton[] _totalSkeleton;
+        Skeleton[] _totalSkeleton;
+
+        public TriggerArea LeftTriggerArea { get; private set; }
+        public TriggerArea RightTriggerArea { get; private set; }
+
+        public ObservableCollection<ICaptionArea> TriggerButtons { get; private set; }
 
 		PositionTrackerController _positionTrackerController;
 
@@ -84,6 +87,7 @@ namespace RideOnMotion.KinectModule
 		public KinectSensorController()
         {
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call.
+            TriggerButtons = new ObservableCollection<ICaptionArea>();
 
             if ( deviceCount > 0 )
             {
@@ -155,7 +159,39 @@ namespace RideOnMotion.KinectModule
 		private void initializePositionTrackerController()
 		{
             _positionTrackerController = new PositionTrackerController();
+
+            initTriggerZones( 300, 100 );
 		}
+
+        /// <summary>
+        /// Prepare the right and left trigger zones.
+        /// </summary>
+        /// <param name="buttonWidth">Width of each button / side size of the zone</param>
+        /// <param name="buttonHeight">Height of each button / thickness of the triggers</param>
+        private void initTriggerZones( int buttonWidth, int buttonHeight )
+        {
+            int zoneWidth = 640 / 2;
+            int zoneHeight = 480;
+
+            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight );
+            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight );
+
+            // Create a collection from both zones
+            TriggerButtons = new ObservableCollection<ICaptionArea>(
+                LeftTriggerArea.TriggerCaptionsCollection.Values.Union(
+                        RightTriggerArea.TriggerCaptionsCollection.Values
+                ).ToList()
+            );
+
+            // Create caption areas
+
+            IPositionTracker leftTracker = new LeftHandPositionTracker( LeftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker rightTracker = new RightHandPositionTracker( RightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+
+            this.PositionTrackerController.AttachPositionTracker( leftTracker );
+            this.PositionTrackerController.AttachPositionTracker( rightTracker );
+
+        }
 
         /// <summary>
         /// Remove bindings on sensor disconnection
@@ -326,6 +362,14 @@ namespace RideOnMotion.KinectModule
             DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
                 skeletonPoint, DepthImageFormat.Resolution640x480Fps30 );
             return new System.Windows.Point( depthPoint.X, depthPoint.Y );
+        }
+
+        private SkeletonPoint UnScalePosition( System.Windows.Point point )
+        {
+            SkeletonPoint skelPoint = this.Sensor.CoordinateMapper.MapDepthPointToSkeletonPoint(
+                DepthImageFormat.Resolution640x480Fps30,
+                new DepthImagePoint() { X = (int)point.X, Y = (int)point.Y } );
+            return skelPoint;
         }
 
         private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )

@@ -80,7 +80,7 @@
             </Viewbox>
             <!-- Main panel - Rectangle Canvas -->
             <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <ItemsControl ItemsSource="{Binding TriggerZoneCollection}">
+                <ItemsControl ItemsSource="{Binding TriggerButtons}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas Width="640" Height="480" />
@@ -89,7 +89,16 @@
                     <!-- ItemTemplate -->
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Rectangle Width="{Binding Width}" Height="{Binding Height}" Fill="#7FFF00A2"></Rectangle>
+                            <Rectangle x:Name="triggerButton" Width="{Binding Width}" Height="{Binding Height}" Fill="#7FFF00A2"></Rectangle>
+
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsActive}" Value="true">
+                                    <Setter TargetName="triggerButton" Property="Fill" Value="#FF0000FF" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsActive}" Value="false">
+                                    <Setter TargetName="triggerButton" Property="Fill" Value="#7F0000FF" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemContainerStyle>
