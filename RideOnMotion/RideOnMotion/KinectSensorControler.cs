@@ -22,8 +22,7 @@ namespace RideOnMotion.KinectModule
         public event BitmapSourceHandler DepthBitmapSourceReady;
         public event EventHandler<KinectSensor> SensorChanged;
 
-        public event EventHandler<System.Windows.Point> LeftHandPointReady;
-        public event EventHandler<System.Windows.Point> RightHandPointReady;
+        public event EventHandler<System.Windows.Point[]> HandsPointReady;
 
         public delegate void BitmapSourceHandler( object sender, BitmapSourceEventArgs e );
 
@@ -251,25 +250,14 @@ namespace RideOnMotion.KinectModule
                     {
                         _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
 
-                        if ( LeftHandPointReady != null )
+                        if ( HandsPointReady != null )
                         {
-                            LeftHandPointReady( this, ScalePosition( firstSkeleton.Joints[JointType.HandLeft].Position ) );
-                        }
-                        if ( RightHandPointReady != null )
-                        {
-                            RightHandPointReady( this, ScalePosition( firstSkeleton.Joints[JointType.HandRight].Position ) );
+							HandsPointReady( this, new System.Windows.Point[2] { ScalePosition( firstSkeleton.Joints[JointType.HandLeft].Position ), ScalePosition( firstSkeleton.Joints[JointType.HandRight].Position ) } );
                         }
                     }
                     else
-                    { // Send empty points to notify view for it to clear.
-						//if ( LeftHandPointReady != null )
-						//{
-						//	LeftHandPointReady( this, new System.Windows.Point(0, 0) );
-						//}
-						//if ( RightHandPointReady != null )
-						//{
-						//	RightHandPointReady( this, new System.Windows.Point( 0, 0 ) );
-						//}
+                    {
+						HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
                     }
                 }
 			}
