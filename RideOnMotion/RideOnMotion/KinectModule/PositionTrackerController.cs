@@ -16,26 +16,27 @@ namespace RideOnMotion.KinectModule
 		public PositionTrackerController()
 		{
 			_positionTrackers = new List<IPositionTracker>();
-
+            /*
 			List<ICaptionArea> listOfCaptionAreas = new List<ICaptionArea>()
 			{
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0 ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0 ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0 ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0 ) }
+				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
+				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
+				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
+				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) }
 			};
 			
 			_positionTrackers.Add( new LeftHandPositionTracker( listOfCaptionAreas ) );
 
 			listOfCaptionAreas = new List<ICaptionArea>()
 			{
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0 ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0 ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0 ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0 ) }
+				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
+				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
+				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
+				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) }
 			};
 
 			_positionTrackers.Add( new RightHandPositionTracker( listOfCaptionAreas ) );
+             */
 		}
 
 		public void AttachPositionTracker( IPositionTracker positionTracker )

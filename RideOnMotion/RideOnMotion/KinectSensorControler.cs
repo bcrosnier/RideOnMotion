@@ -31,6 +31,8 @@ namespace RideOnMotion.KinectModule
         public event EventHandler<System.Windows.Point> RightHandPointReady;
 
         public delegate void BitmapSourceHandler( object sender, BitmapSourceEventArgs e );
+        public delegate SkeletonPoint DepthPointToSkelPoint( DepthImagePoint p );
+        public delegate DepthImagePoint SkelPointToDepthPoint( SkeletonPoint p );
 
         public BitmapSource DepthBitmapSource
         {
@@ -173,8 +175,8 @@ namespace RideOnMotion.KinectModule
             int zoneWidth = 640 / 2;
             int zoneHeight = 480;
 
-            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight );
-            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight );
+            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
+            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
 
             // Create a collection from both zones
             TriggerButtons = new ObservableCollection<ICaptionArea>(
@@ -364,12 +366,19 @@ namespace RideOnMotion.KinectModule
             return new System.Windows.Point( depthPoint.X, depthPoint.Y );
         }
 
-        private SkeletonPoint UnScalePosition( System.Windows.Point point )
+        private SkeletonPoint DepthImagePointToSkelPoint( DepthImagePoint p )
         {
             SkeletonPoint skelPoint = this.Sensor.CoordinateMapper.MapDepthPointToSkeletonPoint(
                 DepthImageFormat.Resolution640x480Fps30,
-                new DepthImagePoint() { X = (int)point.X, Y = (int)point.Y } );
+                p );
             return skelPoint;
+        }
+
+        private DepthImagePoint SkelPointToDepthImagePoint( SkeletonPoint p )
+        {
+            DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
+                 p, DepthImageFormat.Resolution640x480Fps30 );
+            return depthPoint;
         }
 
         private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )

@@ -329,6 +329,7 @@ namespace RideOnMotion
         public ICaptionArea DownButton { get { return this.TriggerCaptionsCollection[Buttons.Down]; } }
 
         public Dictionary<Buttons, ICaptionArea> TriggerCaptionsCollection { get; private set; }
+        private KinectSensorController.SkelPointToDepthPoint _converter;
 
         /// <summary>
         /// Create a trigger area, with 4 triggerable captions.
@@ -339,7 +340,7 @@ namespace RideOnMotion
         /// <param name="offsetY">Y offset to all buttons</param>
         /// <param name="buttonWidth">Width of each button. Side size of the area.</param>
         /// <param name="buttonHeight">Height of each button; "thickness" of the area.</param>
-        public TriggerArea( int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight)
+        public TriggerArea( int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight, KinectSensorController.SkelPointToDepthPoint converter )
         {
             this.AreaHeight = areaHeight;
             this.AreaWidth = areaWidth;
@@ -347,6 +348,8 @@ namespace RideOnMotion
             this.OffsetY = offsetY;
             this.ButtonWidth = buttonWidth;
             this.ButtonHeight = buttonHeight;
+
+            this._converter = converter;
 
             this.TriggerCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
             generateButtonCaptions();
@@ -403,7 +406,8 @@ namespace RideOnMotion
                        depthY
                    ),
                    width,
-                   height
+                   height,
+                   _converter
                );
         }
     }

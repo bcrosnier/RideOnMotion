@@ -16,9 +16,12 @@ namespace RideOnMotion.KinectModule
         Point _topLeftPoint;
         float _width;
         float _height;
+
 		bool _isActive;
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+        KinectSensorController.SkelPointToDepthPoint _converter;
 
         public float Height
         {
@@ -111,12 +114,16 @@ namespace RideOnMotion.KinectModule
             }
         }
 
-		public CaptionArea(Point topLeftPoint, float width, float height)
+        public CaptionArea( Point topLeftPoint, float width, float height, KinectSensorController.SkelPointToDepthPoint converter )
 		{
 			_associateFunctions = new List<Action>();
+
             _topLeftPoint = topLeftPoint;
             _width = width;
             _height = height;
+
+            this._converter = converter;
+
 			IsActive = false;
 		}
 
@@ -134,7 +141,19 @@ namespace RideOnMotion.KinectModule
 
         public void CheckPosition(Joint joint)
         {
-            if( joint.Position.X > _topLeftPoint.X && joint.Position.X < _topLeftPoint.X + _width && joint.Position.Y > _topLeftPoint.Y && joint.Position.Y < _topLeftPoint.Y + _height )
+            DepthImagePoint depthPoint;
+
+            if ( _converter == null )
+            {
+                // This shouldn't happen !
+                depthPoint = new DepthImagePoint() { X = (int)joint.Position.X, Y = (int)joint.Position.Y, Depth = (int)joint.Position.Z };
+            }
+            else
+            {
+                depthPoint = _converter( joint.Position );
+            }
+
+            if ( depthPoint.X > _topLeftPoint.X && depthPoint.X < _topLeftPoint.X + _width && depthPoint.Y > _topLeftPoint.Y && depthPoint.Y < _topLeftPoint.Y + _height )
             {
 				IsActive = true;
 				//il va y avoir un probleme d'appel repete des fonctions associees
