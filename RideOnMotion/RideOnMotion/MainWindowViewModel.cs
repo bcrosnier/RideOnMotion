@@ -37,6 +37,8 @@ namespace RideOnMotion
         private System.Windows.Point _rightHandPoint = new System.Windows.Point( 0, 0 );
 		private Visibility _handsVisibility = Visibility.Collapsed;
 
+		private string _sensorStatusInfo = "No Kinect detected.";
+
         private String _logString;
 
         #endregion Values
@@ -126,8 +128,7 @@ namespace RideOnMotion
         {
             get
             {
-                string statusString = !this._sensorController.HasSensor ? KinectStatus.Disconnected.ToString() : _sensorController.Sensor.Status.ToString();
-                return "Kinect device: " + statusString;
+                return "Kinect device: " + _sensorStatusInfo;
             }
         }
 
@@ -202,6 +203,7 @@ namespace RideOnMotion
             // Bind sensor status
             _sensorController.SensorChanged += ( sender, e ) =>
             {
+				_sensorStatusInfo = !this._sensorController.HasSensor ? KinectStatus.Disconnected.ToString() : _sensorController.Sensor.Status.ToString();
                 this.OnNotifyPropertyChange( "SensorStatusInfo" );
                 this.OnNotifyPropertyChange( "CanUseSensor" );
                 this.OnNotifyPropertyChange( "TriggerButtons" );
