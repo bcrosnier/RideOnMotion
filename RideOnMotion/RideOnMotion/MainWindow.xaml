@@ -13,7 +13,7 @@
         <DockPanel.Background>
             <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
         </DockPanel.Background>
-        
+
         <StatusBar DockPanel.Dock="Bottom">
             <Image Height="16" VerticalAlignment="Center" Source="Images/KinectIcon.png" />
             <TextBlock x:Name="KinectStatusText" Text="{Binding SensorStatusInfo}"></TextBlock>
@@ -54,24 +54,18 @@
                 </Viewbox>
             </StackPanel>
 
-                <GroupBox Header="Status information" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
-                    <StackPanel>
-                        <TextBlock x:Name="KinectStatusInfo" Text="{Binding SensorStatusInfo}"/>
-                    </StackPanel>
-                </GroupBox>
+            <GroupBox Header="Status information" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
+                <StackPanel>
+                    <TextBlock x:Name="KinectStatusInfo" Text="{Binding SensorStatusInfo}"/>
+                </StackPanel>
+            </GroupBox>
 
             <GridSplitter Grid.Column="1" Width="3" Grid.RowSpan="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
 
             <!-- Main panel - Background -->
             <StackPanel Background="Black" x:Name="MainPanel" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
             </StackPanel>
-            <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <Canvas Width="640" Height="480" Background="#7F00FF00">
-                    <!-- Main panel - Point Canvas -->
-                        <Ellipse Visibility="{Binding HandsVisibility}" Canvas.Left="{Binding LeftHandX}" Canvas.Top="{Binding LeftHandY}" Fill="Blue" Height="15" Name="leftHand" Width="15" />
-                        <Ellipse Visibility="{Binding HandsVisibility}" Canvas.Left="{Binding RightHandX}" Canvas.Top="{Binding RightHandY}" Fill="Red" Height="15" Name="rightHand" Width="15" />
-                </Canvas>
-            </Viewbox>
+            
             <!-- Main panel - Rectangle Canvas -->
             <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
                 <ItemsControl ItemsSource="{Binding TriggerButtons}">
@@ -83,25 +77,49 @@
                     <!-- ItemTemplate -->
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Rectangle x:Name="triggerButton" Width="{Binding Width}" Height="{Binding Height}" Fill="#7FFF00A2"></Rectangle>
+                            
+                            <Rectangle x:Name="triggerButton" Width="{Binding Width}" Height="{Binding Height}" Fill="Red"></Rectangle>
 
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding IsActive}" Value="true">
-                                    <Setter TargetName="triggerButton" Property="Fill" Value="#FF0000FF" />
+                                    <Setter TargetName="triggerButton" Property="Fill" Value="#FF00FF" />
+                                    <Setter TargetName="triggerButton" Property="Opacity" Value="1" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding IsActive}" Value="false">
-                                    <Setter TargetName="triggerButton" Property="Fill" Value="#7F0000FF" />
+                                    <Setter TargetName="triggerButton" Property="Fill" Value="#0000FF" />
+                                    <Setter TargetName="triggerButton" Property="Opacity" Value=".5" />
                                 </DataTrigger>
                             </DataTemplate.Triggers>
+                            
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemContainerStyle>
                         <Style TargetType="ContentPresenter">
+                            
                             <Setter Property="Canvas.Left" Value="{Binding X}" />
                             <Setter Property="Canvas.Top" Value="{Binding Y}" />
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsActive}" Value="true">
+                                    <Setter Property="Canvas.ZIndex" Value="50" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsActive}" Value="false">
+                                    <Setter Property="Canvas.ZIndex" Value="0" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                            
                         </Style>
                     </ItemsControl.ItemContainerStyle>
                 </ItemsControl>
+            </Viewbox>
+            <!-- Main panel - Hand points canvas -->
+            <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
+                <Canvas Width="640" Height="480">
+                    <Ellipse Visibility="{Binding HandsVisibility}" Canvas.Left="{Binding LeftHandX}" Canvas.Top="{Binding LeftHandY}"
+                             Fill="Red" Height="15" Name="leftHand" Width="15" />
+                    <Ellipse Visibility="{Binding HandsVisibility}" Canvas.Left="{Binding RightHandX}" Canvas.Top="{Binding RightHandY}"
+                             Fill="Green" Height="15" Name="rightHand" Width="15" />
+                </Canvas>
             </Viewbox>
 
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >
