@@ -246,7 +246,7 @@ namespace RideOnMotion
             _sensorController.LeftHandPointReady += OnLeftHandPoint;
             _sensorController.RightHandPointReady += OnRightHandPoint;
 
-            _sensorController.PositionTrackerController.AreaActived += OnButtonActivated;
+            _sensorController.PositionTrackerController.AreaActivated += OnButtonActivated;
 
 			Logger.Instance.NewLogStringReady += OnLogStringReceived; // Event binding
         }

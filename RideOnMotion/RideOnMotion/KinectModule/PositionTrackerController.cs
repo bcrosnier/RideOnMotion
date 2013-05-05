@@ -11,7 +11,7 @@ namespace RideOnMotion.KinectModule
 	{
 		IList<IPositionTracker> _positionTrackers;
 
-		public event EventHandler<AreaActivedEventArgs> AreaActived;
+		public event EventHandler<AreaActivatedEventArgs> AreaActivated;
 
 		public PositionTrackerController()
 		{
@@ -58,12 +58,12 @@ namespace RideOnMotion.KinectModule
 			}
 		}
 
-		protected void OnAreaActived( ICaptionArea captionArea )
+		protected void OnAreaActivated( ICaptionArea captionArea )
 		{
-			EventHandler<AreaActivedEventArgs> handler = AreaActived;
+			EventHandler<AreaActivatedEventArgs> handler = AreaActivated;
 			if( handler != null )
 			{
-				handler( this, new AreaActivedEventArgs( captionArea ) );
+				handler( this, new AreaActivatedEventArgs( captionArea ) );
 			}
 		}
 
@@ -75,11 +75,11 @@ namespace RideOnMotion.KinectModule
 
 		private void captionArea_PropertyChanged( object sender, System.ComponentModel.PropertyChangedEventArgs e )
 		{
-			OnAreaActived( (ICaptionArea)sender );
+			OnAreaActivated( (ICaptionArea)sender );
 		}
 	}
 
-	public class AreaActivedEventArgs : EventArgs
+	public class AreaActivatedEventArgs : EventArgs
 	{
 		public ICaptionArea CaptionArea
 		{
@@ -87,7 +87,7 @@ namespace RideOnMotion.KinectModule
 			private set;
 		}
 
-		public AreaActivedEventArgs( ICaptionArea captionArea )
+		public AreaActivatedEventArgs( ICaptionArea captionArea )
 		{
 			CaptionArea = captionArea;
 		}
