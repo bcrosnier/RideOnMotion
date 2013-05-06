@@ -216,6 +216,9 @@ namespace RideOnMotion
 
         private void OnHandsPoint( object sender, System.Windows.Point[] e )
         {
+            this._rightHandPoint = e[0];
+            this._leftHandPoint = e[1];
+
 			if ( this._rightHandPoint.Y != -1.0 && _handsVisibility == Visibility.Collapsed )
 			{
 				_handsVisibility = Visibility.Visible;
@@ -226,10 +229,8 @@ namespace RideOnMotion
 				_handsVisibility = Visibility.Collapsed;
 				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands not visible" );
 			}
-            this._rightHandPoint = e[0];
             this.OnNotifyPropertyChange( "LeftHandX" );
             this.OnNotifyPropertyChange( "LeftHandY" );
-            this._leftHandPoint = e[1];
             this.OnNotifyPropertyChange( "RightHandX" );
             this.OnNotifyPropertyChange( "RightHandY" );
             this.OnNotifyPropertyChange( "HandsVisibility" );
