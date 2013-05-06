@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using RideOnMotion.KinectModule;
+using System.Windows.Controls;
 
 namespace RideOnMotion
 {
@@ -22,20 +23,12 @@ namespace RideOnMotion
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
         /// </summary>
-        private KinectModule.KinectSensorController _sensorController;
+        private IDroneInputController _inputController;
 
         #region Values
-        public CommandBinding ResetSensorCommandBinding { get; private set; }
-        public RoutedCommand ResetSensorCommand { get; private set; }
-        public CommandBinding OpenKinectSettingsCommandBinding { get; private set; }
-        public RoutedCommand OpenKinectSettingsCommand { get; private set; }
-
         private BitmapSource _droneBitmapSource;
-        private BitmapSource _depthBitmapSource;
-
-        private System.Windows.Point _leftHandPoint = new System.Windows.Point( -1, -1 );
-		private System.Windows.Point _rightHandPoint = new System.Windows.Point( -1, -1 );
-		private Visibility _handsVisibility = Visibility.Collapsed;
+        private BitmapSource _inputBitmapSource;
+        private Control _inputControl;
 
 		private string _sensorStatusInfo = "No Kinect detected.";
 
@@ -45,19 +38,19 @@ namespace RideOnMotion
 
         #region GettersSetters
 
-        public BitmapSource DepthBitmapSource
+        public BitmapSource InputBitmapSource
         {
             get
             {
-                return this._depthBitmapSource;
+                return this._inputBitmapSource;
             }
 
             set
             {
-                if ( this._depthBitmapSource != value )
+                if ( this._inputBitmapSource != value )
                 {
-                    this._depthBitmapSource = value;
-                    this.OnNotifyPropertyChange( "DepthBitmapSource" );
+                    this._inputBitmapSource = value;
+                    this.OnNotifyPropertyChange( "InputBitmapSource" );
                 }
             }
         }
@@ -77,34 +70,6 @@ namespace RideOnMotion
                     this.OnNotifyPropertyChange( "DroneBitmapSource" );
                 }
             }
-        }
-
-        public int LeftHandX
-        {
-            get { return (int)this._leftHandPoint.X; }
-        }
-
-        public int LeftHandY
-        {
-            get { return (int)this._leftHandPoint.Y; }
-        }
-
-        public int RightHandX
-        {
-            get { return (int)this._rightHandPoint.X; }
-        }
-
-        public int RightHandY
-        {
-            get { return (int)this._rightHandPoint.Y; }
-        }
-
-        public Visibility HandsVisibility
-        {
-			get
-			{
-				return _handsVisibility;
-			}
         }
 
         public String LogString
@@ -128,23 +93,15 @@ namespace RideOnMotion
         {
             get
             {
-                return "Kinect device: " + _sensorStatusInfo;
+                return  _sensorStatusInfo;
             }
         }
 
-        public ObservableCollection<ICaptionArea> TriggerButtons
+        public Control InputControl
         {
             get
             {
-                return this._sensorController.TriggerButtons;
-            }
-        }
-
-        public bool CanUseSensor
-        {
-            get
-            {
-                return ( this._sensorController.HasSensor && this._sensorController.SensorIsRunning );
+                return _inputControl;
             }
         }
 
@@ -172,24 +129,17 @@ namespace RideOnMotion
 
         #region Contructor/initializers/event handlers/methods
         /// <summary>
-        /// Initializes the ViewModel with the given KinectSensorController.
+        /// Initializes the ViewModel with the given IDroneInputController.
         /// </summary>
-        /// <param name="sensorController">Kinect model : Handles data in and out of the Kinect</param>
-        public MainWindowViewModel( KinectModule.KinectSensorController sensorController )
+        /// <param name="inputController">Input model : Handles data in and out of the input</param>
+        public MainWindowViewModel( IDroneInputController sensorController )
         {
-            _sensorController = sensorController;
-            ResetSensorCommand = new RoutedCommand();
-            OpenKinectSettingsCommand = new RoutedCommand();
-
-            this.ResetSensorCommandBinding = new CommandBinding( ResetSensorCommand,
-                this.ResetSensorExecuted,
-                this.CanExecuteKinectCommands );
-
-            this.OpenKinectSettingsCommandBinding = new CommandBinding( OpenKinectSettingsCommand,
-                this.OpenKinectSettingsExecuted,
-                this.CanExecuteKinectCommands );
+            _inputController = sensorController;
 
             initializeBindings();
+
+            _inputControl = _inputController.InputUIControl;
+            this.OnNotifyPropertyChange( "InputControl" );
         }
 
         /// <summary>
@@ -198,47 +148,22 @@ namespace RideOnMotion
         private void initializeBindings()
         {
             // Bind depth image changes
-            _sensorController.DepthBitmapSourceReady += OnDepthBitmapSourceChanged;
+            _inputController.InputImageSourceChanged += OnInputBitmapSourceChanged;
 
             // Bind sensor status
-            _sensorController.SensorChanged += ( sender, e ) =>
+            _inputController.InputStatusChanged += ( sender, e ) =>
             {
-				_sensorStatusInfo = !this._sensorController.HasSensor ? KinectStatus.Disconnected.ToString() : _sensorController.Sensor.Status.ToString();
-                this.OnNotifyPropertyChange( "SensorStatusInfo" );
-                this.OnNotifyPropertyChange( "CanUseSensor" );
-                this.OnNotifyPropertyChange( "TriggerButtons" );
-            };
 
-            _sensorController.HandsPointReady += OnHandsPoint;
+                _sensorStatusInfo = _inputController.InputStatusString;
+                this.OnNotifyPropertyChange( "InputStatusInfo" );
+            };
 
             Logger.Instance.NewLogStringReady += OnLogStringReceived;
         }
 
-        private void OnHandsPoint( object sender, System.Windows.Point[] e )
+        private void OnInputBitmapSourceChanged( object sender, BitmapSource s )
         {
-            this._rightHandPoint = e[0];
-            this._leftHandPoint = e[1];
-
-			if ( this._rightHandPoint.Y != -1.0 && _handsVisibility == Visibility.Collapsed )
-			{
-				_handsVisibility = Visibility.Visible;
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands visible" );
-			}
-			else if ( this._rightHandPoint.Y == -1.0 && _handsVisibility == Visibility.Visible )
-			{
-				_handsVisibility = Visibility.Collapsed;
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands not visible" );
-			}
-            this.OnNotifyPropertyChange( "LeftHandX" );
-            this.OnNotifyPropertyChange( "LeftHandY" );
-            this.OnNotifyPropertyChange( "RightHandX" );
-            this.OnNotifyPropertyChange( "RightHandY" );
-            this.OnNotifyPropertyChange( "HandsVisibility" );
-        }
-
-        private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )
-        {
-            DepthBitmapSource = e.BitmapSource;
+            InputBitmapSource = s;
         }
 
         private void OnLogStringReceived( object sender, String e )
@@ -247,38 +172,6 @@ namespace RideOnMotion
         }
 
         #endregion Contructor/initializers/event handlers
-
-        #region Commands/command helpers
-        public void CanExecuteKinectCommands( object sender, CanExecuteRoutedEventArgs e )
-        {
-            e.CanExecute = this.CanUseSensor;
-            e.Handled = true;
-        }
-
-        public void ResetSensorExecuted( object sender, ExecutedRoutedEventArgs e )
-        {
-            if ( !this.CanUseSensor )
-            {
-                return; // Command should be disabled anyway
-            }
-            this._sensorController.resetSensor();
-
-            e.Handled = true;
-        }
-
-        public void OpenKinectSettingsExecuted( object sender, ExecutedRoutedEventArgs e )
-        {
-            if ( !this.CanUseSensor )
-            {
-                return; // Command should be disabled anyway
-            }
-
-            Window deviceSettingsWindow = new KinectDeviceSettings( this._sensorController );
-            deviceSettingsWindow.Show();
-
-            e.Handled = true;
-        }
-        #endregion Commands/command helpers
     }
 
     /// <summary>

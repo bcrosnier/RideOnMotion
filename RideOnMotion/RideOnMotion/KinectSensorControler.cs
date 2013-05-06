@@ -5,41 +5,99 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using RideOnMotion;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Shapes;
 
 namespace RideOnMotion.KinectModule
 {
-    public class KinectSensorController
+    public class KinectSensorController : IDroneInputController
     {
         private KinectSensor _kinectSensor = null;
-        private bool _depthFrameIsReady = false;
         private BitmapSource _depthBitmapSource = null;
         private TransformSmoothParameters _smoothingParam;
-        private bool _enableSmoothing;
-        Skeleton[] _totalSkeleton;
+        private PositionTrackerController _positionTrackerController;
 
-        public TriggerArea LeftTriggerArea { get; private set; }
-        public TriggerArea RightTriggerArea { get; private set; }
+        private TriggerArea LeftTriggerArea { get; set; }
+        private TriggerArea RightTriggerArea { get; set; }
 
-        public ObservableCollection<ICaptionArea> TriggerButtons { get; private set; }
-
-        PositionTrackerController _positionTrackerController;
-
-        public event BitmapSourceHandler DepthBitmapSourceReady;
-        public event EventHandler<KinectSensor> SensorChanged;
-
-        public event EventHandler<System.Windows.Point[]> HandsPointReady;
+        private bool _depthFrameIsReady;
         private bool _handsVisible;
+        private bool _enableSmoothing;
 
-        public delegate void BitmapSourceHandler( object sender, BitmapSourceEventArgs e );
+        private Skeleton[] _totalSkeleton;
+
+        internal ObservableCollection<ICaptionArea> TriggerButtons { get; private set; }
+
+        private event EventHandler<KinectSensor> SensorChanged;
+        private event EventHandler<System.Windows.Point[]> HandsPointReady;
+
         public delegate SkeletonPoint DepthPointToSkelPoint( DepthImagePoint p );
         public delegate DepthImagePoint SkelPointToDepthPoint( SkeletonPoint p );
 
-        public BitmapSource DepthBitmapSource
+        #region Interface implementation
+        // Events
+        public event EventHandler<BitmapSource> InputImageSourceChanged;
+        public event EventHandler<DroneInputStatus> InputStatusChanged;
+
+        // Properties
+        public MenuItem InputMenu
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Kinect status text
+        /// </summary>
+        public string InputStatusString
+        {
+            get { return _kinectSensor != null ? _kinectSensor.Status.ToString() : "No Kinect detected."; }
+        }
+
+        public string Name
+        {
+            get { return "Kinect for Windows device"; }
+        }
+
+        public BitmapSource InputImageSource
         {
             get { return _depthBitmapSource; }
         }
 
-        public bool DepthFrameIsReady
+        public Control InputUIControl
+        {
+            get;
+            private set;
+        }
+
+        public DroneInputStatus InputStatus
+        {
+            get
+            {
+                if ( _kinectSensor == null || _kinectSensor.Status == KinectStatus.Disconnected )
+                {
+                    return DroneInputStatus.Disconnected;
+                }
+                else if ( _kinectSensor.Status == KinectStatus.Connected )
+                {
+                    return DroneInputStatus.Ready;
+                }
+                else
+                {
+                    return DroneInputStatus.NotReady;
+                }
+            }
+        }
+
+        public IDroneController ActiveDrone
+        {
+            set { throw new NotImplementedException(); }
+        }
+
+        #endregion Interface implementation
+
+        private bool DepthFrameIsReady
         {
             get { return _depthFrameIsReady; }
         }
@@ -47,7 +105,7 @@ namespace RideOnMotion.KinectModule
         /// <summary>
         /// Active Kinect sensor. Can be null (No sensor connected).
         /// </summary>
-        public KinectSensor Sensor
+        internal KinectSensor Sensor
         {
             get { return _kinectSensor; }
         }
@@ -55,7 +113,7 @@ namespace RideOnMotion.KinectModule
         /// <summary>
         /// Indicates whether the sensor has been started. Returns false when no sensor was detected.
         /// </summary>
-        public bool SensorIsRunning
+        private bool SensorIsRunning
         {
             // If _kinectSensor exists, return IsRunning, else return false
             get { return _kinectSensor != null ? _kinectSensor.IsRunning : false; }
@@ -64,24 +122,16 @@ namespace RideOnMotion.KinectModule
         /// <summary>
         /// Indicates whether the Kinect sensor has been detected.
         /// </summary>
-        public bool HasSensor
+        private bool HasSensor
         {
             // If _kinectSensor exists, return true, else return false
             get { return ( _kinectSensor != null && _kinectSensor.Status != KinectStatus.Disconnected ) ? true : false; }
         }
 
         /// <summary>
-        /// Kinect status text
-        /// </summary>
-        public string SensorStatus
-        {
-            get { return _kinectSensor != null ? _kinectSensor.Status.ToString() : "No Kinect detected."; }
-        }
-
-        /// <summary>
         ///
         /// </summary>
-        public PositionTrackerController PositionTrackerController
+        private PositionTrackerController PositionTrackerController
         {
             get { return _positionTrackerController; }
         }
@@ -89,7 +139,10 @@ namespace RideOnMotion.KinectModule
         public KinectSensorController()
         {
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call.
+
             TriggerButtons = new ObservableCollection<ICaptionArea>();
+            this.InputMenu = PrepareInputMenuItem();
+            this.InputUIControl = new KinectSensorControllerUI( this );
 
             if ( deviceCount > 0 )
             {
@@ -103,7 +156,7 @@ namespace RideOnMotion.KinectModule
 
         /// <summary>
         /// Prepares a Kinect to be started. Enables streams, among other things.
-        /// Call StartSensor(); from outside after this.
+        /// Call Start(); from outside after this.
         /// </summary>
         /// <param name="sensor">Kinect to set as active</param>
         private void initializeKinectSensor( KinectSensor sensor )
@@ -153,7 +206,7 @@ namespace RideOnMotion.KinectModule
 
 
             initializePositionTrackerController();
-            // Call StartSensor(); from outside.
+            // Call Start(); from outside.
         }
 
         /// <summary>
@@ -206,13 +259,13 @@ namespace RideOnMotion.KinectModule
                 // Nothing to clean up.
                 return;
             }
-            StopSensor();
+            Stop();
 
             // Throw last BitmapSource to blank picture
             _depthBitmapSource = null;
-            if ( DepthBitmapSourceReady != null )
+            if ( InputImageSourceChanged != null )
             {
-                DepthBitmapSourceReady( this, new BitmapSourceEventArgs( null ) );
+                InputImageSourceChanged( this, null );
             }
 
             _kinectSensor.DepthFrameReady -= sensor_DepthFrameReady;
@@ -240,20 +293,25 @@ namespace RideOnMotion.KinectModule
             cleanupKinectSensor();
             initializeKinectSensor( sensor );
 
-            StartSensor();
+            Start();
         }
 
         /// <summary>
         /// Attempts to start the detected Kinect sensor.
         /// </summary>
-        public void StartSensor()
+        public void Start()
         {
             if ( !SensorIsRunning && HasSensor )
             {
                 try
                 {
                     Sensor.Start(); // Blocking call.
-                    SensorChanged( this, Sensor ); //
+
+                    if ( SensorChanged != null )
+                    {
+                        SensorChanged( this, Sensor );
+                    }
+
                 }
                 catch
                 {
@@ -265,7 +323,7 @@ namespace RideOnMotion.KinectModule
         /// <summary>
         /// Attempts to stop the sensor.
         /// </summary>
-        public void StopSensor()
+        public void Stop()
         {
             if ( SensorIsRunning )
             {
@@ -322,7 +380,6 @@ namespace RideOnMotion.KinectModule
 
         private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
         {
-
             using ( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
             {
                 if ( skeletonFrame != null )
@@ -349,7 +406,10 @@ namespace RideOnMotion.KinectModule
                     }
                     else if ( _handsVisible == true )
                     {
-                        HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
+                        if ( HandsPointReady != null )
+                        {
+                            HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
+                        }
                         _handsVisible = false;
                     }
                 }
@@ -389,9 +449,9 @@ namespace RideOnMotion.KinectModule
             _depthFrameIsReady = true;
             _depthBitmapSource = DepthToBitmapSource( imageFrame );
 
-            if ( DepthBitmapSourceReady != null )
+            if ( InputImageSourceChanged != null )
             {
-                DepthBitmapSourceReady( this, new BitmapSourceEventArgs( _depthBitmapSource ) );
+                InputImageSourceChanged( this, _depthBitmapSource );
             }
             imageFrame.Dispose();
         }
@@ -410,7 +470,7 @@ namespace RideOnMotion.KinectModule
             {
                 initializeKinectSensor( e.Sensor );
                 // New sensor has appeared
-                StartSensor();
+                Start();
             }
 
             // Attach Kinect sensor if it doesn't exist
@@ -424,21 +484,58 @@ namespace RideOnMotion.KinectModule
             {
                 SensorChanged( this, e.Sensor );
             }
-        }
-    }
 
-    public class BitmapSourceEventArgs : EventArgs
-    {
-        private BitmapSource _bitmapSource;
-
-        public BitmapSource BitmapSource
-        {
-            get { return _bitmapSource; }
+            // Throw interface event
+            if ( InputStatusChanged != null )
+            {
+                InputStatusChanged( this, this.InputStatus );
+            }
         }
 
-        public BitmapSourceEventArgs( BitmapSource source )
+        private MenuItem PrepareInputMenuItem()
         {
-            _bitmapSource = source;
+            MenuItem mainMenuItem = new MenuItem();
+            mainMenuItem.Header = "Kinect";
+
+            MenuItem settingsMenuItem = new MenuItem();
+            settingsMenuItem.Header = "Kinect settings";
+            settingsMenuItem.Click += settingsMenuItem_Click;
+            mainMenuItem.Items.Add( settingsMenuItem );
+
+            mainMenuItem.Items.Add( new Separator() );
+
+            MenuItem resetMenuItem = new MenuItem();
+            resetMenuItem.Header = "Reset device";
+            resetMenuItem.Click += resetMenuItem_Click;
+            mainMenuItem.Items.Add( new Separator() );
+
+            return mainMenuItem;
+        }
+
+        private 
+
+
+
+        void resetMenuItem_Click( object sender, RoutedEventArgs e )
+        {
+            if ( this.InputStatus != DroneInputStatus.Ready )
+            {
+                return; // Command should be disabled anyway
+            }
+            this.resetSensor();
+        }
+
+        void settingsMenuItem_Click( object sender, RoutedEventArgs e )
+        {
+            if ( this.InputStatus != DroneInputStatus.Ready )
+            {
+                return; // Command should be disabled anyway
+            }
+
+            Window deviceSettingsWindow = new KinectDeviceSettings( this );
+            deviceSettingsWindow.Show();
+
+            e.Handled = true;
         }
     }
 

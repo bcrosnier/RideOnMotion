@@ -19,11 +19,6 @@ namespace RideOnMotion
         /// Status of the drone that should be connected to the controller.
         /// </summary>
         DroneStatus DroneStatus { get; }
-        
-        /// <summary>
-        /// Fired when the status of the drone changed (<see cref="RideOnMotion.IDroneController.DroneStatus"/>).
-        /// </summary>
-        event EventHandler<DroneStatus> DroneStatusChanged;
 
         /// <summary>
         /// Commands the drone to move on a axis at a given speed.
@@ -31,7 +26,7 @@ namespace RideOnMotion
         /// <param name="axis">Axis to move on.</param>
         /// <param name="speed">Speed AND direction to move the drone on:
         /// Ranges from -1.0 to 1.0.
-        /// -1.0 / 1.0 being full speed on either direction (implementation and hardware decides what full speed and direction mean),
+        /// -1.0 / 1.0 being full speed on either direction (implementation and hardware decide what full speed and direction mean),
         /// 0 being a command stop moving on this axis.</param>
         /// <remarks>
         /// Drone should move on the axis at the determined speed/direction until asked otherwise; but the implementation
@@ -52,6 +47,11 @@ namespace RideOnMotion
         /// </remarks>
         /// <param name="command">Command to send: <see cref="RideOnMotion.DroneSingleCommands"/></param>
         void Command( DroneSingleCommands command );
+
+        /// <summary>
+        /// Fired when the status of the drone changed (<see cref="RideOnMotion.IDroneController.DroneStatus"/>).
+        /// </summary>
+        event EventHandler<DroneStatus> DroneStatusChanged;
     }
 
     /// <summary>

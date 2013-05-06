@@ -16,7 +16,7 @@ namespace RideOnMotion
 		/// <summary>
 		/// Active Kinect sensor controller.
         /// </summary>
-        private KinectSensorController sensorController;
+        private IDroneInputController inputController;
 
         /// <summary>
         /// Model view for this window.
@@ -33,34 +33,31 @@ namespace RideOnMotion
 		{
             InitializeComponent();
 
-            this.sensorController = new KinectSensorController();
-            this.mainWindowViewModel = new MainWindowViewModel( sensorController );
+            this.inputController = new KinectSensorController();
+            this.mainWindowViewModel = new MainWindowViewModel( inputController );
             this.DataContext = this.mainWindowViewModel;
-
-            CommandBindings.Add( this.mainWindowViewModel.OpenKinectSettingsCommandBinding );
-            CommandBindings.Add( this.mainWindowViewModel.ResetSensorCommandBinding );
 		}
 
 		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
 		{
-            prepareSensor();
+            prepareInput();
 		}
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            this.sensorController.StopSensor(); 
+            this.inputController.Stop(); 
         }
 
-        private void prepareSensor()
+        private void prepareInput()
         {
-            if ( !this.sensorController.HasSensor )
+            if ( this.inputController.InputStatus == DroneInputStatus.Disconnected )
             {
-                MessageBox.Show( "No Kinect device detected.\nPlease ensure it is plugged in and correctly installed.", "No Kinect detected" );
+                MessageBox.Show( "No input device detected.\nPlease ensure it is plugged in and correctly installed.", "No input detected" );
             }
             else
             {
                 // Start Kinect
-                this.sensorController.StartSensor(); // Blocking.
+                this.inputController.Start(); // Blocking.
             }
         }
 

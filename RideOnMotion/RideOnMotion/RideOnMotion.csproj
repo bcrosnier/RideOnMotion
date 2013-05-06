@@ -76,7 +76,14 @@
     <Compile Include="IDroneController.cs" />
     <Compile Include="IDroneInputController.cs" />
     <Compile Include="IViewModel.cs" />
+    <Compile Include="KinectModule\KinectSensorControllerUI.xaml.cs">
+      <DependentUpon>KinectSensorControllerUI.xaml</DependentUpon>
+    </Compile>
     <Page Include="KinectDeviceSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="KinectModule\KinectSensorControllerUI.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

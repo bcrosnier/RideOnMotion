@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace RideOnMotion
@@ -35,16 +36,13 @@ namespace RideOnMotion
         BitmapSource InputImageSource { get; }
 
         /// <summary>
-        /// An observable collection of UI elements, relative to the input, that should be displayed by the user interface. Can be empty.
+        /// A display control, relative to the input, that should be displayed by the user interface. Can be empty.
         /// </summary>
-        /// <remarks>
-        /// In the current implementation, the controller should assume its UI elements are displayed as children of a 640x480 canvas.
-        /// </remarks>
         /// <example>
         /// On a Kinect device, display the two points of a hand, and/or trigger areas.
         /// Display key information on a keyboard or on a joystick, etc.
         /// </example>
-        ObservableCollection<UIElement> InputUIElements { get; }
+        Control InputUIControl { get; }
 
         /// <summary>
         /// Status of the input that should be connected to the controller.
@@ -52,10 +50,30 @@ namespace RideOnMotion
         DroneInputStatus InputStatus { get; }
 
         /// <summary>
+        /// Long version of the status input; if you want to display or log data directly related to the input.
+        /// </summary>
+        string InputStatusString { get; }
+
+        /// <summary>
         /// Set the drone controller linked to this input.
         /// The IDroneController set here should be the one the commands are sent to.
         /// </summary>
         IDroneController ActiveDrone { set; }
+
+        /// <summary>
+        /// A MenuItem to be displayed, if applicable. Can contain other elements and/or be null.
+        /// </summary>
+        MenuItem InputMenu { get; }
+
+        /// <summary>
+        /// For inputs that require explicit initialization.
+        /// </summary>
+        void Start();
+
+        /// <summary>
+        /// For inputs that require explicit cleanup.
+        /// </summary>
+        void Stop();
 
         /// <summary>
         /// If the InputImageSource is set to a new one, this event should be fired.
@@ -65,6 +83,7 @@ namespace RideOnMotion
 
         /// <summary>
         /// Fired when the status of the input device changed (<see cref="RideOnMotion.IDroneInputController.InputStatus"/>).
+        /// Also fired when the InputStatusString changed (<see cref="RideOnMotion.IDroneInputController.InputStatusString"/>).
         /// </summary>
         event EventHandler<DroneInputStatus> InputStatusChanged;
     }
