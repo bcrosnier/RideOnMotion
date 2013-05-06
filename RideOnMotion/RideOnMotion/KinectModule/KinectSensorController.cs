@@ -238,6 +238,8 @@ namespace RideOnMotion.KinectModule
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call (USB devices polling).
 
             TriggerButtons = new ObservableCollection<ICaptionArea>();
+            initTriggerZones( TRIGGER_BUTTON_WIDTH, TRIGGER_BUTTON_HEIGHT );
+
             this.InputMenu = PrepareInputMenuItem();
 
             if ( deviceCount > 0 )
@@ -302,7 +304,6 @@ namespace RideOnMotion.KinectModule
             _kinectSensor.DepthStream.Enable( DEPTH_IMAGE_FORMAT );
 			_kinectSensor.SkeletonStream.EnableTrackingInNearRange = true;
 
-
             initializePositionTrackerController();
             // Call Start(); from outside.
         }
@@ -314,7 +315,11 @@ namespace RideOnMotion.KinectModule
         {
             _positionTrackerController = new PositionTrackerController();
 
-            initTriggerZones( TRIGGER_BUTTON_WIDTH, TRIGGER_BUTTON_HEIGHT );
+            IPositionTracker leftTracker = new LeftHandPositionTracker( LeftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker rightTracker = new RightHandPositionTracker( RightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+
+            this.PositionTrackerController.AttachPositionTracker( leftTracker );
+            this.PositionTrackerController.AttachPositionTracker( rightTracker );
         }
 
         /// <summary>
@@ -327,6 +332,7 @@ namespace RideOnMotion.KinectModule
             int zoneWidth = DEPTH_FRAME_WIDTH / 2;
             int zoneHeight = DEPTH_FRAME_HEIGHT;
 
+            // Create caption areas
             LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
             RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
 
@@ -336,15 +342,6 @@ namespace RideOnMotion.KinectModule
                         RightTriggerArea.TriggerCaptionsCollection.Values
                 ).ToList()
             );
-
-            // Create caption areas
-
-            IPositionTracker leftTracker = new LeftHandPositionTracker( LeftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
-            IPositionTracker rightTracker = new RightHandPositionTracker( RightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
-
-            this.PositionTrackerController.AttachPositionTracker( leftTracker );
-            this.PositionTrackerController.AttachPositionTracker( rightTracker );
-
         }
 
         /// <summary>
