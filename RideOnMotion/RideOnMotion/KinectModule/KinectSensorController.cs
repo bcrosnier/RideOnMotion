@@ -648,7 +648,7 @@ namespace RideOnMotion.KinectModule
             MenuItem resetMenuItem = new MenuItem();
             resetMenuItem.Header = "Reset device";
             resetMenuItem.Click += resetMenuItem_Click;
-            mainMenuItem.Items.Add( new Separator() );
+            mainMenuItem.Items.Add( resetMenuItem );
 
             return mainMenuItem;
         }

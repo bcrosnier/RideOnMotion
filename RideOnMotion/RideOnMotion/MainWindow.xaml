@@ -22,17 +22,12 @@
             <TextBlock x:Name="DroneStatusText">No drone</TextBlock>
         </StatusBar>
 
-        <Menu DockPanel.Dock="Top">
+        <Menu DockPanel.Dock="Top" x:Name="MenuBar" IsMainMenu="True">
             <Menu.Background>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.MenuBarColorKey}}"/>
             </Menu.Background>
             <MenuItem Header="File">
                 <MenuItem Header="Quit" Click="MenuItem_Quit_Click" />
-            </MenuItem>
-            <MenuItem Header="Kinect">
-                <MenuItem Header="Kinect settings" Command="{Binding OpenKinectSettingsCommand}" />
-                <Separator />
-                <MenuItem Header="Reset Kinect" Command="{Binding ResetSensorCommand}" />
             </MenuItem>
         </Menu>
 

@@ -36,6 +36,12 @@ namespace RideOnMotion
             this.inputController = new KinectSensorController();
             this.mainWindowViewModel = new MainWindowViewModel( inputController );
             this.DataContext = this.mainWindowViewModel;
+
+            // Bind input menu
+            if ( this.inputController.InputMenu != null )
+            {
+                this.MenuBar.Items.Add( this.inputController.InputMenu );
+            }
 		}
 
 		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
