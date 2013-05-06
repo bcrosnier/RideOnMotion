@@ -30,7 +30,7 @@ namespace RideOnMotion.KinectModule
         internal ObservableCollection<ICaptionArea> TriggerButtons { get; private set; }
 
         private event EventHandler<KinectSensor> SensorChanged;
-        private event EventHandler<System.Windows.Point[]> HandsPointReady;
+        public event EventHandler<System.Windows.Point[]> HandsPointReady;
 
         public delegate SkeletonPoint DepthPointToSkelPoint( DepthImagePoint p );
         public delegate DepthImagePoint SkelPointToDepthPoint( SkeletonPoint p );
@@ -142,7 +142,6 @@ namespace RideOnMotion.KinectModule
 
             TriggerButtons = new ObservableCollection<ICaptionArea>();
             this.InputMenu = PrepareInputMenuItem();
-            this.InputUIControl = new KinectSensorControllerUI( this );
 
             if ( deviceCount > 0 )
             {
@@ -152,6 +151,8 @@ namespace RideOnMotion.KinectModule
             }
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
+
+            this.InputUIControl = new KinectSensorControllerUI( this );
         }
 
         /// <summary>
@@ -511,8 +512,6 @@ namespace RideOnMotion.KinectModule
 
             return mainMenuItem;
         }
-
-        private 
 
 
 

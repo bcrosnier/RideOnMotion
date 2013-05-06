@@ -70,6 +70,8 @@ namespace RideOnMotion.KinectModule
             this._controller = controller;
             this.DataContext = this;
 
+            this._controller.HandsPointReady += OnHandsPoint;
+
             InitializeComponent();
         }
 
@@ -88,6 +90,7 @@ namespace RideOnMotion.KinectModule
 				_handsVisibility = Visibility.Collapsed;
 				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands not visible" );
 			}
+
             this.OnNotifyPropertyChange( "LeftHandX" );
             this.OnNotifyPropertyChange( "LeftHandY" );
             this.OnNotifyPropertyChange( "RightHandX" );
