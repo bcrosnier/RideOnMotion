@@ -301,8 +301,9 @@ namespace RideOnMotion.KinectModule
 					}
 					catch ( InvalidOperationException e )
 					{
-						// Log ElevationAngle error here
-						Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Kinect, "Too much movement for the Kinect, please wait 20 sec" );
+                        // Log ElevationAngle error here
+                        Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Kinect, "Too much movement for the Kinect, please wait 20 sec:" );
+                        Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Kinect, e.Message );
 					}
 				} );
 			}
