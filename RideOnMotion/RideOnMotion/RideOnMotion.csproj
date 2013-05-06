@@ -73,6 +73,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="IDroneController.cs" />
+    <Compile Include="IDroneInputController.cs" />
     <Compile Include="IViewModel.cs" />
     <Page Include="KinectDeviceSettings.xaml">
       <SubType>Designer</SubType>

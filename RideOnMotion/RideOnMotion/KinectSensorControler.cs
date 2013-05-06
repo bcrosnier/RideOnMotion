@@ -8,8 +8,8 @@ using System.Collections.ObjectModel;
 
 namespace RideOnMotion.KinectModule
 {
-	public class KinectSensorController
-	{
+    public class KinectSensorController
+    {
         private KinectSensor _kinectSensor = null;
         private bool _depthFrameIsReady = false;
         private BitmapSource _depthBitmapSource = null;
@@ -22,12 +22,13 @@ namespace RideOnMotion.KinectModule
 
         public ObservableCollection<ICaptionArea> TriggerButtons { get; private set; }
 
-		PositionTrackerController _positionTrackerController;
+        PositionTrackerController _positionTrackerController;
 
         public event BitmapSourceHandler DepthBitmapSourceReady;
         public event EventHandler<KinectSensor> SensorChanged;
 
         public event EventHandler<System.Windows.Point[]> HandsPointReady;
+        private bool _handsVisible;
 
         public delegate void BitmapSourceHandler( object sender, BitmapSourceEventArgs e );
         public delegate SkeletonPoint DepthPointToSkelPoint( DepthImagePoint p );
@@ -35,7 +36,7 @@ namespace RideOnMotion.KinectModule
 
         public BitmapSource DepthBitmapSource
         {
-			get { return _depthBitmapSource; }
+            get { return _depthBitmapSource; }
         }
 
         public bool DepthFrameIsReady
@@ -66,7 +67,7 @@ namespace RideOnMotion.KinectModule
         public bool HasSensor
         {
             // If _kinectSensor exists, return true, else return false
-            get { return (_kinectSensor != null && _kinectSensor.Status != KinectStatus.Disconnected) ? true : false; }
+            get { return ( _kinectSensor != null && _kinectSensor.Status != KinectStatus.Disconnected ) ? true : false; }
         }
 
         /// <summary>
@@ -77,15 +78,15 @@ namespace RideOnMotion.KinectModule
             get { return _kinectSensor != null ? _kinectSensor.Status.ToString() : "No Kinect detected."; }
         }
 
-		/// <summary>
-		///
-		/// </summary>
-		public PositionTrackerController PositionTrackerController
-		{
-			get { return _positionTrackerController; }
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        public PositionTrackerController PositionTrackerController
+        {
+            get { return _positionTrackerController; }
+        }
 
-		public KinectSensorController()
+        public KinectSensorController()
         {
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call.
             TriggerButtons = new ObservableCollection<ICaptionArea>();
@@ -93,12 +94,12 @@ namespace RideOnMotion.KinectModule
             if ( deviceCount > 0 )
             {
                 KinectSensor kinectSensor = KinectSensor.KinectSensors.Where( item => item.Status == KinectStatus.Connected ).FirstOrDefault();
-                SetSkeletonSmoothingEnabled(false);
+                SetSkeletonSmoothingEnabled( false );
                 initializeKinectSensor( kinectSensor );
             }
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
-		}
+        }
 
         /// <summary>
         /// Prepares a Kinect to be started. Enables streams, among other things.
@@ -124,7 +125,7 @@ namespace RideOnMotion.KinectModule
                 _kinectSensor.SkeletonStream.Disable();
             }
 
-			_totalSkeleton = new Skeleton[6];
+            _totalSkeleton = new Skeleton[6];
 
             if ( this._enableSmoothing == true )
             {
@@ -145,24 +146,25 @@ namespace RideOnMotion.KinectModule
             {
                 _kinectSensor.DepthStream.Disable();
             }
+            _handsVisible = false;
 
             _kinectSensor.DepthStream.Range = DepthRange.Default; // Change to Near mode here
             _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
-            
+
 
             initializePositionTrackerController();
             // Call StartSensor(); from outside.
         }
 
-		/// <summary>
-		/// Créer les PositionTracker et les CaptionArea associe
-		/// </summary>
-		private void initializePositionTrackerController()
-		{
+        /// <summary>
+        /// Créer les PositionTracker et les CaptionArea associe
+        /// </summary>
+        private void initializePositionTrackerController()
+        {
             _positionTrackerController = new PositionTrackerController();
 
             initTriggerZones( 300, 100 );
-		}
+        }
 
         /// <summary>
         /// Prepare the right and left trigger zones.
@@ -199,13 +201,13 @@ namespace RideOnMotion.KinectModule
         /// </summary>
         private void cleanupKinectSensor()
         {
-            if( _kinectSensor == null )
+            if ( _kinectSensor == null )
             {
                 // Nothing to clean up.
                 return;
             }
             StopSensor();
-            
+
             // Throw last BitmapSource to blank picture
             _depthBitmapSource = null;
             if ( DepthBitmapSourceReady != null )
@@ -248,15 +250,15 @@ namespace RideOnMotion.KinectModule
         {
             if ( !SensorIsRunning && HasSensor )
             {
-				try
-				{
-					Sensor.Start(); // Blocking call.
-					SensorChanged( this,Sensor ); //
-				}
-				catch
-				{
-					Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Unexpected API error, replug the Kinect." );
-				}
+                try
+                {
+                    Sensor.Start(); // Blocking call.
+                    SensorChanged( this, Sensor ); //
+                }
+                catch
+                {
+                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Unexpected API error, replug the Kinect." );
+                }
             }
         }
 
@@ -305,7 +307,7 @@ namespace RideOnMotion.KinectModule
         private static BitmapSource DepthToBitmapSource( DepthImageFrame imageFrame )
         {
             short[] pixelData = new short[imageFrame.PixelDataLength];
-            imageFrame.CopyPixelDataTo(pixelData);
+            imageFrame.CopyPixelDataTo( pixelData );
 
             BitmapSource bmap = BitmapSource.Create(
                 imageFrame.Width,
@@ -314,39 +316,45 @@ namespace RideOnMotion.KinectModule
                 PixelFormats.Gray16,
                 null,
                 pixelData,
-                imageFrame.Width*imageFrame.BytesPerPixel);
+                imageFrame.Width * imageFrame.BytesPerPixel );
             return bmap;
         }
 
-		private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
-		{
-            
-			using( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
-			{
+        private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
+        {
+
+            using ( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
+            {
                 if ( skeletonFrame != null )
                 {
-				    // copy the frame data in to the collection
-				    skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
+                    // copy the frame data in to the collection
+                    skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
 
-				    Skeleton firstSkeleton = ( from trackskeleton in _totalSkeleton
-										       where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
-										       select trackskeleton ).FirstOrDefault();
+                    var trackedSkeletons = ( from trackskeleton in _totalSkeleton
+                                             where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
+                                             select trackskeleton );
+
+                    int skeletonCount = trackedSkeletons.Count();
+
+                    Skeleton firstSkeleton = trackedSkeletons.FirstOrDefault();
                     if ( firstSkeleton != null )
                     {
+                        _handsVisible = true;
                         _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
 
                         if ( HandsPointReady != null )
                         {
-							HandsPointReady( this, new System.Windows.Point[2] { ScalePosition( firstSkeleton.Joints[JointType.HandLeft].Position ), ScalePosition( firstSkeleton.Joints[JointType.HandRight].Position ) } );
+                            HandsPointReady( this, new System.Windows.Point[2] { ScalePosition( firstSkeleton.Joints[JointType.HandLeft].Position ), ScalePosition( firstSkeleton.Joints[JointType.HandRight].Position ) } );
                         }
                     }
-                    else
+                    else if ( _handsVisible == true )
                     {
-						HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
+                        HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
+                        _handsVisible = false;
                     }
                 }
-			}
-		}
+            }
+        }
 
         private System.Windows.Point ScalePosition( SkeletonPoint skeletonPoint )
         {
@@ -383,20 +391,21 @@ namespace RideOnMotion.KinectModule
 
             if ( DepthBitmapSourceReady != null )
             {
-                DepthBitmapSourceReady( this, new BitmapSourceEventArgs(_depthBitmapSource) );
+                DepthBitmapSourceReady( this, new BitmapSourceEventArgs( _depthBitmapSource ) );
             }
             imageFrame.Dispose();
         }
 
-        private void sensors_StatusChanged(object sender, StatusChangedEventArgs e) {
+        private void sensors_StatusChanged( object sender, StatusChangedEventArgs e )
+        {
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.Kinect, "Status changed to : " + e.Status.ToString() );
+            Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.Kinect, "Status changed to : " + e.Status.ToString() );
             if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
                 && e.Sensor == _kinectSensor )
             {
                 // Current sensor is gone, clean up
                 cleanupKinectSensor();
-            } 
+            }
             else if ( e.Status == KinectStatus.Connected )
             {
                 initializeKinectSensor( e.Sensor );
@@ -416,7 +425,7 @@ namespace RideOnMotion.KinectModule
                 SensorChanged( this, e.Sensor );
             }
         }
-	}
+    }
 
     public class BitmapSourceEventArgs : EventArgs
     {
@@ -432,5 +441,5 @@ namespace RideOnMotion.KinectModule
             _bitmapSource = source;
         }
     }
-	
+
 }
