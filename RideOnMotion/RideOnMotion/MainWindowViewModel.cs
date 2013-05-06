@@ -156,6 +156,8 @@ namespace RideOnMotion
                 _inputStatusInfo = _inputController.InputStatusString;
                 this.OnNotifyPropertyChange( "InputStatusInfo" );
             };
+            // Set once
+            _inputStatusInfo = _inputController.InputStatusString;
 
             Logger.Instance.NewLogStringReady += OnLogStringReceived;
         }

@@ -17,6 +17,11 @@ namespace RideOnMotion.KinectModule
     public class KinectSensorController : IDroneInputController
     {
         /// <summary>
+        /// A user-friendly input name!
+        /// </summary>
+        private static readonly string INPUT_NAME = "Kinect";
+
+        /// <summary>
         /// Default format used for the depth image stream.
         /// </summary>
         private static readonly DepthImageFormat DEPTH_IMAGE_FORMAT = DepthImageFormat.Resolution640x480Fps30;
@@ -152,7 +157,7 @@ namespace RideOnMotion.KinectModule
 
         public string Name
         {
-            get { return "Kinect for Windows device"; }
+            get { return INPUT_NAME; }
         }
 
         public BitmapSource InputImageSource
@@ -423,12 +428,6 @@ namespace RideOnMotion.KinectModule
                 {
                     Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Unexpected API error, replug the Kinect." );
                 }
-            }
-
-            // Throw interface event once on startup
-            if ( InputStatusChanged != null )
-            {
-                InputStatusChanged( this, this.InputStatus );
             }
         }
 
