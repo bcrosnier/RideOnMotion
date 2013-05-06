@@ -29,6 +29,9 @@ namespace RideOnMotion.KinectModule
         public Dictionary<Buttons, ICaptionArea> TriggerCaptionsCollection { get; private set; }
         private KinectSensorController.SkelPointToDepthPoint _converter;
 
+        private System.Media.SoundPlayer quackPlayer;
+        private Action quack;
+
         /// <summary>
         /// Create a trigger area, with 4 triggerable captions.
         /// </summary>
@@ -51,6 +54,9 @@ namespace RideOnMotion.KinectModule
 
             this.TriggerCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
             generateButtonCaptions();
+
+            quackPlayer = new System.Media.SoundPlayer( RideOnMotion.Properties.Resources.Quack );
+            quack = new Action( () => { quackPlayer.Play(); } );
         }
 
         public void generateButtonCaptions()
@@ -89,6 +95,11 @@ namespace RideOnMotion.KinectModule
                 ButtonHeight,
                 ButtonWidth
             );
+
+            ((CaptionArea)upCaption).AddFunction( quack );
+            ((CaptionArea)downCaption).AddFunction( quack );
+            ((CaptionArea)leftCaption).AddFunction( quack );
+            ((CaptionArea)rightCaption).AddFunction( quack );
 
             TriggerCaptionsCollection.Add( Buttons.Up, upCaption );
             TriggerCaptionsCollection.Add( Buttons.Down, downCaption );
