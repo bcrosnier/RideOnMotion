@@ -30,7 +30,7 @@ namespace RideOnMotion
         private BitmapSource _inputBitmapSource;
         private Control _inputControl;
 
-		private string _sensorStatusInfo = "No Kinect detected.";
+		private string _inputStatusInfo = "No Kinect detected.";
 
         private String _logString;
 
@@ -89,11 +89,11 @@ namespace RideOnMotion
             }
         }
 
-        public String SensorStatusInfo
+        public String InputStatusInfo
         {
             get
             {
-                return  _sensorStatusInfo;
+                return  _inputController.Name + ": " + _inputStatusInfo;
             }
         }
 
@@ -153,8 +153,7 @@ namespace RideOnMotion
             // Bind sensor status
             _inputController.InputStatusChanged += ( sender, e ) =>
             {
-
-                _sensorStatusInfo = _inputController.InputStatusString;
+                _inputStatusInfo = _inputController.InputStatusString;
                 this.OnNotifyPropertyChange( "InputStatusInfo" );
             };
 

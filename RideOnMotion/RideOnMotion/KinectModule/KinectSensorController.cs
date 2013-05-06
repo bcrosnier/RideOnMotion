@@ -354,7 +354,7 @@ namespace RideOnMotion.KinectModule
                 // Nothing to clean up.
                 return;
             }
-            Stop();
+            Stop(); // HAMMER TIME.
 
             // Throw last BitmapSource to blank picture
             _depthBitmapSource = null;
