@@ -137,7 +137,17 @@ namespace RideOnMotion.KinectModule
         /// </summary>
         public string InputStatusString
         {
-            get { return _kinectSensor != null ? _kinectSensor.Status.ToString() : "No Kinect detected."; }
+            get
+            {
+                if ( _kinectSensor != null )
+                {
+                    return _kinectSensor.Status.ToString();
+                }
+                else
+                {
+                    return "No Kinect detected.";
+                }
+            }
         }
 
         public string Name
@@ -252,6 +262,7 @@ namespace RideOnMotion.KinectModule
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
 
             this.InputUIControl = new KinectSensorControllerUI( this );
+
         }
 
         /// <summary>
@@ -412,6 +423,12 @@ namespace RideOnMotion.KinectModule
                 {
                     Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Unexpected API error, replug the Kinect." );
                 }
+            }
+
+            // Throw interface event once on startup
+            if ( InputStatusChanged != null )
+            {
+                InputStatusChanged( this, this.InputStatus );
             }
         }
 

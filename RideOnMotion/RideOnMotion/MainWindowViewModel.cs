@@ -30,7 +30,7 @@ namespace RideOnMotion
         private BitmapSource _inputBitmapSource;
         private Control _inputControl;
 
-		private string _inputStatusInfo = "No Kinect detected.";
+		private string _inputStatusInfo = String.Empty;
 
         private String _logString;
 
