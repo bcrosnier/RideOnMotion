@@ -11,8 +11,36 @@ using System.Windows.Shapes;
 
 namespace RideOnMotion.KinectModule
 {
+    /// <summary>
+    /// Main controller class for drone input through a Kinect sensor device.
+    /// </summary>
     public class KinectSensorController : IDroneInputController
     {
+        /// <summary>
+        /// Default format used for the depth image stream.
+        /// </summary>
+        private static readonly DepthImageFormat DEPTH_IMAGE_FORMAT = DepthImageFormat.Resolution640x480Fps30;
+
+        /// <summary>
+        /// Width of the depth frame. Must match DEPTH_IMAGE_FORMAT.
+        /// </summary>
+        private static readonly int DEPTH_FRAME_WIDTH = 640;
+
+        /// <summary>
+        /// Height of the depth frame. Must match DEPTH_IMAGE_FORMAT.
+        /// </summary>
+        private static readonly int DEPTH_FRAME_HEIGHT = 480;
+
+        /// <summary>
+        /// Default trigger zone width (side size)
+        /// </summary>
+        private static readonly int TRIGGER_BUTTON_WIDTH = 300;
+
+        /// <summary>
+        /// Default trigger zone height (button thickness)
+        /// </summary>
+        private static readonly int TRIGGER_BUTTON_HEIGHT = 100;
+
         /// <summary>
         /// The Kinect sensor used by the controller. Can be null.
         /// </summary>
@@ -271,7 +299,7 @@ namespace RideOnMotion.KinectModule
             }
             _handsVisible = false;
 
-            _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
+            _kinectSensor.DepthStream.Enable( DEPTH_IMAGE_FORMAT );
 			_kinectSensor.SkeletonStream.EnableTrackingInNearRange = true;
 
 
@@ -286,7 +314,7 @@ namespace RideOnMotion.KinectModule
         {
             _positionTrackerController = new PositionTrackerController();
 
-            initTriggerZones( 300, 100 );
+            initTriggerZones( TRIGGER_BUTTON_WIDTH, TRIGGER_BUTTON_HEIGHT );
         }
 
         /// <summary>
@@ -296,8 +324,8 @@ namespace RideOnMotion.KinectModule
         /// <param name="buttonHeight">Height of each button / thickness of the triggers</param>
         private void initTriggerZones( int buttonWidth, int buttonHeight )
         {
-            int zoneWidth = 640 / 2;
-            int zoneHeight = 480;
+            int zoneWidth = DEPTH_FRAME_WIDTH / 2;
+            int zoneHeight = DEPTH_FRAME_HEIGHT;
 
             LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
             RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
@@ -520,7 +548,7 @@ namespace RideOnMotion.KinectModule
         private SkeletonPoint DepthImagePointToSkelPoint( DepthImagePoint p )
         {
             SkeletonPoint skelPoint = this.Sensor.CoordinateMapper.MapDepthPointToSkeletonPoint(
-                DepthImageFormat.Resolution640x480Fps30,
+                DEPTH_IMAGE_FORMAT,
                 p );
             return skelPoint;
         }
@@ -533,7 +561,7 @@ namespace RideOnMotion.KinectModule
         private DepthImagePoint SkelPointToDepthImagePoint( SkeletonPoint p )
         {
             DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
-                 p, DepthImageFormat.Resolution640x480Fps30 );
+                 p, DEPTH_IMAGE_FORMAT );
             return depthPoint;
         }
 
