@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace RideOnMotion
+namespace RideOnMotion.KinectModule
 {
     /// <summary>
     /// Interaction logic for KinectDeviceSettings.xaml
@@ -234,55 +234,79 @@ namespace RideOnMotion
         }
 
         public void applySettings() {
+
+			bool settingChanged = false;
             if ( _controller.Sensor.Status != Microsoft.Kinect.KinectStatus.Connected )
             {
                 return; // Fuck you
             }
 
             // Near mode
-            if ( this.NearModeIsEnabled )
+			if ( this.NearModeIsEnabled 
+				&& _controller.Sensor.DepthStream.Range == Microsoft.Kinect.DepthRange.Default )
             {
                 _controller.Sensor.DepthStream.Range = Microsoft.Kinect.DepthRange.Near;
+				settingChanged = true;
             }
-            else
+            else if ( !this.NearModeIsEnabled 
+				&& _controller.Sensor.DepthStream.Range == Microsoft.Kinect.DepthRange.Near)
             {
-                _controller.Sensor.DepthStream.Range = Microsoft.Kinect.DepthRange.Default;
+				_controller.Sensor.DepthStream.Range = Microsoft.Kinect.DepthRange.Default;
+				settingChanged = true;
             }
 
             // Seating mode
-            if ( this.SeatingModeIsEnabled )
+            if ( this.SeatingModeIsEnabled 
+				&& _controller.Sensor.SkeletonStream.TrackingMode == Microsoft.Kinect.SkeletonTrackingMode.Default)
             {
-                _controller.Sensor.SkeletonStream.TrackingMode = Microsoft.Kinect.SkeletonTrackingMode.Seated;
+				_controller.Sensor.SkeletonStream.TrackingMode = Microsoft.Kinect.SkeletonTrackingMode.Seated;
+				settingChanged = true;
             }
-            else
+			else if ( !this.SeatingModeIsEnabled 
+				&& _controller.Sensor.SkeletonStream.TrackingMode == Microsoft.Kinect.SkeletonTrackingMode.Seated )
             {
-                _controller.Sensor.SkeletonStream.TrackingMode = Microsoft.Kinect.SkeletonTrackingMode.Default;
+				_controller.Sensor.SkeletonStream.TrackingMode = Microsoft.Kinect.SkeletonTrackingMode.Default;
+				settingChanged = true;
             }
 
             // Smoothing
-            if ( this.SkeletonSmoothingIsEnabled )
+            if ( this.SkeletonSmoothingIsEnabled 
+				&& _controller.SmoothingEnabled == false)
             {
-                _controller.SetSkeletonSmoothingEnabled( true );
+				_controller.SetSkeletonSmoothingEnabled( true );
+				settingChanged = true;
+				
             }
-            else
+			else if ( !this.SkeletonSmoothingIsEnabled 
+				&& _controller.SmoothingEnabled == true )
             {
-                _controller.SetSkeletonSmoothingEnabled( false );
+				_controller.SetSkeletonSmoothingEnabled( false );
+				settingChanged = true;
             }
 
-            _controller.resetSensor();
+			if ( settingChanged )
+			{
+				_controller.resetSensor();
+			}
 
-            Task.Factory.StartNew( () =>
-            {
-                try
-                {
-                    _controller.Sensor.ElevationAngle = this.CurrentElevationAngle;
-                }
-                catch ( InvalidOperationException e )
-                {
-                    // Log ElevationAngle error here
-                    System.Console.WriteLine( e.Message );
-                }
-            } );
+			//we are checking for +1 and -1 since Kinect can't distinguish between 1° angles
+			if ( _controller.Sensor.ElevationAngle < this.CurrentElevationAngle - 1 
+				|| _controller.Sensor.ElevationAngle > this.CurrentElevationAngle + 1 )
+			{
+				Task.Factory.StartNew( () =>
+				{
+					try
+					{
+						_controller.Sensor.ElevationAngle = this.CurrentElevationAngle;
+					}
+					catch ( InvalidOperationException e )
+					{
+                        // Log ElevationAngle error here
+                        Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Kinect, "Too much movement for the Kinect, please wait 20 sec:" );
+                        Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Kinect, e.Message );
+					}
+				} );
+			}
         }
     }
 }

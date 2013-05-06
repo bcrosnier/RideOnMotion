@@ -14,6 +14,7 @@ namespace RideOnMotion.KinectModule
         float Y { get; }
         float Width { get; }
         float Height { get; }
+		String Name { get; }
 
 		IReadOnlyList<Point> Points { get; }
 		void CheckPosition( Joint joint );

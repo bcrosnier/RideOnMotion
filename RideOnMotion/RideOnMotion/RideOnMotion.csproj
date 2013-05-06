@@ -73,8 +73,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="IDroneController.cs" />
+    <Compile Include="IDroneInputController.cs" />
     <Compile Include="IViewModel.cs" />
-    <Page Include="KinectDeviceSettings.xaml">
+    <Compile Include="KinectModule\KinectSensorControllerUI.xaml.cs">
+      <DependentUpon>KinectSensorControllerUI.xaml</DependentUpon>
+    </Compile>
+    <Page Include="KinectModule\KinectDeviceSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="KinectModule\KinectSensorControllerUI.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -86,12 +95,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="KinectDeviceSettings.xaml.cs">
+    <Compile Include="KinectModule\KinectDeviceSettings.xaml.cs">
       <DependentUpon>KinectDeviceSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="KinectModule\ImplementationTracker\CaptionArea.cs" />
     <Compile Include="KinectModule\PositionTrackerController.cs" />
-    <Compile Include="KinectSensorControler.cs" />
+    <Compile Include="KinectModule\TriggerArea.cs" />
+    <Compile Include="KinectModule\KinectSensorController.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="KinectModule\ImplementationTracker\RightHandPositionTracker.cs" />
     <Compile Include="KinectModule\ImplementationTracker\LeftHandPositionTracker.cs" />
