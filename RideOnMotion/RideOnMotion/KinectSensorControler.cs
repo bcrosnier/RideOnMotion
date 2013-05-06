@@ -13,26 +13,83 @@ namespace RideOnMotion.KinectModule
 {
     public class KinectSensorController : IDroneInputController
     {
+        /// <summary>
+        /// The Kinect sensor used by the controller. Can be null.
+        /// </summary>
         private KinectSensor _kinectSensor = null;
+
+        /// <summary>
+        /// The last BitmapSource given by the depth camera.
+        /// </summary>
         private BitmapSource _depthBitmapSource = null;
+
+        /// <summary>
+        /// Default smoothing parameters for the skeleton.
+        /// </summary>
         private TransformSmoothParameters _smoothingParam;
+
+        /// <summary>
+        /// Handler for the hands' zone detection and activation.
+        /// </summary>
         private PositionTrackerController _positionTrackerController;
 
+        /// <summary>
+        /// TriggerArea for the left hand.
+        /// </summary>
         private TriggerArea LeftTriggerArea { get; set; }
+
+        /// <summary>
+        /// TriggerArea for the right hand.
+        /// </summary>
         private TriggerArea RightTriggerArea { get; set; }
 
+        /// <summary>
+        /// Whether a depth frame is ready to use.
+        /// </summary>
         private bool _depthFrameIsReady;
+
+        /// <summary>
+        /// Whether hands are visible, and tracked.
+        /// </summary>
         private bool _handsVisible;
+
+        /// <summary>
+        /// Whether to enable skeleton smoothing. <see cref="_smoothingParam"/>
+        /// </summary>
         private bool _enableSmoothing;
 
+        /// <summary>
+        /// Array of all skeletons that could be detected.
+        /// </summary>
         private Skeleton[] _totalSkeleton;
 
+        /// <summary>
+        /// Collection of all ICaptionAreas for the left and right hands.
+        /// </summary>
         internal ObservableCollection<ICaptionArea> TriggerButtons { get; private set; }
 
+        /// <summary>
+        /// Fired when the active Kinect sensor changes.
+        /// </summary>
         private event EventHandler<KinectSensor> SensorChanged;
+
+        /// <summary>
+        /// Fired when new points are available for the hands.
+        /// </summary>
         public event EventHandler<System.Windows.Point[]> HandsPointReady;
 
+        /// <summary>
+        /// Converts a DepthImagePoint to a SkeletonPoint, using this controller's depth tracking data.
+        /// </summary>
+        /// <param name="p">DepthImagePoint to convert.</param>
+        /// <returns>Equivalent SkeletonPoint</returns>
         public delegate SkeletonPoint DepthPointToSkelPoint( DepthImagePoint p );
+
+        /// <summary>
+        /// Converts a SkeletonPoint to a DepthImagePoint, using this controller's depth tracking data.
+        /// </summary>
+        /// <param name="p">SkeletonPoint to convert.</param>
+        /// <returns>Equivalent DepthImagePoint</returns>
         public delegate DepthImagePoint SkelPointToDepthPoint( SkeletonPoint p );
 
         #region Interface implementation
@@ -136,14 +193,21 @@ namespace RideOnMotion.KinectModule
             get { return _positionTrackerController; }
         }
 
+        /// <summary>
+        /// Gets whether skeleton smoothing is enabled.
+        /// </summary>
 		public bool SmoothingEnabled
 		{
 			get { return this._enableSmoothing; }
 		}
 
+        /// <summary>
+        /// Kinect sensor input controller.
+        /// Handles drone control through a Kinect sensor.
+        /// </summary>
         public KinectSensorController()
         {
-            int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call.
+            int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call (USB devices polling).
 
             TriggerButtons = new ObservableCollection<ICaptionArea>();
             this.InputMenu = PrepareInputMenuItem();
@@ -216,7 +280,7 @@ namespace RideOnMotion.KinectModule
         }
 
         /// <summary>
-        /// Créer les PositionTracker et les CaptionArea associe
+        /// Initializes the position tracker and its related trigger zones for the hands.
         /// </summary>
         private void initializePositionTrackerController()
         {
@@ -337,6 +401,11 @@ namespace RideOnMotion.KinectModule
             }
         }
 
+        /// <summary>
+        /// Enable smoothing on skeleton tracking.
+        /// Kinect needs to be reinitialized from the outside after this.
+        /// </summary>
+        /// <param name="enabled">True to enable, false to disable smoothing.</param>
         public void SetSkeletonSmoothingEnabled( bool enabled )
         {
             if ( !enabled )
@@ -363,7 +432,7 @@ namespace RideOnMotion.KinectModule
         }
 
         /// <summary>
-        /// Converts a depth image frame to a Bitmap source.
+        /// Converts a depth image frame to a Bitmap source using a simple 16-bit Grayscale mapping.
         /// From http://www.i-programmer.info/ebooks/practical-windows-kinect-in-c/3802-using-the-kinect-depth-sensor.html?start=1
         /// </summary>
         /// <param name="imageFrame">Image frame to convert</param>
@@ -383,7 +452,12 @@ namespace RideOnMotion.KinectModule
                 imageFrame.Width * imageFrame.BytesPerPixel );
             return bmap;
         }
-
+        
+        /// <summary>
+        /// Method fired when a new skeleton frame is ready.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
         {
             using ( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
@@ -407,7 +481,12 @@ namespace RideOnMotion.KinectModule
 
                         if ( HandsPointReady != null )
                         {
-                            HandsPointReady( this, new System.Windows.Point[2] { ScalePosition( firstSkeleton.Joints[JointType.HandLeft].Position ), ScalePosition( firstSkeleton.Joints[JointType.HandRight].Position ) } );
+                            HandsPointReady( this,
+                                new System.Windows.Point[2] {
+                                    SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandLeft].Position ),
+                                    SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
+                                }
+                             );
                         }
                     }
                     else if ( _handsVisible == true )
@@ -422,13 +501,22 @@ namespace RideOnMotion.KinectModule
             }
         }
 
-        private System.Windows.Point ScalePosition( SkeletonPoint skeletonPoint )
+        /// <summary>
+        /// Converts a SkeletonPoint to a DepthImagePoint, taking only the X and Y values.
+        /// </summary>
+        /// <param name="skeletonPoint">SkeletonPoint to convert</param>
+        /// <returns>Point in 2D space of its DepthImagePoint equivalent</returns>
+        private System.Windows.Point SkelPointTo2DDepthPoint( SkeletonPoint skeletonPoint )
         {
-            DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
-                skeletonPoint, DepthImageFormat.Resolution640x480Fps30 );
+            DepthImagePoint depthPoint = SkelPointToDepthImagePoint( skeletonPoint );
             return new System.Windows.Point( depthPoint.X, depthPoint.Y );
         }
 
+        /// <summary>
+        /// Converts a DepthImagePoint to a SkeletonPoint.
+        /// </summary>
+        /// <param name="p">DepthImagePoint to convert</param>
+        /// <returns>SkeletonPoint equivalent</returns>
         private SkeletonPoint DepthImagePointToSkelPoint( DepthImagePoint p )
         {
             SkeletonPoint skelPoint = this.Sensor.CoordinateMapper.MapDepthPointToSkeletonPoint(
@@ -437,6 +525,11 @@ namespace RideOnMotion.KinectModule
             return skelPoint;
         }
 
+        /// <summary>
+        /// Converts a SkeletonPoint to a DepthImagePoint.
+        /// </summary>
+        /// <param name="p">SkeletonPoint to convert</param>
+        /// <returns>DepthImagePoint equivalent</returns>
         private DepthImagePoint SkelPointToDepthImagePoint( SkeletonPoint p )
         {
             DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
@@ -444,12 +537,17 @@ namespace RideOnMotion.KinectModule
             return depthPoint;
         }
 
+        /// <summary>
+        /// Fired on every depth frame.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )
         {
             DepthImageFrame imageFrame = e.OpenDepthImageFrame();
             if ( imageFrame == null )
             {
-                return; // Already opened
+                return; // Clear frame
             }
 
             _depthFrameIsReady = true;
@@ -461,7 +559,12 @@ namespace RideOnMotion.KinectModule
             }
             imageFrame.Dispose();
         }
-
+        
+        /// <summary>
+        /// Fired every time any sensor on the system changes its status.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void sensors_StatusChanged( object sender, StatusChangedEventArgs e )
         {
 
@@ -498,6 +601,10 @@ namespace RideOnMotion.KinectModule
             }
         }
 
+        /// <summary>
+        /// Create the menu items for the UI.
+        /// </summary>
+        /// <returns>New MenuItem for the active Kinect device.</returns>
         private MenuItem PrepareInputMenuItem()
         {
             MenuItem mainMenuItem = new MenuItem();
@@ -518,8 +625,11 @@ namespace RideOnMotion.KinectModule
             return mainMenuItem;
         }
 
-
-
+        /// <summary>
+        /// Fired when the "Reset device" menu item is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void resetMenuItem_Click( object sender, RoutedEventArgs e )
         {
             if ( this.InputStatus != DroneInputStatus.Ready )
@@ -529,6 +639,11 @@ namespace RideOnMotion.KinectModule
             this.resetSensor();
         }
 
+        /// <summary>
+        /// Fired when the "Kinect settings" menu item is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void settingsMenuItem_Click( object sender, RoutedEventArgs e )
         {
             if ( this.InputStatus != DroneInputStatus.Ready )
