@@ -136,6 +136,11 @@ namespace RideOnMotion.KinectModule
             get { return _positionTrackerController; }
         }
 
+		public bool SmoothingEnabled
+		{
+			get { return this._enableSmoothing; }
+		}
+
         public KinectSensorController()
         {
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call.
@@ -202,8 +207,8 @@ namespace RideOnMotion.KinectModule
             }
             _handsVisible = false;
 
-            _kinectSensor.DepthStream.Range = DepthRange.Default; // Change to Near mode here
             _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
+			_kinectSensor.SkeletonStream.EnableTrackingInNearRange = true;
 
 
             initializePositionTrackerController();
