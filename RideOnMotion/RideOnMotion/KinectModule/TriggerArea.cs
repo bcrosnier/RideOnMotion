@@ -59,29 +59,33 @@ namespace RideOnMotion.KinectModule
             int verticalMargin = ( AreaHeight - ButtonWidth ) / 2;
 
             ICaptionArea upCaption = createCaptionArea(
-                    OffsetX + horizontalMargin,
-                    OffsetY + verticalMargin,
+                "Up button",
+                OffsetX + horizontalMargin,
+                OffsetY + verticalMargin,
                 ButtonWidth,
                 ButtonHeight
             );
 
             ICaptionArea leftCaption = createCaptionArea(
-                    OffsetX + horizontalMargin,
-                    OffsetY + verticalMargin,
+                "Left button",
+                OffsetX + horizontalMargin,
+                OffsetY + verticalMargin,
                 ButtonHeight,
                 ButtonWidth
             );
 
             ICaptionArea downCaption = createCaptionArea(
-                    OffsetX + horizontalMargin,
-                    OffsetY + verticalMargin + ButtonWidth - ButtonHeight,
+                "Down button",
+                OffsetX + horizontalMargin,
+                OffsetY + verticalMargin + ButtonWidth - ButtonHeight,
                 ButtonWidth,
                 ButtonHeight
             );
 
             ICaptionArea rightCaption = createCaptionArea(
-                    OffsetX + horizontalMargin + ButtonWidth - ButtonHeight,
-                    OffsetY + verticalMargin,
+                "Right button",
+                OffsetX + horizontalMargin + ButtonWidth - ButtonHeight,
+                OffsetY + verticalMargin,
                 ButtonHeight,
                 ButtonWidth
             );
@@ -94,18 +98,19 @@ namespace RideOnMotion.KinectModule
             // Fire stuff to update rectangles here. --BC
         }
 
-        private ICaptionArea createCaptionArea( int depthX, int depthY, int width, int height )
+        private ICaptionArea createCaptionArea( string name, int depthX, int depthY, int width, int height )
         {
             //DepthImagePoint depthPoint = new DepthImagePoint() { X = depthX, Y = depthY };
             //SkeletonPoint skelPoint = _pointConverter( depthPoint );
             return new CaptionArea(
-                   new KinectModule.Point(
-                       depthX,
-                       depthY
-                   ),
-                   width,
-                   height,
-                   _converter
+                    name,
+                    new KinectModule.Point(
+                        depthX,
+                        depthY
+                    ),
+                    width,
+                    height,
+                    _converter
                );
         }
     }
