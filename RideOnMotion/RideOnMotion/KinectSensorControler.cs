@@ -148,7 +148,6 @@ namespace RideOnMotion.KinectModule
             }
             _handsVisible = false;
 
-            _kinectSensor.DepthStream.Range = DepthRange.Default; // Change to Near mode here
             _kinectSensor.DepthStream.Enable( DepthImageFormat.Resolution640x480Fps30 );
 
 
