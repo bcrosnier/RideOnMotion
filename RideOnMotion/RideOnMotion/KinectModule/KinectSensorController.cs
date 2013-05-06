@@ -256,6 +256,7 @@ namespace RideOnMotion.KinectModule
             initTriggerZones( TRIGGER_BUTTON_WIDTH, TRIGGER_BUTTON_HEIGHT );
 
             this.InputMenu = PrepareInputMenuItem();
+            this.InputStatusChanged += OnInputStatusChanged;
 
             if ( deviceCount > 0 )
             {
@@ -268,6 +269,16 @@ namespace RideOnMotion.KinectModule
 
             this.InputUIControl = new KinectSensorControllerUI( this );
 
+        }
+
+        /// <summary>
+        /// Fired on InputStatusChanged to enable/disable the menus.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void OnInputStatusChanged( object sender, DroneInputStatus e )
+        {
+            this.updateMenusStatus();
         }
 
         /// <summary>
@@ -416,7 +427,7 @@ namespace RideOnMotion.KinectModule
             {
                 try
                 {
-                    Sensor.Start(); // Blocking call.
+                    Sensor.Start(); // Blocking call. May throw IOException on already used, or worse...!
 
                     if ( SensorChanged != null )
                     {
@@ -424,11 +435,19 @@ namespace RideOnMotion.KinectModule
                     }
 
                 }
-                catch
+                catch ( System.IO.IOException e )
                 {
-                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Unexpected API error, replug the Kinect." );
+                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Kinect is already in use by another process. Error:" );
+                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, e.Message );
+                }
+                catch ( Exception e )
+                {
+                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Unexpected Kinect API error:" );
+                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, e.Message );
                 }
             }
+
+            updateMenusStatus();
         }
 
         /// <summary>
@@ -664,6 +683,25 @@ namespace RideOnMotion.KinectModule
             mainMenuItem.Items.Add( resetMenuItem );
 
             return mainMenuItem;
+        }
+
+        /// <summary>
+        /// Enable or disable menu availability, depending on whether Kinect is ready
+        /// </summary>
+        void updateMenusStatus()
+        {
+            if( this.InputMenu != null )
+            {
+                if ( this.InputStatus == DroneInputStatus.Ready )
+                {
+                    this.InputMenu.IsEnabled = true;
+                }
+                else
+                {
+                    this.InputMenu.IsEnabled = false;
+                }
+            }
+
         }
 
         /// <summary>
