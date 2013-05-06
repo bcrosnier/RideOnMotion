@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace RideOnMotion
+namespace RideOnMotion.KinectModule
 {
     /// <summary>
     /// Interaction logic for KinectDeviceSettings.xaml
