@@ -334,27 +334,31 @@ namespace RideOnMotion
             int verticalMargin = ( AreaHeight - ButtonWidth ) / 2;
 
             ICaptionArea upCaption = createCaptionArea(
+				"Up button",
                     OffsetX + horizontalMargin,
                     OffsetY + verticalMargin,
                 ButtonWidth,
                 ButtonHeight
             );
 
-            ICaptionArea leftCaption = createCaptionArea(
+			ICaptionArea leftCaption = createCaptionArea(
+				"Left button",
                     OffsetX + horizontalMargin,
                     OffsetY + verticalMargin,
                 ButtonHeight,
                 ButtonWidth
             );
 
-            ICaptionArea downCaption = createCaptionArea(
+			ICaptionArea downCaption = createCaptionArea(
+				"Down button",
                     OffsetX + horizontalMargin,
                     OffsetY + verticalMargin + ButtonWidth - ButtonHeight,
                 ButtonWidth,
                 ButtonHeight
             );
 
-            ICaptionArea rightCaption = createCaptionArea(
+			ICaptionArea rightCaption = createCaptionArea(
+				"Right button",
                     OffsetX + horizontalMargin + ButtonWidth - ButtonHeight,
                     OffsetY + verticalMargin,
                 ButtonHeight,
@@ -369,17 +373,17 @@ namespace RideOnMotion
             // Fire stuff to update rectangles here. --BC
         }
 
-        private ICaptionArea createCaptionArea( int depthX, int depthY, int width, int height )
+        private ICaptionArea createCaptionArea(String Name, int DepthX, int DepthY, int Width, int Height )
         {
             //DepthImagePoint depthPoint = new DepthImagePoint() { X = depthX, Y = depthY };
             //SkeletonPoint skelPoint = _pointConverter( depthPoint );
-            return new CaptionArea(
+            return new CaptionArea( Name,
                    new KinectModule.Point(
-                       depthX,
-                       depthY
+                       DepthX,
+                       DepthY
                    ),
-                   width,
-                   height,
+                   Width,
+                   Height,
                    _converter
                );
         }
