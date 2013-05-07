@@ -9,53 +9,48 @@ namespace RideOnMotion.UI
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		/// <summary>
-		/// Active Kinect sensor controller.
-        /// </summary>
-        private IDroneInputController inputController;
-
         /// <summary>
         /// Model view for this window.
         /// </summary>
         private MainWindowViewModel mainWindowViewModel;
+
+        private MenuItem _activeInputMenuItem;
 
 
 		public MainWindow()
 		{
             InitializeComponent();
 
-            this.inputController = new KinectSensorController();
-            this.mainWindowViewModel = new MainWindowViewModel( inputController );
+            this.mainWindowViewModel = new MainWindowViewModel();
             this.DataContext = this.mainWindowViewModel;
 
-            // Bind input menu
-            if ( this.inputController.InputMenu != null )
-            {
-                this.MenuBar.Items.Add( this.inputController.InputMenu );
-            }
+            // Bind input menu and fire once
+            this.mainWindowViewModel.InputMenuChanged += OnInputMenuChange;
+            this.OnInputMenuChange( this, this.mainWindowViewModel.InputMenu );
 		}
+
+        private void OnInputMenuChange( object sender, MenuItem e )
+        {
+            if ( this._activeInputMenuItem != null )
+            {
+                this.MenuBar.Items.Remove( this._activeInputMenuItem );
+            }
+
+            if ( e != null )
+            {
+                this.MenuBar.Items.Add( e );
+            }
+
+            this._activeInputMenuItem = e;
+        }
 
 		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
 		{
-            prepareInput();
 		}
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            this.inputController.Stop(); 
-        }
-
-        private void prepareInput()
-        {
-            if ( this.inputController.InputStatus == DroneInputStatus.Disconnected )
-            {
-                MessageBox.Show( "No input device detected.\nPlease ensure it is plugged in and correctly installed.", "No input detected" );
-            }
-            else
-            {
-                // Start Kinect
-                this.inputController.Start(); // Blocking.
-            }
+            this.mainWindowViewModel.Stop(); 
         }
 
         /// <summary>
