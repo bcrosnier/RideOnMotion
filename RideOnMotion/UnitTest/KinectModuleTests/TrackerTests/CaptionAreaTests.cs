@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RideOnMotion.KinectModule;
+using RideOnMotion.Inputs.Kinect;
 using Microsoft.Kinect;
 
-namespace UnitTest.KinectModuleTests.TrackerTests
+namespace UnitTest.Inputs.KinectTests.TrackerTests
 {
 	[TestFixture]
 	public class CaptionAreaTests
@@ -15,7 +15,7 @@ namespace UnitTest.KinectModuleTests.TrackerTests
 		[Test]
 		public void CaptionAreaPointTest()
 		{
-			CaptionArea mockCaptionArea = new CaptionArea( new Point( 0, 0 ), 10, 10, null );
+			CaptionArea mockCaptionArea = new CaptionArea("Mock Caption", new Point( 0, 0 ), 10, 10, null );
 			IReadOnlyList<Point> listOfPoint = mockCaptionArea.Points;
 
 			Assert.That( listOfPoint[0].X, Is.EqualTo( 0 ) );
@@ -32,7 +32,7 @@ namespace UnitTest.KinectModuleTests.TrackerTests
 		public void CaptionAreaCallFunctionTests()
 		{
 			int i = 0;
-            CaptionArea mockCaptionArea = new CaptionArea( new Point( 0, 0 ), 10, 10, null );
+			CaptionArea mockCaptionArea = new CaptionArea( "Mock Caption", new Point( 0, 0 ), 10, 10, null );
 			Action function = () => { i++; };
 			mockCaptionArea.AddFunction( function );
 			Joint joint = new Skeleton().Joints[0];

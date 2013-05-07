@@ -1,12 +1,8 @@
 ﻿using System.Windows;
-using Microsoft.Kinect;
-using KinectStatusNotifier;
-using RideOnMotion.KinectModule;
-using System;
-using System.Windows.Input;
+using RideOnMotion.Inputs.Kinect;
 using System.Windows.Controls;
 
-namespace RideOnMotion
+namespace RideOnMotion.UI
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -16,51 +12,49 @@ namespace RideOnMotion
 		/// <summary>
 		/// Active Kinect sensor controller.
         /// </summary>
-        private KinectSensorController sensorController;
+        private IDroneInputController inputController;
 
         /// <summary>
         /// Model view for this window.
         /// </summary>
         private MainWindowViewModel mainWindowViewModel;
 
-		/// <summary>
-		/// Kinect Status Notifier. Notably used by the Kinect system tray icon.
-		/// </summary>
-        private StatusNotifier notifier = new StatusNotifier();
-
 
 		public MainWindow()
 		{
             InitializeComponent();
 
-            this.sensorController = new KinectSensorController();
-            this.mainWindowViewModel = new MainWindowViewModel( sensorController );
+            this.inputController = new KinectSensorController();
+            this.mainWindowViewModel = new MainWindowViewModel( inputController );
             this.DataContext = this.mainWindowViewModel;
 
-            CommandBindings.Add( this.mainWindowViewModel.OpenKinectSettingsCommandBinding );
-            CommandBindings.Add( this.mainWindowViewModel.ResetSensorCommandBinding );
+            // Bind input menu
+            if ( this.inputController.InputMenu != null )
+            {
+                this.MenuBar.Items.Add( this.inputController.InputMenu );
+            }
 		}
 
 		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
 		{
-            prepareSensor();
+            prepareInput();
 		}
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            this.sensorController.StopSensor(); 
+            this.inputController.Stop(); 
         }
 
-        private void prepareSensor()
+        private void prepareInput()
         {
-            if ( !this.sensorController.HasSensor )
+            if ( this.inputController.InputStatus == DroneInputStatus.Disconnected )
             {
-                MessageBox.Show( "No Kinect device detected.\nPlease ensure it is plugged in and correctly installed.", "No Kinect detected" );
+                MessageBox.Show( "No input device detected.\nPlease ensure it is plugged in and correctly installed.", "No input detected" );
             }
             else
             {
                 // Start Kinect
-                this.sensorController.StartSensor(); // Blocking.
+                this.inputController.Start(); // Blocking.
             }
         }
 
@@ -70,10 +64,6 @@ namespace RideOnMotion
         private void MenuItem_Quit_Click( object sender, RoutedEventArgs e )
         {
             this.Close();
-        }
-
-        private void MenuItem_KinectSettings_Click( object sender, RoutedEventArgs e )
-        {
         }
 
         private void LogString_TextChanged( object sender, System.Windows.Controls.TextChangedEventArgs e )

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 
-namespace RideOnMotion.KinectModule
+namespace RideOnMotion.Inputs.Kinect
 {
 	public class CaptionArea : ICaptionArea, INotifyPropertyChanged
     {
@@ -16,6 +16,7 @@ namespace RideOnMotion.KinectModule
         Point _topLeftPoint;
         float _width;
         float _height;
+		String _name;
 
 		bool _isActive;
 
@@ -87,6 +88,18 @@ namespace RideOnMotion.KinectModule
             }
         }
 
+		public String Name
+		{
+			get
+			{
+				return this._name;
+			}
+			private set
+			{
+				this._name = value;
+			}
+		}
+
 		public bool IsActive
 		{
 			get { return _isActive; }
@@ -114,10 +127,11 @@ namespace RideOnMotion.KinectModule
             }
         }
 
-        public CaptionArea( Point topLeftPoint, float width, float height, KinectSensorController.SkelPointToDepthPoint converter )
+        public CaptionArea(String Name, Point topLeftPoint, float width, float height, KinectSensorController.SkelPointToDepthPoint converter )
 		{
 			_associateFunctions = new List<Action>();
 
+			_name = Name;
             _topLeftPoint = topLeftPoint;
             _width = width;
             _height = height;
@@ -153,18 +167,28 @@ namespace RideOnMotion.KinectModule
                 depthPoint = _converter( joint.Position );
             }
 
-            if ( depthPoint.X > _topLeftPoint.X && depthPoint.X < _topLeftPoint.X + _width && depthPoint.Y > _topLeftPoint.Y && depthPoint.Y < _topLeftPoint.Y + _height )
+            if ( depthPoint.X > _topLeftPoint.X &&
+                depthPoint.X < _topLeftPoint.X + _width &&
+                depthPoint.Y > _topLeftPoint.Y &&
+                depthPoint.Y < _topLeftPoint.Y + _height &&
+                (joint.TrackingState == JointTrackingState.Inferred || joint.TrackingState == JointTrackingState.Tracked) )
             {
-				IsActive = true;
-				//il va y avoir un probleme d'appel repete des fonctions associees
-                foreach (Action action in _associateFunctions)
+				if ( IsActive == false )
                 {
-                    action();
-                }
+                    foreach ( Action action in _associateFunctions )
+                    {
+                        action();
+                    }
+
+					Logger.Instance.NewEntry( LogLevel.Trace, CKTraitTags.ARDrone, joint.JointType.ToString() + " activated " + this.Name );
+				}
+
+				IsActive = true;
             }
 			else if( IsActive == true )
 			{
 				IsActive = false;
+				//Logger.Instance.NewEntry( LogLevel.Trace, CKTraitTags.ARDrone, joint.JointType.ToString() + " not on " + this.Name );
 			}
         }
 

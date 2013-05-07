@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RideOnMotion.KinectModule
+namespace RideOnMotion.Inputs.Kinect
 {
 	public interface ICaptionArea : INotifyPropertyChanged
     {
@@ -14,6 +14,7 @@ namespace RideOnMotion.KinectModule
         float Y { get; }
         float Width { get; }
         float Height { get; }
+		String Name { get; }
 
 		IReadOnlyList<Point> Points { get; }
 		void CheckPosition( Joint joint );
