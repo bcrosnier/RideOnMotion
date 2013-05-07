@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RideOnMotion.KinectModule
+namespace RideOnMotion.Inputs.Kinect
 {
     /// <summary>
     /// Trigger zone, reprensenting 4 overlayed TriggerButtons as sides of a square.
@@ -104,7 +104,7 @@ namespace RideOnMotion.KinectModule
             //SkeletonPoint skelPoint = _pointConverter( depthPoint );
             return new CaptionArea(
                     name,
-                    new KinectModule.Point(
+                    new Inputs.Kinect.Point(
                         depthX,
                         depthY
                     ),

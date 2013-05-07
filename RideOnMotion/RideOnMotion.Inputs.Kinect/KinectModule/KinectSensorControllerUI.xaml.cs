@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RideOnMotion.KinectModule
+namespace RideOnMotion.Inputs.Kinect
 {
     /// <summary>
     /// Kinect UI overlay, with a Canvas, hand points, buttons, et cetera, et cetera.

@@ -1,9 +1,5 @@
 ﻿using System.Windows;
-using Microsoft.Kinect;
-using KinectStatusNotifier;
-using RideOnMotion.KinectModule;
-using System;
-using System.Windows.Input;
+using RideOnMotion.Inputs.Kinect;
 using System.Windows.Controls;
 
 namespace RideOnMotion
@@ -22,11 +18,6 @@ namespace RideOnMotion
         /// Model view for this window.
         /// </summary>
         private MainWindowViewModel mainWindowViewModel;
-
-		/// <summary>
-		/// Kinect Status Notifier. Notably used by the Kinect system tray icon.
-		/// </summary>
-        private StatusNotifier notifier = new StatusNotifier();
 
 
 		public MainWindow()
@@ -73,10 +64,6 @@ namespace RideOnMotion
         private void MenuItem_Quit_Click( object sender, RoutedEventArgs e )
         {
             this.Close();
-        }
-
-        private void MenuItem_KinectSettings_Click( object sender, RoutedEventArgs e )
-        {
         }
 
         private void LogString_TextChanged( object sender, System.Windows.Controls.TextChangedEventArgs e )

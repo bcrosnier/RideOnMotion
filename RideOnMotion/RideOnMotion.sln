@@ -16,6 +16,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5FFA12
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideOnMotion.Inputs.Kinect", "RideOnMotion.Inputs.Kinect\RideOnMotion.Inputs.Kinect.csproj", "{F351A907-F922-4986-AD6B-CB04D9307040}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideOnMotion.Utilities", "RideOnMotion.Utilities\RideOnMotion.Utilities.csproj", "{7DB44258-5127-4395-B0D6-619C899BF2A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External toolkits", "External toolkits", "{AAEAFB8F-B51D-4FB1-97E0-5ACB9B84AA93}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit tests", "Unit tests", "{6D4F6749-48A7-46EA-9AC2-AF3916812F2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,8 +46,21 @@ Global
 		{9A8C2953-BB59-4419-8D51-9ADCF52DEE6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A8C2953-BB59-4419-8D51-9ADCF52DEE6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A8C2953-BB59-4419-8D51-9ADCF52DEE6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F351A907-F922-4986-AD6B-CB04D9307040}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F351A907-F922-4986-AD6B-CB04D9307040}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F351A907-F922-4986-AD6B-CB04D9307040}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F351A907-F922-4986-AD6B-CB04D9307040}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DB44258-5127-4395-B0D6-619C899BF2A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DB44258-5127-4395-B0D6-619C899BF2A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DB44258-5127-4395-B0D6-619C899BF2A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DB44258-5127-4395-B0D6-619C899BF2A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C6F9C31B-6130-4443-A5CC-EF0664552ECD} = {AAEAFB8F-B51D-4FB1-97E0-5ACB9B84AA93}
+		{4508C4D1-85BB-4F3F-9E3B-CC93D231C65D} = {AAEAFB8F-B51D-4FB1-97E0-5ACB9B84AA93}
+		{9A8C2953-BB59-4419-8D51-9ADCF52DEE6F} = {6D4F6749-48A7-46EA-9AC2-AF3916812F2C}
 	EndGlobalSection
 EndGlobal

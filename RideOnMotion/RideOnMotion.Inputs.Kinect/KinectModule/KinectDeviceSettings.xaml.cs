@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace RideOnMotion.KinectModule
+namespace RideOnMotion.Inputs.Kinect
 {
     /// <summary>
     /// Interaction logic for KinectDeviceSettings.xaml
@@ -23,7 +23,7 @@ namespace RideOnMotion.KinectModule
     {
         private KinectDeviceSettingsViewModel _viewModel;
 
-        public KinectDeviceSettings(KinectModule.KinectSensorController controller)
+        public KinectDeviceSettings(Inputs.Kinect.KinectSensorController controller)
         {
             this._viewModel = new KinectDeviceSettingsViewModel(controller);
             this.DataContext = _viewModel;
@@ -55,7 +55,7 @@ namespace RideOnMotion.KinectModule
 
     public class KinectDeviceSettingsViewModel : INotifyPropertyChanged
     {
-        private KinectModule.KinectSensorController _controller;
+        private Inputs.Kinect.KinectSensorController _controller;
 
         private int _minimumElevationAngle;
         private int _maximumElevationAngle;
@@ -64,7 +64,7 @@ namespace RideOnMotion.KinectModule
         private bool _seatingModeIsEnabled;
         private bool _skeletonSmoothingIsEnabled;
 
-        public KinectDeviceSettingsViewModel( KinectModule.KinectSensorController controller )
+        public KinectDeviceSettingsViewModel( Inputs.Kinect.KinectSensorController controller )
         {
             this._controller = controller;
             this.MinimumElevationAngle = this._controller.Sensor.MinElevationAngle;
