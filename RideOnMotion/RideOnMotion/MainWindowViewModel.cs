@@ -1,19 +1,9 @@
-﻿using Microsoft.Kinect;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Timers;
-using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Collections.ObjectModel;
-using System.Drawing;
-using RideOnMotion.KinectModule;
 using System.Windows.Controls;
 
-namespace RideOnMotion
+namespace RideOnMotion.UI
 {
     /// <summary>
     /// View model for main window. Contains displayed properties.

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 
-namespace RideOnMotion.KinectModule
+namespace RideOnMotion.Inputs.Kinect
 {
 	public class CaptionArea : ICaptionArea, INotifyPropertyChanged
     {

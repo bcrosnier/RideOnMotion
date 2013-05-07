@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using CK.Core;
 
-namespace RideOnMotion.KinectModule
+namespace RideOnMotion.Inputs.Kinect
 {
-	public class LeftHandPositionTracker : IPositionTracker
+	public class RightHandPositionTracker : IPositionTracker
 	{
 		readonly IList<ICaptionArea> _captionAreas;
 
@@ -18,19 +18,19 @@ namespace RideOnMotion.KinectModule
 			get { return _captionAreas.AsReadOnlyList(); }
 		}
 
-		public LeftHandPositionTracker()
+		public RightHandPositionTracker()
 			: this( new List<ICaptionArea>() )
 		{
 		}
 
-		public LeftHandPositionTracker(IList<ICaptionArea> listOfCaptionAreas)
+		public RightHandPositionTracker( IList<ICaptionArea> listOfCaptionAreas )
 		{
 			_captionAreas = listOfCaptionAreas;
 		}
 
 		public void HookingSkeleton( Microsoft.Kinect.Skeleton skeleton )
 		{
-			ValidateCaptionArea( skeleton.Joints[JointType.HandLeft] );
+			ValidateCaptionArea( skeleton.Joints[JointType.HandRight] );
 		}
 
 		public void AttachCaptionArea( ICaptionArea captionArea )

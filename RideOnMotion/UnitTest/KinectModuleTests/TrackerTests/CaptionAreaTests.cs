@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RideOnMotion.KinectModule;
+using RideOnMotion.Inputs.Kinect;
 using Microsoft.Kinect;
 
-namespace UnitTest.KinectModuleTests.TrackerTests
+namespace UnitTest.Inputs.KinectTests.TrackerTests
 {
 	[TestFixture]
 	public class CaptionAreaTests

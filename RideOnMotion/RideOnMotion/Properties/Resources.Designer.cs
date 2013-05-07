@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RideOnMotion.Properties
+namespace RideOnMotion.UI.Properties
 {
 
 
@@ -44,7 +44,7 @@ namespace RideOnMotion.Properties
 			{
 				if ( ( resourceMan == null ) )
 				{
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager( "RideOnMotion.Properties.Resources", typeof( Resources ).Assembly );
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager( "RideOnMotion.UI.Properties.Resources", typeof( Resources ).Assembly );
 					resourceMan = temp;
 				}
 				return resourceMan;
