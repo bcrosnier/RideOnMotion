@@ -167,17 +167,22 @@ namespace RideOnMotion.Inputs.Kinect
                 depthPoint = _converter( joint.Position );
             }
 
-            if ( depthPoint.X > _topLeftPoint.X && depthPoint.X < _topLeftPoint.X + _width && depthPoint.Y > _topLeftPoint.Y && depthPoint.Y < _topLeftPoint.Y + _height )
+            if ( depthPoint.X > _topLeftPoint.X &&
+                depthPoint.X < _topLeftPoint.X + _width &&
+                depthPoint.Y > _topLeftPoint.Y &&
+                depthPoint.Y < _topLeftPoint.Y + _height &&
+                (joint.TrackingState == JointTrackingState.Inferred || joint.TrackingState == JointTrackingState.Tracked) )
             {
 				if ( IsActive == false )
-				{
+                {
+                    foreach ( Action action in _associateFunctions )
+                    {
+                        action();
+                    }
+
 					Logger.Instance.NewEntry( LogLevel.Trace, CKTraitTags.ARDrone, joint.JointType.ToString() + " activated " + this.Name );
 				}
-				//il va y avoir un probleme d'appel repete des fonctions associees
-                foreach (Action action in _associateFunctions)
-                {
-                    action();
-                }
+
 				IsActive = true;
             }
 			else if( IsActive == true )
