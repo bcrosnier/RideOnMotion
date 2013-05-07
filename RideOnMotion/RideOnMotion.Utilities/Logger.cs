@@ -10,12 +10,13 @@ namespace RideOnMotion
 {
 
     /// <summary>
-    /// First version of the logger on 23.04.2013
-    /// Wait for the new version, right now I don't have time to make something cool.
+    /// Implementation of ActivityLogger from CK.Core package for RideOnMotion project
     /// </summary>
     public class Logger
-    {
+	{
+		
 		private static Logger instance = new Logger();
+		#region Constructor
 		public static Logger Instance
 		{
 			get
@@ -27,6 +28,7 @@ namespace RideOnMotion
 				return instance;
 			}
 		}
+		#endregion
 
 		IDefaultActivityLogger _logger;
 
@@ -71,6 +73,9 @@ namespace RideOnMotion
 
     }
 
+	/// <summary>
+	/// Getting some TraitTags from CK project
+	/// </summary>
 	public class CKTraitTags
 	{
 		public static CKTrait None = ActivityLogger.RegisteredTags.FindOrCreate( "None" );
@@ -82,6 +87,9 @@ namespace RideOnMotion
 		public static CKTrait User = ActivityLogger.RegisteredTags.FindOrCreate( "User" );
 	}
 
+	/// <summary>
+	/// Collection of usefull method to work with string types
+	/// </summary>
 	public class StringImpl : IActivityLoggerSink
 	{
 		public StringWriter Writer { get; private set; }
