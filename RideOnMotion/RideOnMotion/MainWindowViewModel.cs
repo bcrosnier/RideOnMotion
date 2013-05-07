@@ -148,7 +148,6 @@ namespace RideOnMotion.UI
         /// </summary>
         private void initializeBindings()
         {
-
             Logger.Instance.NewLogStringReady += OnLogStringReceived;
         }
 
@@ -189,6 +188,8 @@ namespace RideOnMotion.UI
                 {
                     InputMenuChanged( this, _inputController.InputMenu );
                 }
+
+                _inputController.Start();
             }
             else
             {
@@ -213,10 +214,8 @@ namespace RideOnMotion.UI
             // Bind depth image changes
             _inputController.InputImageSourceChanged += OnInputBitmapSourceChanged;
 
-            // Bind sensor status
+            // Bind sensor status and set once
             _inputController.InputStatusChanged += OnInputStatusChanged;
-
-            // Set once
             _inputStatusInfo = _inputController.InputStatusString;
         }
 

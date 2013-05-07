@@ -16,7 +16,6 @@ namespace RideOnMotion.UI
 
         private MenuItem _activeInputMenuItem;
 
-
 		public MainWindow()
 		{
             InitializeComponent();
