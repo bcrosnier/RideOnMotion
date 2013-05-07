@@ -55,7 +55,7 @@ namespace RideOnMotion.Inputs.Kinect
             this.TriggerCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
 
             quack = new Action( () => {
-                System.Media.SoundPlayer sp = new System.Media.SoundPlayer( RideOnMotion.Properties.Resources.Quack );
+                System.Media.SoundPlayer sp = new System.Media.SoundPlayer( RideOnMotion.Inputs.Kinect.Properties.Resources.quack );
                 sp.Play();
             } );
 

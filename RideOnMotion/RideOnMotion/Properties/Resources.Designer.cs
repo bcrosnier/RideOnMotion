@@ -8,8 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RideOnMotion.UI.Properties
-{
+namespace RideOnMotion.UI.Properties {
     using System;
     
     
@@ -40,7 +39,7 @@ namespace RideOnMotion.UI.Properties
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager( "RideOnMotion.UI.Properties.Resources", typeof( Resources ).Assembly );
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RideOnMotion.UI.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -58,15 +57,6 @@ namespace RideOnMotion.UI.Properties
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream Quack {
-            get {
-                return ResourceManager.GetStream("Quack", resourceCulture);
             }
         }
     }
