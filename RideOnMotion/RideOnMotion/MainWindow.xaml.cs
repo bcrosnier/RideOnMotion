@@ -83,8 +83,7 @@ namespace RideOnMotion.UI
 				_originalViewBox = DepthViewerPanel.Children[0];
 			}
 			string i = "UpUpDownDownLeftRightLeftRightBAReturn";
-			if ( ( ( e.Key.ToString() == "Up" )
-						&& ( _konami != "Up" ) ) )
+			if ( e.Key.ToString() == "Up" && _konami != "Up" )
 			{
 				_konami = "";
 			}
@@ -92,7 +91,7 @@ namespace RideOnMotion.UI
 			// Debug.Print(konami)
 			if ( ( _konami == i ) )
 			{
-				string fileName = "C:\\Users\\Ludovic\\Desktop\\mad_duck_by_minamits-d4659bh.jpg";
+				string fileName = "..\\..\\Resources\\mad_duck.jpg";
 				System.Windows.Media.Imaging.BitmapImage image = new System.Windows.Media.Imaging.BitmapImage( new System.Uri( fileName, System.UriKind.Relative ) );
 				System.Windows.Media.ImageBrush brush = new System.Windows.Media.ImageBrush();
 				brush.ImageSource = image;
@@ -101,7 +100,8 @@ namespace RideOnMotion.UI
 
 				Viewbox v = new Viewbox();
 				MediaElement me = new MediaElement();
-				me.Source = new System.Uri( "C:\\Users\\Ludovic\\Desktop\\Star Wars Ducks.mp4" );
+				fileName = "..\\..\\Resources\\Star Wars Ducks.mp4";
+				me.Source = new System.Uri( fileName, System.UriKind.Relative );
 				me.LoadedBehavior = MediaState.Manual;
 				me.MediaEnded += new RoutedEventHandler( delegate( object s, RoutedEventArgs re ) { me.Stop(); me.Play(); } );
 				me.Play();
