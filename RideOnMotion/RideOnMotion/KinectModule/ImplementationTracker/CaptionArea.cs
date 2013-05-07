@@ -9,16 +9,83 @@ using System.ComponentModel;
 
 namespace RideOnMotion.KinectModule
 {
-	public class CaptionArea : ICaptionArea
+	public class CaptionArea : ICaptionArea, INotifyPropertyChanged
     {
         IList<Action> _associateFunctions;
         IList<Point> _points;
         Point _topLeftPoint;
-        float _length;
         float _width;
+        float _height;
+
 		bool _isActive;
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+        KinectSensorController.SkelPointToDepthPoint _converter;
+
+        public float Height
+        {
+            get
+            {
+                return this._height;
+            }
+            set
+            {
+                if ( value != this._height )
+                {
+                    this._height = value;
+                    OnPropertyChanged( "Height" );
+                }
+            }
+        }
+
+        public float Width
+        {
+            get
+            {
+                return this._width;
+            }
+            set
+            {
+                if ( value != this._width )
+                {
+                    this._width = value;
+                    OnPropertyChanged( "Width" );
+                }
+            }
+        }
+
+        public float X
+        {
+            get
+            {
+                return this._topLeftPoint.X;
+            }
+            set
+            {
+                if ( value != this._topLeftPoint.X )
+                {
+                    this._topLeftPoint.X = value;
+                    OnPropertyChanged( "X" );
+                }
+            }
+        }
+
+        public float Y
+        {
+            get
+            {
+                return this._topLeftPoint.Y;
+            }
+            set
+            {
+                if ( value != this._topLeftPoint.Y )
+                {
+                    this._topLeftPoint.Y = value;
+                    OnPropertyChanged( "Y" );
+                }
+            }
+        }
 
 		public bool IsActive
 		{
@@ -37,9 +104,9 @@ namespace RideOnMotion.KinectModule
             {
                 _points = new List<Point>();
                 _points.Add(_topLeftPoint);
-                Point topRightPoint = new Point(_topLeftPoint.X + _length, _topLeftPoint.Y);
+                Point topRightPoint = new Point(_topLeftPoint.X + _width, _topLeftPoint.Y);
                 _points.Add(topRightPoint);
-                Point bottomRightPoint = new Point(topRightPoint.X, topRightPoint.Y + _width);
+                Point bottomRightPoint = new Point(topRightPoint.X, topRightPoint.Y + _height);
                 _points.Add(bottomRightPoint);
                 Point bottomLeftPoint = new Point(_topLeftPoint.X, bottomRightPoint.Y);
                 _points.Add(bottomLeftPoint);
@@ -47,12 +114,16 @@ namespace RideOnMotion.KinectModule
             }
         }
 
-		public CaptionArea(Point topLeftPoint, float length, float width)
+        public CaptionArea( Point topLeftPoint, float width, float height, KinectSensorController.SkelPointToDepthPoint converter )
 		{
 			_associateFunctions = new List<Action>();
+
             _topLeftPoint = topLeftPoint;
-            _length = length;
             _width = width;
+            _height = height;
+
+            this._converter = converter;
+
 			IsActive = false;
 		}
 
@@ -70,7 +141,19 @@ namespace RideOnMotion.KinectModule
 
         public void CheckPosition(Joint joint)
         {
-            if( joint.Position.X > _topLeftPoint.X && joint.Position.X < _topLeftPoint.X + _length && joint.Position.Y > _topLeftPoint.Y && joint.Position.Y < _topLeftPoint.Y + _width )
+            DepthImagePoint depthPoint;
+
+            if ( _converter == null )
+            {
+                // This shouldn't happen !
+                depthPoint = new DepthImagePoint() { X = (int)joint.Position.X, Y = (int)joint.Position.Y, Depth = (int)joint.Position.Z };
+            }
+            else
+            {
+                depthPoint = _converter( joint.Position );
+            }
+
+            if ( depthPoint.X > _topLeftPoint.X && depthPoint.X < _topLeftPoint.X + _width && depthPoint.Y > _topLeftPoint.Y && depthPoint.Y < _topLeftPoint.Y + _height )
             {
 				IsActive = true;
 				//il va y avoir un probleme d'appel repete des fonctions associees

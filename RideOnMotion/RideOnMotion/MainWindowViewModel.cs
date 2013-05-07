@@ -10,13 +10,14 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using RideOnMotion.KinectModule;
 
 namespace RideOnMotion
 {
     /// <summary>
     /// View model for main window. Contains displayed properties.
     /// </summary>
-	class MainWindowViewModel : IViewModel, INotifyPropertyChanged
+    class MainWindowViewModel : IViewModel, INotifyPropertyChanged
     {
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
@@ -32,20 +33,9 @@ namespace RideOnMotion
         private BitmapSource _droneBitmapSource;
         private BitmapSource _depthBitmapSource;
 
-        public TriggerArea LeftTriggerArea { get; private set; }
-        public TriggerArea RightTriggerArea { get; private set; }
-
-        public List<Rectangle> TriggerZoneCollection {
-            get {
-                return LeftTriggerArea.TriggerZoneCollection.Values
-                    .Union(
-                        RightTriggerArea.TriggerZoneCollection.Values
-                    ).ToList();
-            }
-        }
-
         private System.Windows.Point _leftHandPoint = new System.Windows.Point( 0, 0 );
         private System.Windows.Point _rightHandPoint = new System.Windows.Point( 0, 0 );
+		private Visibility _handsVisibility = Visibility.Collapsed;
 
         private String _logString;
 
@@ -97,21 +87,6 @@ namespace RideOnMotion
             get { return (int)this._leftHandPoint.Y; }
         }
 
-        public Visibility LeftHandVisibility
-        {
-            get {
-                bool exists = ( this._leftHandPoint.Y == 0.0 && this._leftHandPoint.X == 0.0)  ? false : true;
-                if ( exists )
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
-        }
-
         public int RightHandX
         {
             get { return (int)this._rightHandPoint.X; }
@@ -121,32 +96,13 @@ namespace RideOnMotion
         {
             get { return (int)this._rightHandPoint.Y; }
         }
-		private Visibility _rightHandVisibility;
-        public Visibility RightHandVisibility
+
+        public Visibility HandsVisibility
         {
-            get
-            {
-				bool exists = this._rightHandPoint.Y != 0.0 && this._rightHandPoint.X != 0.0 ;
-                if ( exists )
-				{
-					if ( _rightHandVisibility != Visibility.Visible )
-					{
-						Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Right hand visible" );
-					}
-					_rightHandVisibility = Visibility.Visible;
-					return _rightHandVisibility;
-                }
-                else
-				{
-					if ( _rightHandVisibility != Visibility.Collapsed
-						)
-					{
-						Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Right hand not visible" );
-					}
-					_rightHandVisibility = Visibility.Collapsed;
-					return _rightHandVisibility;
-                }
-            }
+			get
+			{
+				return _handsVisibility;
+			}
         }
 
         public String LogString
@@ -175,6 +131,14 @@ namespace RideOnMotion
             }
         }
 
+        public ObservableCollection<ICaptionArea> TriggerButtons
+        {
+            get
+            {
+                return this._sensorController.TriggerButtons;
+            }
+        }
+
         public bool CanUseSensor
         {
             get
@@ -192,16 +156,16 @@ namespace RideOnMotion
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-		/// Called when [notify property change].
-		/// </summary>
-		/// <param name="propertyName">Name of the property.</param>
-		public void OnNotifyPropertyChange( string propertyName )
-		{
-			if ( this.PropertyChanged != null )
-			{
-				this.PropertyChanged.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-			}
-		}
+        /// Called when [notify property change].
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        public void OnNotifyPropertyChange( string propertyName )
+        {
+            if ( this.PropertyChanged != null )
+            {
+                this.PropertyChanged.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
+            }
+        }
 
         #endregion INotifyPropertyChanged utilities
 
@@ -225,7 +189,6 @@ namespace RideOnMotion
                 this.CanExecuteKinectCommands );
 
             initializeBindings();
-            initTriggerZones( 300, 100 );
         }
 
         /// <summary>
@@ -241,35 +204,34 @@ namespace RideOnMotion
             {
                 this.OnNotifyPropertyChange( "SensorStatusInfo" );
                 this.OnNotifyPropertyChange( "CanUseSensor" );
+                this.OnNotifyPropertyChange( "TriggerButtons" );
             };
 
-            _sensorController.LeftHandPointReady += OnLeftHandPoint;
-            _sensorController.RightHandPointReady += OnRightHandPoint;
-
+            _sensorController.HandsPointReady += OnHandsPoint;
             _sensorController.PositionTrackerController.AreaActivated += OnButtonActivated;
 
-			Logger.Instance.NewLogStringReady += OnLogStringReceived; // Event binding
+            Logger.Instance.NewLogStringReady += OnLogStringReceived;
         }
 
-        private void OnButtonActivated( object sender, KinectModule.AreaActivedEventArgs e )
+        private void OnHandsPoint( object sender, System.Windows.Point[] e )
         {
-            throw new NotImplementedException();
-        }
-
-        private void OnRightHandPoint( object sender, System.Windows.Point e )
-        {
-            this._rightHandPoint = e;
+			if ( this._rightHandPoint.Y != -1.0 && _handsVisibility == Visibility.Collapsed )
+			{
+				_handsVisibility = Visibility.Visible;
+				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands visible" );
+			}
+			else if ( this._rightHandPoint.Y == -1.0 && _handsVisibility == Visibility.Visible )
+			{
+				_handsVisibility = Visibility.Collapsed;
+				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands not visible" );
+			}
+            this._rightHandPoint = e[0];
             this.OnNotifyPropertyChange( "LeftHandX" );
             this.OnNotifyPropertyChange( "LeftHandY" );
-            this.OnNotifyPropertyChange( "LeftHandVisibility" );
-        }
-
-        private void OnLeftHandPoint( object sender, System.Windows.Point e )
-        {
-            this._leftHandPoint = e;
+            this._leftHandPoint = e[1];
             this.OnNotifyPropertyChange( "RightHandX" );
             this.OnNotifyPropertyChange( "RightHandY" );
-            this.OnNotifyPropertyChange( "RightHandVisibility" );
+            this.OnNotifyPropertyChange( "HandsVisibility" );
         }
 
         private void OnDepthBitmapSourceChanged( object sender, KinectModule.BitmapSourceEventArgs e )
@@ -282,19 +244,10 @@ namespace RideOnMotion
             this.LogString = e; // Will fire NotifyPropertyChanged
         }
 
-        private void initTriggerZones( int buttonWidth, int buttonHeight )
-        {
-            int zoneWidth = 640 / 2;
-            int zoneHeight = 480;
-
-            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight );
-            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight );
-        }
-
         #endregion Contructor/initializers/event handlers
 
         #region Commands/command helpers
-        public void CanExecuteKinectCommands(object sender, CanExecuteRoutedEventArgs e)
+        public void CanExecuteKinectCommands( object sender, CanExecuteRoutedEventArgs e )
         {
             e.CanExecute = this.CanUseSensor;
             e.Handled = true;
@@ -326,10 +279,10 @@ namespace RideOnMotion
         #endregion Commands/command helpers
     }
 
-    /**
-     * Trigger zone, reprensenting 4 overlayed rectangles (here, 'buttons') as sides of a square.
-     * Centered in a given area.
-     **/
+    /// <summary>
+    /// Trigger zone, reprensenting 4 overlayed TriggerButtons as sides of a square.
+    /// Centered in a given area.
+    /// </summary>
     public class TriggerArea
     {
         public enum Buttons { Up = 0, Down = 1, Left = 2, Right = 3 };
@@ -341,14 +294,24 @@ namespace RideOnMotion
         public int ButtonWidth { get; private set; }
         public int ButtonHeight { get; private set; }
 
-        public Rectangle LeftButton { get { return this.TriggerZoneCollection[Buttons.Left]; } }
-        public Rectangle RightButton { get { return this.TriggerZoneCollection[Buttons.Right]; } }
-        public Rectangle UpButton { get { return this.TriggerZoneCollection[Buttons.Up]; } }
-        public Rectangle DownButton { get { return this.TriggerZoneCollection[Buttons.Down]; } }
+        public ICaptionArea LeftButton { get { return this.TriggerCaptionsCollection[Buttons.Left]; } }
+        public ICaptionArea RightButton { get { return this.TriggerCaptionsCollection[Buttons.Right]; } }
+        public ICaptionArea UpButton { get { return this.TriggerCaptionsCollection[Buttons.Up]; } }
+        public ICaptionArea DownButton { get { return this.TriggerCaptionsCollection[Buttons.Down]; } }
 
-        public Dictionary<Buttons, Rectangle> TriggerZoneCollection { get; private set; }
+        public Dictionary<Buttons, ICaptionArea> TriggerCaptionsCollection { get; private set; }
+        private KinectSensorController.SkelPointToDepthPoint _converter;
 
-        public TriggerArea(int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight)
+        /// <summary>
+        /// Create a trigger area, with 4 triggerable captions.
+        /// </summary>
+        /// <param name="areaWidth">Total width of the zone to use ; area will be centered in it.</param>
+        /// <param name="areaHeight">Total height of the zone to use ; area will be centered in it.</param>
+        /// <param name="offsetX">X offset to all buttons</param>
+        /// <param name="offsetY">Y offset to all buttons</param>
+        /// <param name="buttonWidth">Width of each button. Side size of the area.</param>
+        /// <param name="buttonHeight">Height of each button; "thickness" of the area.</param>
+        public TriggerArea( int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight, KinectSensorController.SkelPointToDepthPoint converter )
         {
             this.AreaHeight = areaHeight;
             this.AreaWidth = areaWidth;
@@ -357,62 +320,66 @@ namespace RideOnMotion
             this.ButtonWidth = buttonWidth;
             this.ButtonHeight = buttonHeight;
 
-            TriggerZoneCollection = new Dictionary<Buttons, Rectangle>();
-            generateButtonRectangles();
+            this._converter = converter;
+
+            this.TriggerCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
+            generateButtonCaptions();
         }
 
-        public void generateButtonRectangles()
+        public void generateButtonCaptions()
         {
             int horizontalMargin = ( AreaWidth - ButtonWidth ) / 2;
             int verticalMargin = ( AreaHeight - ButtonWidth ) / 2;
 
-            Rectangle upZone = new Rectangle
-            {
-                Height = ButtonHeight,
-                Width = ButtonWidth,
-                X = OffsetX + horizontalMargin,
-                Y = OffsetY + verticalMargin
-            };
+            ICaptionArea upCaption = createCaptionArea(
+                    OffsetX + horizontalMargin,
+                    OffsetY + verticalMargin,
+                ButtonWidth,
+                ButtonHeight
+            );
 
-            Rectangle leftZone = new Rectangle
-            {
-                Height = ButtonWidth,
-                Width = ButtonHeight,
-                X = OffsetX + horizontalMargin,
-                Y = OffsetY + verticalMargin
-            };
+            ICaptionArea leftCaption = createCaptionArea(
+                    OffsetX + horizontalMargin,
+                    OffsetY + verticalMargin,
+                ButtonHeight,
+                ButtonWidth
+            );
 
-            Rectangle downZone = new Rectangle
-            {
-                Height = ButtonHeight,
-                Width = ButtonWidth,
-                X = OffsetX + horizontalMargin,
-                Y = OffsetY + verticalMargin + ButtonWidth - ButtonHeight
-            };
+            ICaptionArea downCaption = createCaptionArea(
+                    OffsetX + horizontalMargin,
+                    OffsetY + verticalMargin + ButtonWidth - ButtonHeight,
+                ButtonWidth,
+                ButtonHeight
+            );
 
-            Rectangle rightZone = new Rectangle
-            {
-                Height = ButtonWidth,
-                Width = ButtonHeight,
-                X = OffsetX + horizontalMargin + ButtonWidth - ButtonHeight,
-                Y = OffsetY + verticalMargin
-            };
+            ICaptionArea rightCaption = createCaptionArea(
+                    OffsetX + horizontalMargin + ButtonWidth - ButtonHeight,
+                    OffsetY + verticalMargin,
+                ButtonHeight,
+                ButtonWidth
+            );
 
-            TriggerZoneCollection.Add( Buttons.Up, upZone );
-            TriggerZoneCollection.Add( Buttons.Down, downZone );
-            TriggerZoneCollection.Add( Buttons.Left, leftZone );
-            TriggerZoneCollection.Add( Buttons.Right, rightZone );
+            TriggerCaptionsCollection.Add( Buttons.Up, upCaption );
+            TriggerCaptionsCollection.Add( Buttons.Down, downCaption );
+            TriggerCaptionsCollection.Add( Buttons.Left, leftCaption );
+            TriggerCaptionsCollection.Add( Buttons.Right, rightCaption );
 
             // Fire stuff to update rectangles here. --BC
         }
-    }
 
-    public class TriggerButton // Rectangle can't be extended as it is a struct
-    {
-        public int Height { get; set; }
-        public int Width { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
-        public bool Activated { get; set; }
+        private ICaptionArea createCaptionArea( int depthX, int depthY, int width, int height )
+        {
+            //DepthImagePoint depthPoint = new DepthImagePoint() { X = depthX, Y = depthY };
+            //SkeletonPoint skelPoint = _pointConverter( depthPoint );
+            return new CaptionArea(
+                   new KinectModule.Point(
+                       depthX,
+                       depthY
+                   ),
+                   width,
+                   height,
+                   _converter
+               );
+        }
     }
 }

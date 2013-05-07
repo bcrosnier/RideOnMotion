@@ -4,12 +4,10 @@ using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using RideOnMotion;
+using System.Collections.ObjectModel;
 
 namespace RideOnMotion.KinectModule
 {
-
-	// ToDo
-	// gerer le renvoi de status du sensor
 	public class KinectSensorController
 	{
         private KinectSensor _kinectSensor = null;
@@ -17,17 +15,23 @@ namespace RideOnMotion.KinectModule
         private BitmapSource _depthBitmapSource = null;
         private TransformSmoothParameters _smoothingParam;
         private bool _enableSmoothing;
-		Skeleton[] _totalSkeleton;
+        Skeleton[] _totalSkeleton;
+
+        public TriggerArea LeftTriggerArea { get; private set; }
+        public TriggerArea RightTriggerArea { get; private set; }
+
+        public ObservableCollection<ICaptionArea> TriggerButtons { get; private set; }
 
 		PositionTrackerController _positionTrackerController;
 
         public event BitmapSourceHandler DepthBitmapSourceReady;
         public event EventHandler<KinectSensor> SensorChanged;
 
-        public event EventHandler<System.Windows.Point> LeftHandPointReady;
-        public event EventHandler<System.Windows.Point> RightHandPointReady;
+        public event EventHandler<System.Windows.Point[]> HandsPointReady;
 
         public delegate void BitmapSourceHandler( object sender, BitmapSourceEventArgs e );
+        public delegate SkeletonPoint DepthPointToSkelPoint( DepthImagePoint p );
+        public delegate DepthImagePoint SkelPointToDepthPoint( SkeletonPoint p );
 
         public BitmapSource DepthBitmapSource
         {
@@ -84,6 +88,7 @@ namespace RideOnMotion.KinectModule
 		public KinectSensorController()
         {
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call.
+            TriggerButtons = new ObservableCollection<ICaptionArea>();
 
             if ( deviceCount > 0 )
             {
@@ -155,7 +160,39 @@ namespace RideOnMotion.KinectModule
 		private void initializePositionTrackerController()
 		{
             _positionTrackerController = new PositionTrackerController();
+
+            initTriggerZones( 300, 100 );
 		}
+
+        /// <summary>
+        /// Prepare the right and left trigger zones.
+        /// </summary>
+        /// <param name="buttonWidth">Width of each button / side size of the zone</param>
+        /// <param name="buttonHeight">Height of each button / thickness of the triggers</param>
+        private void initTriggerZones( int buttonWidth, int buttonHeight )
+        {
+            int zoneWidth = 640 / 2;
+            int zoneHeight = 480;
+
+            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
+            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
+
+            // Create a collection from both zones
+            TriggerButtons = new ObservableCollection<ICaptionArea>(
+                LeftTriggerArea.TriggerCaptionsCollection.Values.Union(
+                        RightTriggerArea.TriggerCaptionsCollection.Values
+                ).ToList()
+            );
+
+            // Create caption areas
+
+            IPositionTracker leftTracker = new LeftHandPositionTracker( LeftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker rightTracker = new RightHandPositionTracker( RightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+
+            this.PositionTrackerController.AttachPositionTracker( leftTracker );
+            this.PositionTrackerController.AttachPositionTracker( rightTracker );
+
+        }
 
         /// <summary>
         /// Remove bindings on sensor disconnection
@@ -297,25 +334,14 @@ namespace RideOnMotion.KinectModule
                     {
                         _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
 
-                        if ( LeftHandPointReady != null )
+                        if ( HandsPointReady != null )
                         {
-                            LeftHandPointReady( this, ScalePosition( firstSkeleton.Joints[JointType.HandLeft].Position ) );
-                        }
-                        if ( RightHandPointReady != null )
-                        {
-                            RightHandPointReady( this, ScalePosition( firstSkeleton.Joints[JointType.HandRight].Position ) );
+							HandsPointReady( this, new System.Windows.Point[2] { ScalePosition( firstSkeleton.Joints[JointType.HandLeft].Position ), ScalePosition( firstSkeleton.Joints[JointType.HandRight].Position ) } );
                         }
                     }
                     else
-                    { // Send empty points to notify view for it to clear.
-						//if ( LeftHandPointReady != null )
-						//{
-						//	LeftHandPointReady( this, new System.Windows.Point(0, 0) );
-						//}
-						//if ( RightHandPointReady != null )
-						//{
-						//	RightHandPointReady( this, new System.Windows.Point( 0, 0 ) );
-						//}
+                    {
+						HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
                     }
                 }
 			}
@@ -326,6 +352,21 @@ namespace RideOnMotion.KinectModule
             DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
                 skeletonPoint, DepthImageFormat.Resolution640x480Fps30 );
             return new System.Windows.Point( depthPoint.X, depthPoint.Y );
+        }
+
+        private SkeletonPoint DepthImagePointToSkelPoint( DepthImagePoint p )
+        {
+            SkeletonPoint skelPoint = this.Sensor.CoordinateMapper.MapDepthPointToSkeletonPoint(
+                DepthImageFormat.Resolution640x480Fps30,
+                p );
+            return skelPoint;
+        }
+
+        private DepthImagePoint SkelPointToDepthImagePoint( SkeletonPoint p )
+        {
+            DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
+                 p, DepthImageFormat.Resolution640x480Fps30 );
+            return depthPoint;
         }
 
         private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )
