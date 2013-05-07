@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace RideOnMotion.KinectModule
 {
@@ -53,10 +54,11 @@ namespace RideOnMotion.KinectModule
             this._converter = converter;
 
             this.TriggerCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
-            generateButtonCaptions();
 
             quackPlayer = new System.Media.SoundPlayer( RideOnMotion.Properties.Resources.Quack );
             quack = new Action( () => { quackPlayer.Play(); } );
+
+            generateButtonCaptions();
         }
 
         public void generateButtonCaptions()
