@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 
-namespace RideOnMotion
+namespace RideOnMotion.UI
 {
     /// <summary>
     /// View model for main window. Contains displayed properties.

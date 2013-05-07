@@ -2,7 +2,7 @@
 using RideOnMotion.Inputs.Kinect;
 using System.Windows.Controls;
 
-namespace RideOnMotion
+namespace RideOnMotion.UI
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

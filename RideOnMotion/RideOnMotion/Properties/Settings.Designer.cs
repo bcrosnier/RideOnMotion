@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RideOnMotion.Properties
+namespace RideOnMotion.UI.Properties
 {
 
 

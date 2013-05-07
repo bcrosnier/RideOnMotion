@@ -1,7 +1,7 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:RideOnMotion" x:Name="MainWindow1" x:Class="RideOnMotion.MainWindow"
+        xmlns:local="clr-namespace:RideOnMotion.UI" x:Name="MainWindow1" x:Class="RideOnMotion.UI.MainWindow"
         Title="RideOn[Motion]" Height="600" Width="800"
         Loaded="MainWindow_Loaded" MinWidth="800" MinHeight="600"
         Closing="MainWindow_Closing">
