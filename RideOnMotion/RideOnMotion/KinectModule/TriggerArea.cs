@@ -30,7 +30,6 @@ namespace RideOnMotion.KinectModule
         public Dictionary<Buttons, ICaptionArea> TriggerCaptionsCollection { get; private set; }
         private KinectSensorController.SkelPointToDepthPoint _converter;
 
-        private System.Media.SoundPlayer quackPlayer;
         private Action quack;
 
         /// <summary>
@@ -55,8 +54,10 @@ namespace RideOnMotion.KinectModule
 
             this.TriggerCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
 
-            quackPlayer = new System.Media.SoundPlayer( RideOnMotion.Properties.Resources.Quack );
-            quack = new Action( () => { quackPlayer.Play(); } );
+            quack = new Action( () => {
+                System.Media.SoundPlayer sp = new System.Media.SoundPlayer( RideOnMotion.Properties.Resources.Quack );
+                sp.Play();
+            } );
 
             generateButtonCaptions();
         }
