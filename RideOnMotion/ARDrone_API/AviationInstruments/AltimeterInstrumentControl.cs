@@ -1,4 +1,4 @@
-/*****************************************************************************/
+﻿/*****************************************************************************/
 /* Project  : AviationInstruments                                  */
 /* File     : AltimeterInstrumentControl.cs                                  */
 /* Version  : 1                                                              */
@@ -30,7 +30,7 @@ namespace AviationInstruments
         Bitmap bmpCadran = new Bitmap(AviationInstruments.AvionicsInstrumentsControlsRessources.Altimeter_Background);
         Bitmap bmpSmallNeedle = new Bitmap(AviationInstruments.AvionicsInstrumentsControlsRessources.SmallNeedleAltimeter);
         Bitmap bmpLongNeedle = new Bitmap(AviationInstruments.AvionicsInstrumentsControlsRessources.LongNeedleAltimeter);
-        Bitmap bmpScroll = new Bitmap(AviationInstruments.AvionicsInstrumentsControlsRessources.Bandeau_D�rouleur);
+        Bitmap bmpScroll = new Bitmap(AviationInstruments.AvionicsInstrumentsControlsRessources.Bandeau_Dérouleur);
 
         #endregion
 
