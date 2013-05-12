@@ -30,7 +30,7 @@ namespace RideOnMotion.Inputs.Kinect
         public Dictionary<Buttons, ICaptionArea> TriggerCaptionsCollection { get; private set; }
         private KinectSensorController.SkelPointToDepthPoint _converter;
 
-        private Action quack;
+		//private Action Quack;
 
         /// <summary>
         /// Create a trigger area, with 4 triggerable captions.
@@ -54,10 +54,10 @@ namespace RideOnMotion.Inputs.Kinect
 
             this.TriggerCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
 
-            quack = new Action( () => {
-                System.Media.SoundPlayer sp = new System.Media.SoundPlayer( RideOnMotion.Inputs.Kinect.Properties.Resources.quack );
-                sp.Play();
-            } );
+			//Quack = new Action( () => {
+			//	System.Media.SoundPlayer sp = new System.Media.SoundPlayer( RideOnMotion.Inputs.Kinect.Properties.Resources.quack );
+			//	sp.Play();
+			//} );
 
             generateButtonCaptions();
         }
@@ -99,10 +99,10 @@ namespace RideOnMotion.Inputs.Kinect
                 ButtonWidth
             );
 
-            ((CaptionArea)upCaption).AddFunction( quack );
-            ((CaptionArea)downCaption).AddFunction( quack );
-            ((CaptionArea)leftCaption).AddFunction( quack );
-            ((CaptionArea)rightCaption).AddFunction( quack );
+			//((CaptionArea)upCaption).AddFunction( Quack );
+			//((CaptionArea)downCaption).AddFunction( Quack );
+			//((CaptionArea)leftCaption).AddFunction( Quack );
+			//((CaptionArea)rightCaption).AddFunction( Quack );
 
             TriggerCaptionsCollection.Add( Buttons.Up, upCaption );
             TriggerCaptionsCollection.Add( Buttons.Down, downCaption );
