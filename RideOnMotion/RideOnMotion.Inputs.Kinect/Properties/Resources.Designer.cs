@@ -59,14 +59,5 @@ namespace RideOnMotion.Inputs.Kinect.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream quack {
-            get {
-                return ResourceManager.GetStream("quack", resourceCulture);
-            }
-        }
     }
 }

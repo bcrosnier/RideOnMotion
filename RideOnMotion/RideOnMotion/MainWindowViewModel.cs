@@ -28,6 +28,13 @@ namespace RideOnMotion.UI
 
         private String _logString;
 
+		internal bool Konami = false;
+
+		private System.Windows.Media.MediaPlayer mp1 = new System.Windows.Media.MediaPlayer();
+		private System.Windows.Media.MediaPlayer mp2 = new System.Windows.Media.MediaPlayer();
+		private System.Windows.Media.MediaPlayer mp3 = new System.Windows.Media.MediaPlayer();
+		private System.Windows.Media.MediaPlayer mp4 = new System.Windows.Media.MediaPlayer();
+
         internal event EventHandler<MenuItem> InputMenuChanged;
 
         #endregion Values
@@ -47,6 +54,30 @@ namespace RideOnMotion.UI
                 {
                     this._inputBitmapSource = value;
                     this.OnNotifyPropertyChange( "InputBitmapSource" );
+					if ( IsActive == true  && Konami == true)
+					{
+						TimeSpan timeZero =  new TimeSpan( 0 );
+						if ( mp1.Position == mp1.NaturalDuration.TimeSpan || mp1.Position == timeZero)
+						{
+						mp1.Position = new TimeSpan( 0 );
+						mp1.Play();
+						}
+						else if ( mp2.Position == mp2.NaturalDuration.TimeSpan || mp2.Position == timeZero )
+						{
+							mp2.Position = new TimeSpan( 0 );
+							mp2.Play();
+						}
+						else if ( mp3.Position == mp3.NaturalDuration.TimeSpan || mp3.Position == timeZero )
+						{
+							mp3.Position = new TimeSpan( 0 );
+							mp3.Play();
+						}
+						else if ( mp4.Position == mp4.NaturalDuration.TimeSpan || mp4.Position == timeZero )
+						{
+							mp4.Position = new TimeSpan( 0 );
+							mp4.Play();
+						}
+					}
                 }
             }
         }
@@ -109,6 +140,14 @@ namespace RideOnMotion.UI
             }
         }
 
+		public bool IsActive
+		{
+			get
+			{
+				return _inputController.IsActive;
+			}
+		}
+
         #endregion GettersSetters
 
         #region INotifyPropertyChanged utilities
@@ -138,9 +177,13 @@ namespace RideOnMotion.UI
         public MainWindowViewModel()
         {
             InputTypes = new List<Type>();
-            InputTypes.Add( typeof(RideOnMotion.Inputs.Kinect.KinectSensorController) );
+			InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
 
-            loadInputType( InputTypes[0] );
+			loadInputType( InputTypes[0] );
+			mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
+			mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
+			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
+			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
         }
 
         /// <summary>
@@ -203,6 +246,7 @@ namespace RideOnMotion.UI
             {
                 _inputController.InputImageSourceChanged -= OnInputBitmapSourceChanged;
                 _inputController.InputStatusChanged -= OnInputStatusChanged;
+				_inputController.ControllerActivity -= OnControllerActivity;
                 _inputStatusInfo = "";
                 this.OnNotifyPropertyChange( "InputStatusInfo" );
                 this._inputController = null;
@@ -216,8 +260,16 @@ namespace RideOnMotion.UI
 
             // Bind sensor status and set once
             _inputController.InputStatusChanged += OnInputStatusChanged;
-            _inputStatusInfo = _inputController.InputStatusString;
+			_inputStatusInfo = _inputController.InputStatusString;
+
+			// Bind activity
+			_inputController.ControllerActivity += OnControllerActivity;
         }
+
+		public void OnControllerActivity(object sender, bool e)
+		{
+			this.OnNotifyPropertyChange( "IsActive" );
+		}
 
         internal void Stop()
         {

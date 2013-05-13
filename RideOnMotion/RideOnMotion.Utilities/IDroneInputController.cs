@@ -86,6 +86,16 @@ namespace RideOnMotion
         /// Also fired when the InputStatusString changed (<see cref="RideOnMotion.IDroneInputController.InputStatusString"/>).
         /// </summary>
         event EventHandler<DroneInputStatus> InputStatusChanged;
+
+		/// <summary>
+		/// Fired when there is activity on the controller
+		/// </summary>
+		event EventHandler<bool> ControllerActivity;
+
+		/// <summary>
+		/// A switch to know if the controller is being used right now
+		/// </summary>
+		bool IsActive { get; }
     }
 
     /// <summary>

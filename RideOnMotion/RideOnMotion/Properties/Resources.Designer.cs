@@ -59,25 +59,5 @@ namespace RideOnMotion.UI.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap mad_duck {
-            get {
-                object obj = ResourceManager.GetObject("mad_duck", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Star_Wars_Ducks {
-            get {
-                object obj = ResourceManager.GetObject("Star_Wars_Ducks", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

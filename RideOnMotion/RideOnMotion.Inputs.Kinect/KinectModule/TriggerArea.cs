@@ -41,7 +41,8 @@ namespace RideOnMotion.Inputs.Kinect
         /// <param name="offsetY">Y offset to all buttons</param>
         /// <param name="buttonWidth">Width of each button. Side size of the area.</param>
         /// <param name="buttonHeight">Height of each button; "thickness" of the area.</param>
-        public TriggerArea( int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight, KinectSensorController.SkelPointToDepthPoint converter )
+		/// <param name="position">True if the trigger area is on the left, false if it is on the right</param>
+        public TriggerArea( int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight, KinectSensorController.SkelPointToDepthPoint converter, bool position )
         {
             this.AreaHeight = areaHeight;
             this.AreaWidth = areaWidth;
@@ -59,11 +60,34 @@ namespace RideOnMotion.Inputs.Kinect
 			//	sp.Play();
 			//} );
 
-            generateButtonCaptions();
+            generateButtonCaptions(position);
         }
 
-        public void generateButtonCaptions()
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="position">Specify if the buttons are on the left (true) or on the right (false)</param>
+        public void generateButtonCaptions( bool position)
         {
+			int up = 0;
+			int down = 0;
+			int left = 0;
+			int right = 0;
+
+			if ( position )
+			{
+				up = 1;
+				down = 2;
+				left = 4;
+				right = 8;
+			}
+			else if ( !position )
+			{
+				up = 16;
+				down = 32;
+				left = 64;
+				right = 128;
+			}
             int horizontalMargin = ( AreaWidth - ButtonWidth ) / 2;
             int verticalMargin = ( AreaHeight - ButtonWidth ) / 2;
 
@@ -72,7 +96,8 @@ namespace RideOnMotion.Inputs.Kinect
                 OffsetX + horizontalMargin,
                 OffsetY + verticalMargin,
                 ButtonWidth,
-                ButtonHeight
+                ButtonHeight,
+				up
             );
 
             ICaptionArea leftCaption = createCaptionArea(
@@ -80,7 +105,8 @@ namespace RideOnMotion.Inputs.Kinect
                 OffsetX + horizontalMargin,
                 OffsetY + verticalMargin,
                 ButtonHeight,
-                ButtonWidth
+                ButtonWidth,
+				left
             );
 
             ICaptionArea downCaption = createCaptionArea(
@@ -88,7 +114,8 @@ namespace RideOnMotion.Inputs.Kinect
                 OffsetX + horizontalMargin,
                 OffsetY + verticalMargin + ButtonWidth - ButtonHeight,
                 ButtonWidth,
-                ButtonHeight
+                ButtonHeight,
+				down
             );
 
             ICaptionArea rightCaption = createCaptionArea(
@@ -96,7 +123,8 @@ namespace RideOnMotion.Inputs.Kinect
                 OffsetX + horizontalMargin + ButtonWidth - ButtonHeight,
                 OffsetY + verticalMargin,
                 ButtonHeight,
-                ButtonWidth
+                ButtonWidth,
+				right
             );
 
 			//((CaptionArea)upCaption).AddFunction( Quack );
@@ -112,7 +140,7 @@ namespace RideOnMotion.Inputs.Kinect
             // Fire stuff to update rectangles here. --BC
         }
 
-        private ICaptionArea createCaptionArea( string name, int depthX, int depthY, int width, int height )
+        private ICaptionArea createCaptionArea( string name, int depthX, int depthY, int width, int height , int id)
         {
             //DepthImagePoint depthPoint = new DepthImagePoint() { X = depthX, Y = depthY };
             //SkeletonPoint skelPoint = _pointConverter( depthPoint );
@@ -124,7 +152,8 @@ namespace RideOnMotion.Inputs.Kinect
                     ),
                     width,
                     height,
-                    _converter
+                    _converter,
+					id
                );
         }
     }

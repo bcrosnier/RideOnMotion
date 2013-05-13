@@ -71,7 +71,6 @@ namespace RideOnMotion.UI
         }
 
 		#region KonamiCode
-
 		protected string _konami = string.Empty;
 		protected System.Windows.Media.Brush _originalBackground;
 		protected UIElement _originalViewBox;
@@ -91,6 +90,7 @@ namespace RideOnMotion.UI
 			// Debug.Print(konami)
 			if ( ( _konami == i ) )
 			{
+				mainWindowViewModel.Konami = true;
 				string fileName = "..\\..\\Resources\\mad_duck.jpg";
 				System.Windows.Media.Imaging.BitmapImage image = new System.Windows.Media.Imaging.BitmapImage( new System.Uri( fileName, System.UriKind.Relative ) );
 				System.Windows.Media.ImageBrush brush = new System.Windows.Media.ImageBrush();
@@ -111,6 +111,7 @@ namespace RideOnMotion.UI
 			}
 			else if ( _konami.Length > i.Length )
 			{
+				mainWindowViewModel.Konami = false;
 				MainPanel.Background = _originalBackground;
 				DepthViewerPanel.Children.RemoveAt( 0 );
 				DepthViewerPanel.Children.Add( _originalViewBox );
