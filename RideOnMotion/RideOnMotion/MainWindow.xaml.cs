@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using RideOnMotion.Inputs.Kinect;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System;
 
 namespace RideOnMotion.UI
 {
@@ -68,6 +70,55 @@ namespace RideOnMotion.UI
             tb.ScrollToEnd();
         }
 
+		#region KonamiCode
+		protected string _konami = string.Empty;
+		protected System.Windows.Media.Brush _originalBackground;
+		protected UIElement _originalViewBox;
+		protected override void OnPreviewKeyDown( KeyEventArgs e )
+		{
+			if ( _originalBackground == null )
+			{
+				_originalBackground = MainPanel.Background;
+				_originalViewBox = DepthViewerPanel.Children[0];
+			}
+			string i = "UpUpDownDownLeftRightLeftRightBAReturn";
+			if ( e.Key.ToString() == "Up" && _konami != "Up" )
+			{
+				_konami = "";
+			}
+			_konami = ( _konami + e.Key.ToString() );
+			// Debug.Print(konami)
+			if ( ( _konami == i ) )
+			{
+				mainWindowViewModel.Konami = true;
+				string fileName = "..\\..\\Resources\\mad_duck.jpg";
+				System.Windows.Media.Imaging.BitmapImage image = new System.Windows.Media.Imaging.BitmapImage( new System.Uri( fileName, System.UriKind.Relative ) );
+				System.Windows.Media.ImageBrush brush = new System.Windows.Media.ImageBrush();
+				brush.ImageSource = image;
+				MainPanel.Background = brush;
+
+
+				Viewbox v = new Viewbox();
+				MediaElement me = new MediaElement();
+				fileName = "..\\..\\Resources\\Star Wars Ducks.mp4";
+				me.Source = new System.Uri( fileName, System.UriKind.Relative );
+				me.LoadedBehavior = MediaState.Manual;
+				me.MediaEnded += new RoutedEventHandler( delegate( object s, RoutedEventArgs re ) { me.Stop(); me.Play(); } );
+				me.Play();
+				v.Child = me;
+				DepthViewerPanel.Children.RemoveAt( 0 );
+				DepthViewerPanel.Children.Add( v );
+			}
+			else if ( _konami.Length > i.Length )
+			{
+				mainWindowViewModel.Konami = false;
+				MainPanel.Background = _originalBackground;
+				DepthViewerPanel.Children.RemoveAt( 0 );
+				DepthViewerPanel.Children.Add( _originalViewBox );
+			}
+		}
+
+		#endregion //KonamiCode
 
 	}
 }

@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
+using System.Collections;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -125,10 +126,16 @@ namespace RideOnMotion.Inputs.Kinect
         /// <returns>Equivalent DepthImagePoint</returns>
         public delegate DepthImagePoint SkelPointToDepthPoint( SkeletonPoint p );
 
+		/// <summary>
+		/// Determine the number of active triggerButtons
+		/// </summary>
+		internal int _triggerButtonsActive;
+
         #region Interface implementation
         // Events
         public event EventHandler<BitmapSource> InputImageSourceChanged;
         public event EventHandler<DroneInputStatus> InputStatusChanged;
+		public event EventHandler<bool> ControllerActivity;
 
         // Properties
         public MenuItem InputMenu
@@ -194,6 +201,31 @@ namespace RideOnMotion.Inputs.Kinect
         {
             set { throw new NotImplementedException(); }
         }
+
+		public bool IsActive
+		{
+			get
+			{
+				int activesButtons = 0;
+				System.Collections.Generic.List<ICaptionArea> triggerActive = TriggerButtons.Where( ( button ) => button.IsActive == true ).ToList();
+				foreach( ICaptionArea flag in triggerActive)
+				{
+					activesButtons += flag.Id;
+				}
+
+				if ( activesButtons != _triggerButtonsActive )
+				{
+					_triggerButtonsActive = activesButtons;
+					ControllerActivity( this, true );
+					return true;
+				}
+				else
+				{
+					ControllerActivity( this, false );
+					return false;
+				}
+			}
+		}
 
         #endregion Interface implementation
 
@@ -360,8 +392,8 @@ namespace RideOnMotion.Inputs.Kinect
             int zoneHeight = DEPTH_FRAME_HEIGHT;
 
             // Create caption areas
-            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
-            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint );
+            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint, true);
+            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint, false);
 
             // Create a collection from both zones
             TriggerButtons = new ObservableCollection<ICaptionArea>(
@@ -736,5 +768,4 @@ namespace RideOnMotion.Inputs.Kinect
             e.Handled = true;
         }
     }
-
 }
