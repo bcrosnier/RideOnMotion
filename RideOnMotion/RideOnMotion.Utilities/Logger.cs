@@ -98,7 +98,7 @@ namespace RideOnMotion
 			{
 				LoggerContent.RemoveAt( LoggerContent.IndexOf( LoggerContent.First() ) );
 			}
-			LoggerContent.Add( time.ToString( "H:mm:ss" ) + " [" + level.ToString() + " : "+ trait.ToString() +"] " + text +Environment.NewLine);
+			LoggerContent.Add( time.ToString( "H:mm:ss" ) + " [" + level.ToString() + " : "+ trait.ToString() +"] " + text );
 		}
 
 		public void OnContinueOnSameLevel( CKTrait trait, LogLevel level, string text, DateTime time )
@@ -108,7 +108,7 @@ namespace RideOnMotion
 			{
 				LoggerContent.RemoveAt( LoggerContent.IndexOf( LoggerContent.First() ) );
 			}
-			LoggerContent.Add( time.ToString( "H:mm:ss" ) + " [" + level.ToString() + " : " + trait.ToString() + "] " + text + Environment.NewLine );
+			LoggerContent.Add( time.ToString( "H:mm:ss" ) + " [" + level.ToString() + " : " + trait.ToString() + "] " + text );
 		}
 
 		public void OnLeaveLevel( LogLevel level )
@@ -123,7 +123,7 @@ namespace RideOnMotion
 
 		public void OnGroupClose( IActivityLogGroup g, ICKReadOnlyList<ActivityLogGroupConclusion> conclusions )
 		{
-			LoggerContent.Add( new String( '-', g.Depth ) + String.Join( ", ", conclusions.Select( c => c.Text ) ) + Environment.NewLine );
+			LoggerContent.Add( new String( '-', g.Depth ) + String.Join( ", ", conclusions.Select( c => c.Text ) ) );
 		}
 	}
 }

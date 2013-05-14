@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace RideOnMotion.UI
 {
@@ -11,6 +12,8 @@ namespace RideOnMotion.UI
     /// </summary>
     class MainWindowViewModel : IViewModel, INotifyPropertyChanged
     {
+        private readonly int MAX_LOG_ENTRIES = 50; // Maximum number of log entries in the collection
+
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
         /// </summary>
@@ -25,8 +28,8 @@ namespace RideOnMotion.UI
         private List<Type> InputTypes { get; set; }
 
 		private string _inputStatusInfo = String.Empty;
-
-        private String _logString;
+        
+        private ObservableCollection<String> _logStrings;
 
 		internal bool Konami = false;
 
@@ -99,19 +102,19 @@ namespace RideOnMotion.UI
             }
         }
 
-        public String LogString
+        public ObservableCollection<String> LogData
         {
             get
             {
-                return this._logString;
+                return this._logStrings;
             }
 
             set
             {
-                if ( this._logString != value )
+                if ( this._logStrings != value )
                 {
-                    this._logString = value;
-                    this.OnNotifyPropertyChange( "LogString" );
+                    this._logStrings = value;
+                    this.OnNotifyPropertyChange( "LogData" );
                 }
             }
         }
@@ -179,11 +182,15 @@ namespace RideOnMotion.UI
             InputTypes = new List<Type>();
 			InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
 
+            _logStrings = new ObservableCollection<string>();
+
 			loadInputType( InputTypes[0] );
+
 			mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
 			mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
 			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
 			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
+
 			initializeBindings();
         }
 
@@ -208,7 +215,11 @@ namespace RideOnMotion.UI
 
         private void OnLogStringReceived( object sender, String e )
         {
-            this.LogString = e; // Will fire NotifyPropertyChanged
+            if ( _logStrings.Count >= MAX_LOG_ENTRIES )
+            {
+                _logStrings.RemoveAt( 0 );
+            }
+            _logStrings.Add( e );
         }
 
         private void loadInputType(Type t)

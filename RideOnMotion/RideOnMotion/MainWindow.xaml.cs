@@ -3,6 +3,7 @@ using RideOnMotion.Inputs.Kinect;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System;
+using System.Collections.Specialized;
 
 namespace RideOnMotion.UI
 {
@@ -28,7 +29,17 @@ namespace RideOnMotion.UI
             // Bind input menu and fire once
             this.mainWindowViewModel.InputMenuChanged += OnInputMenuChange;
             this.OnInputMenuChange( this, this.mainWindowViewModel.InputMenu );
+
+            ( (INotifyCollectionChanged)this.LogListBox.Items ).CollectionChanged += LogListBox_CollectionChanged;
 		}
+
+        private void LogListBox_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )
+        {
+            if ( e.Action == NotifyCollectionChangedAction.Add )
+            {
+                this.LogListBox.ScrollIntoView( e.NewItems[0] );
+            } 
+        }
 
         private void OnInputMenuChange( object sender, MenuItem e )
         {
@@ -45,10 +56,6 @@ namespace RideOnMotion.UI
             this._activeInputMenuItem = e;
         }
 
-		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
-		{
-		}
-
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.mainWindowViewModel.Stop(); 
@@ -60,14 +67,6 @@ namespace RideOnMotion.UI
         private void MenuItem_Quit_Click( object sender, RoutedEventArgs e )
         {
             this.Close();
-        }
-
-        private void LogString_TextChanged( object sender, System.Windows.Controls.TextChangedEventArgs e )
-        {
-            TextBox tb = (TextBox)sender;
-
-            //tb.SelectionStart = tb.Text.Length;
-            tb.ScrollToEnd();
         }
 
 		#region KonamiCode
