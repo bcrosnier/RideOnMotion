@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using RideOnMotion.Inputs.Kinect;
 using System.Windows.Controls;
+using RideOnMotion.Utilities;
 
 namespace RideOnMotion.UI
 {
@@ -33,6 +34,8 @@ namespace RideOnMotion.UI
             {
                 this.MenuBar.Items.Add( this.inputController.InputMenu );
             }
+
+			DroneInitializer drone = new DroneInitializer();
 		}
 
 		private void MainWindow_Loaded( object sender, RoutedEventArgs e )

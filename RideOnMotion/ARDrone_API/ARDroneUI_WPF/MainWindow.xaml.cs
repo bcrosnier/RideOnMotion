@@ -204,10 +204,10 @@ namespace ARDrone.UI
             droneControl.ConnectToDrone();
             UpdateUISync("Connecting to the drone");
 
-            timerHudStatusUpdate.Start();
-            timerVideoUpdate.Start();
+            //timerHudStatusUpdate.Start();
+            //timerVideoUpdate.Start();
 
-            lastFrameRateCaptureTime = DateTime.Now;
+            //lastFrameRateCaptureTime = DateTime.Now;
         }
 
         private void Disconnect()
