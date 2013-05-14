@@ -17,6 +17,7 @@ namespace RideOnMotion.Inputs.Kinect
         float _width;
         float _height;
 		String _name;
+		int _id;
 
 		bool _isActive;
 
@@ -100,6 +101,18 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 		}
 
+		public int Id
+		{
+			get
+			{
+				return this._id;
+			}
+			private set
+			{
+				this._id = value;
+			}
+		}
+
 		public bool IsActive
 		{
 			get { return _isActive; }
@@ -127,7 +140,7 @@ namespace RideOnMotion.Inputs.Kinect
             }
         }
 
-        public CaptionArea(String Name, Point topLeftPoint, float width, float height, KinectSensorController.SkelPointToDepthPoint converter )
+        public CaptionArea(String Name, Point topLeftPoint, float width, float height, KinectSensorController.SkelPointToDepthPoint converter , int Id)
 		{
 			_associateFunctions = new List<Action>();
 
@@ -135,6 +148,7 @@ namespace RideOnMotion.Inputs.Kinect
             _topLeftPoint = topLeftPoint;
             _width = width;
             _height = height;
+			_id = Id;
 
             this._converter = converter;
 
