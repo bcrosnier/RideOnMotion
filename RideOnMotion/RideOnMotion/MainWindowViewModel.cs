@@ -184,6 +184,7 @@ namespace RideOnMotion.UI
 			mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
 			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
 			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
+			initializeBindings();
         }
 
         /// <summary>

@@ -39,7 +39,7 @@ namespace RideOnMotion
 		private Logger()
 		{
 			_logger = new DefaultActivityLogger();
-			_logger.Tap.Register( new StringImpl() );
+			_logger.Tap.Register( new ListImpl() );
 			
 		}
 
@@ -66,7 +66,7 @@ namespace RideOnMotion
 		/// <returns>the logger output as a String</returns>
 		public String Output()
 		{
-			return _logger.Tap.RegisteredSinks.OfType<StringImpl>().Single().Writer.ToString();
+			return _logger.Tap.RegisteredSinks.OfType<ListImpl>().Single().LoggerContent.Last().ToString();
 		}
 
     }
@@ -82,46 +82,48 @@ namespace RideOnMotion
 		public static CKTrait User = ActivityLogger.RegisteredTags.FindOrCreate( "User" );
 	}
 
-	public class StringImpl : IActivityLoggerSink
+	public class ListImpl : IActivityLoggerSink
 	{
-		public StringWriter Writer { get; private set; }
+		public IList<string> LoggerContent { get; private set; }
 
-		public StringImpl()
+		public ListImpl()
 		{
-			Writer = new StringWriter();
+			LoggerContent = new List<string>();
 		}
 
 		public void OnEnterLevel( CKTrait trait, LogLevel level, string text, DateTime time )
 		{
 			time = time.ToLocalTime();
-			Writer.WriteLine();
-			Writer.Write( time.ToString( "H:mm:ss" ) + " [" + level.ToString() + " : "+ trait.ToString() +"] " + text );
+			if ( LoggerContent.Count >= 200 )
+			{
+				LoggerContent.RemoveAt( LoggerContent.IndexOf( LoggerContent.First() ) );
+			}
+			LoggerContent.Add( time.ToString( "H:mm:ss" ) + " [" + level.ToString() + " : "+ trait.ToString() +"] " + text +Environment.NewLine);
 		}
 
 		public void OnContinueOnSameLevel( CKTrait trait, LogLevel level, string text, DateTime time )
 		{
 			time = time.ToLocalTime();
-			Writer.WriteLine();
-			Writer.Write( time.ToString( "H:mm:ss" ) + " [" + level.ToString() + " : " + trait.ToString() + "] " + text );
+			if ( LoggerContent.Count >= 200 )
+			{
+				LoggerContent.RemoveAt( LoggerContent.IndexOf( LoggerContent.First() ) );
+			}
+			LoggerContent.Add( time.ToString( "H:mm:ss" ) + " [" + level.ToString() + " : " + trait.ToString() + "] " + text + Environment.NewLine );
 		}
 
 		public void OnLeaveLevel( LogLevel level )
 		{
-			Writer.Flush();
+			//No need to flush with a list
 		}
 
 		public void OnGroupOpen( IActivityLogGroup g )
 		{
-			Writer.WriteLine();
-			Writer.Write( new String( '+', g.Depth ) );
-			Writer.Write( "{1} ({0})", g.GroupLevel, g.GroupText );
+			LoggerContent.Add( new String( '+', g.Depth ) + "g.GroupLevel (g.GroupText)" + Environment.NewLine );
 		}
 
 		public void OnGroupClose( IActivityLogGroup g, ICKReadOnlyList<ActivityLogGroupConclusion> conclusions )
 		{
-			Writer.WriteLine();
-			Writer.Write( new String( '-', g.Depth ) );
-			Writer.Write( String.Join( ", ", conclusions.Select( c => c.Text ) ) );
+			LoggerContent.Add( new String( '-', g.Depth ) + String.Join( ", ", conclusions.Select( c => c.Text ) ) + Environment.NewLine );
 		}
 	}
 }
