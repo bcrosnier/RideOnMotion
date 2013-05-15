@@ -9,15 +9,22 @@ namespace RideOnMotion.Utilities
 {
 	class TriggerInterpreter
 	{
+		//array _tab
 		public TriggerInterpreter()
 		{
-			PositionTrackerController PosTracker = new PositionTrackerController();
-			PosTracker.AreaActived += TriggerRecept;
+			
 		}
 		public void TriggerRecept( object sender, AreaActivedEventArgs e )
 		{
-			AreaActivedEventArgs ReceptedEvent = e;
 			
+		}
+		public void CommandTraitment()
+		{
+			//int roll;
+			//int pitch;
+			//int yaw;
+			//int gaz;
+
 		}
 	}
 }
