@@ -205,8 +205,7 @@ namespace RideOnMotion.UI
 
         void OnDroneFrameReady( object sender, DroneFrameReadyEventArgs e )
         {
-            ImageSource source = e.Frame;
-            throw new NotImplementedException();
+            this.DroneBitmapSource = e.Frame;
         }
 
         /// <summary>
