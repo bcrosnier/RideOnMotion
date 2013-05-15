@@ -88,7 +88,7 @@ namespace RideOnMotion.UI
             }
         }
 
-        public ImageSource DroneBitmapSource
+        public ImageSource DroneImageSource
         {
             get
             {
@@ -100,7 +100,7 @@ namespace RideOnMotion.UI
                 if ( this._droneImageSource != value )
                 {
                     this._droneImageSource = value;
-                    this.OnNotifyPropertyChange( "DroneBitmapSource" );
+                    this.OnNotifyPropertyChange( "DroneImageSource" );
                 }
             }
         }
@@ -205,7 +205,7 @@ namespace RideOnMotion.UI
 
         void OnDroneFrameReady( object sender, DroneFrameReadyEventArgs e )
         {
-            this.DroneBitmapSource = e.Frame;
+            this.DroneImageSource = e.Frame;
         }
 
         /// <summary>
