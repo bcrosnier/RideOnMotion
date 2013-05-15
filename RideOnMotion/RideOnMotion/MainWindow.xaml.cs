@@ -25,8 +25,6 @@ namespace RideOnMotion.UI
 
         private MenuItem _activeInputMenuItem;
 
-		DroneInitializer drone;
-
 		public MainWindow()
 		{
             InitializeComponent();
@@ -43,9 +41,6 @@ namespace RideOnMotion.UI
             {
                 this.MenuBar.Items.Add( this.inputController.InputMenu );
             }
-
-			drone = new DroneInitializer();
-			drone.StartDrone();
 
             ( (INotifyCollectionChanged)this.LogListBox.Items ).CollectionChanged += LogListBox_CollectionChanged;
 		}
@@ -104,6 +99,7 @@ namespace RideOnMotion.UI
 		protected UIElement _originalViewBox;
 		protected override void OnPreviewKeyDown( KeyEventArgs e )
 		{
+            /*
 			if( e.Key.ToString() == "Space")
 			{
 				drone.DroneCommand.Land();
@@ -166,7 +162,7 @@ namespace RideOnMotion.UI
 			{
 				drone.DroneCommand.Takeoff();
 			}
-
+            */
 			if ( _originalBackground == null )
 			{
 				_originalBackground = MainPanel.Background;

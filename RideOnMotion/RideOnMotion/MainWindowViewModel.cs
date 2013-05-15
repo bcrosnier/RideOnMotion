@@ -4,6 +4,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Media;
 
 namespace RideOnMotion.UI
 {
@@ -19,9 +20,11 @@ namespace RideOnMotion.UI
         /// </summary>
         private IDroneInputController _inputController;
 
+        private DroneInitializer _droneInit;
+
         #region Values
-        private BitmapSource _droneBitmapSource;
-        private BitmapSource _inputBitmapSource;
+        private ImageSource _droneImageSource;
+        private ImageSource _inputImageSource;
         private Control _inputControl;
         private MenuItem _inputMenu;
 
@@ -44,19 +47,19 @@ namespace RideOnMotion.UI
 
         #region GettersSetters
 
-        public BitmapSource InputBitmapSource
+        public ImageSource InputImageSource
         {
             get
             {
-                return this._inputBitmapSource;
+                return this._inputImageSource;
             }
 
             set
             {
-                if ( this._inputBitmapSource != value )
+                if ( this._inputImageSource != value )
                 {
-                    this._inputBitmapSource = value;
-                    this.OnNotifyPropertyChange( "InputBitmapSource" );
+                    this._inputImageSource = value;
+                    this.OnNotifyPropertyChange( "InputImageSource" );
 					if ( IsActive == true  && Konami == true)
 					{
 						TimeSpan timeZero =  new TimeSpan( 0 );
@@ -85,18 +88,18 @@ namespace RideOnMotion.UI
             }
         }
 
-        public BitmapSource DroneBitmapSource
+        public ImageSource DroneBitmapSource
         {
             get
             {
-                return this._droneBitmapSource;
+                return this._droneImageSource;
             }
 
             set
             {
-                if ( this._droneBitmapSource != value )
+                if ( this._droneImageSource != value )
                 {
-                    this._droneBitmapSource = value;
+                    this._droneImageSource = value;
                     this.OnNotifyPropertyChange( "DroneBitmapSource" );
                 }
             }
@@ -191,7 +194,19 @@ namespace RideOnMotion.UI
 			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
 			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
 
-			initializeBindings();
+            initializeBindings();
+
+            _droneInit = new DroneInitializer();
+            _droneInit.StartDrone();
+
+            // Bind front drone camera
+            _droneInit.DroneFrameReady += OnDroneFrameReady;
+        }
+
+        void OnDroneFrameReady( object sender, DroneFrameReadyEventArgs e )
+        {
+            ImageSource source = e.Frame;
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -210,7 +225,7 @@ namespace RideOnMotion.UI
 
         private void OnInputBitmapSourceChanged( object sender, BitmapSource s )
         {
-            InputBitmapSource = s;
+            InputImageSource = s;
         }
 
         private void OnLogStringReceived( object sender, String e )
