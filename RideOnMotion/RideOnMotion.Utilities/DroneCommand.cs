@@ -7,18 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RideOnMotion.Utilities
+namespace RideOnMotion
 {
 	//god class !
 	public class DroneCommand
 	{
 		private DroneControl _droneControl;
-		private VideoRecorder _videoRecorder;
 
-		public DroneCommand( DroneControl droneControl, VideoRecorder videoRecorder )
+		public DroneCommand( DroneControl droneControl )
 		{
 			_droneControl = droneControl;
-			_videoRecorder = videoRecorder;
 		}
 
 		public void Connect()
@@ -35,7 +33,7 @@ namespace RideOnMotion.Utilities
 		{
 			Command switchCameraCommand = new SwitchCameraCommand( DroneCameraMode.NextMode );
 
-			if( !_droneControl.IsCommandPossible( switchCameraCommand ) || _videoRecorder.IsVideoCaptureRunning )
+			if( !_droneControl.IsCommandPossible( switchCameraCommand ) )
 				return;
 
 			_droneControl.SendCommand( switchCameraCommand );
@@ -105,6 +103,7 @@ namespace RideOnMotion.Utilities
 
 		public void Navigate( float roll, float pitch, float yaw, float gaz )
 		{
+			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, roll + " " + pitch + " " + yaw + " " + gaz );
 			FlightMoveCommand flightMoveCommand = new FlightMoveCommand( roll, pitch, yaw, gaz );
 
 			if( _droneControl.IsCommandPossible( flightMoveCommand ) )

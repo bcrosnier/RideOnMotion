@@ -24,13 +24,14 @@ namespace RideOnMotion.UI
 
         private MenuItem _activeInputMenuItem;
 
+		DroneInitializer drone;
+
 		public MainWindow()
 		{
             InitializeComponent();
 
             this.mainWindowViewModel = new MainWindowViewModel();
             this.inputController = new KinectSensorController();
-            this.mainWindowViewModel = new MainWindowViewModel( inputController );
             this.DataContext = this.mainWindowViewModel;
 
             // Bind input menu and fire once
@@ -42,7 +43,7 @@ namespace RideOnMotion.UI
                 this.MenuBar.Items.Add( this.inputController.InputMenu );
             }
 
-			DroneInitializer drone = new DroneInitializer();
+			drone = new DroneInitializer();
 		}
 
         private void OnInputMenuChange( object sender, MenuItem e )
@@ -64,9 +65,10 @@ namespace RideOnMotion.UI
 		{
 		}
 
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            this.mainWindowViewModel.Stop(); 
+		private void MainWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e )
+		{
+			this.mainWindowViewModel.Stop();
+		}
         private void prepareInput()
         {
             if ( this.inputController.InputStatus == DroneInputStatus.Disconnected )
@@ -102,6 +104,53 @@ namespace RideOnMotion.UI
 		protected UIElement _originalViewBox;
 		protected override void OnPreviewKeyDown( KeyEventArgs e )
 		{
+			if( e.Key.ToString() == "Space")
+			{
+				drone.DroneCommand.Takeoff();
+			}
+
+			if( e.Key.ToString() == "A" )
+			{
+				drone.DroneCommand.Navigate(-1, 1, 0, 0);
+			}
+			if( e.Key.ToString() == "Z" )
+			{
+				drone.DroneCommand.Navigate( 0, 1, 0, 0 );
+			}
+			if( e.Key.ToString() == "E" )
+			{
+				drone.DroneCommand.Navigate( 1, 1, 0, 0 );
+			}
+			if( e.Key.ToString() == "Q" )
+			{
+				drone.DroneCommand.Navigate( -1, 0, 0, 0 );
+			}
+			if( e.Key.ToString() == "S" )
+			{
+				drone.DroneCommand.Navigate( 0, 0, 0, 0 );
+			}
+			if( e.Key.ToString() == "D" )
+			{
+				drone.DroneCommand.Navigate( 1, 0, 0, 0 );
+			}
+			if( e.Key.ToString() == "W" )
+			{
+				drone.DroneCommand.Navigate( -1, -1, 0, 0 );
+			}
+			if( e.Key.ToString() == "X" )
+			{
+				drone.DroneCommand.Navigate( 0, -1, 0, 0 );
+			}
+			if( e.Key.ToString() == "C" )
+			{
+				drone.DroneCommand.Navigate( 1, -1, 0, 0 );
+			}
+
+			if( e.Key.ToString() == "Enter" )
+			{
+				drone.DroneCommand.Takeoff();
+			}
+
 			if ( _originalBackground == null )
 			{
 				_originalBackground = MainPanel.Background;

@@ -1,28 +1,65 @@
 ﻿using ARDrone.Capture;
 using ARDrone.Control;
+using ARDrone.Control.Commands;
 using ARDrone.Control.Events;
+using ARDrone.Hud;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
-namespace RideOnMotion.Utilities
+namespace RideOnMotion
 {
 	public class DroneInitializer
 	{
+		private DispatcherTimer _timerVideoUpdate;
+		private DispatcherTimer _timerStatusUpdate;
+
+		private HudConfig _currentHudConfig;
+		private HudInterface _hudInterface;
+
 		private DroneConfig _currentDroneConfig;
 		private DroneControl _droneControl;
 
 		private DroneCommand _droneCommand;
-		private VideoRecorder _videoRecorder;
-		private SnapshotRecorder _snapshotRecorder;
+		private int _frameCountSinceLastCapture = 0;
+		private DateTime _lastFrameRateCaptureTime;
+		private int _averageFrameRate = 0;
 
 		public DroneCommand DroneCommand { get { return _droneCommand; } }
-		public VideoRecorder VideoRecorder { get { return _videoRecorder; } }
-		public SnapshotRecorder SnapshotRecorder { get { return _snapshotRecorder; } }
+		public int FrameRate { get { return GetCurrentFrameRate(); } }
+
+		private int GetCurrentFrameRate()
+		{
+			int timePassed = (int)( DateTime.Now - _lastFrameRateCaptureTime ).TotalMilliseconds;
+			int frameRate = _frameCountSinceLastCapture * 1000 / timePassed;
+			_averageFrameRate = ( _averageFrameRate + frameRate ) / 2;
+
+			_lastFrameRateCaptureTime = DateTime.Now;
+			_frameCountSinceLastCapture = 0;
+
+			return _averageFrameRate;
+		}
+
+		public event EventHandler<DroneFrameReadyEventArgs> DroneFrameReady;
 
 		public DroneInitializer()
+		{
+			InitializeDroneControl();
+
+			InitializeVideoUpdate();
+
+			InitializeHudInterface();
+
+			_droneCommand = new DroneCommand( _droneControl );
+
+		}
+
+		private void InitializeDroneControl()
 		{
 			_currentDroneConfig = new DroneConfig();
 
@@ -32,30 +69,96 @@ namespace RideOnMotion.Utilities
 
 			_droneControl = new DroneControl( _currentDroneConfig );
 
-			_videoRecorder = new VideoRecorder();
-			_snapshotRecorder = new SnapshotRecorder();
+			_droneControl.Error += droneControl_Error;
+			_droneControl.ConnectionStateChanged += droneControl_ConnectionStateChanged;
 
-			_droneCommand = new DroneCommand( _droneControl, _videoRecorder );
-
-			_droneControl.ConnectionStateChanged += droneControl_ConnectionStateChanged_Sync;
-			_droneCommand.Connect();
-
+			_timerStatusUpdate = new DispatcherTimer();
+			_timerStatusUpdate.Interval = new TimeSpan( 0, 0, 1 );
+			_timerStatusUpdate.Tick += new EventHandler( timerStatusUpdate_Tick );
 		}
 
-		private void droneControl_ConnectionStateChanged_Sync( object sender, DroneConnectionStateChangedEventArgs e )
+		private void InitializeVideoUpdate()
+		{
+			_timerVideoUpdate = new DispatcherTimer();
+			_timerVideoUpdate.Interval = new TimeSpan( 0, 0, 0, 0, 50 );
+			_timerVideoUpdate.Tick += new EventHandler( timerVideoUpdate_Tick );
+
+			_lastFrameRateCaptureTime = DateTime.Now;
+		}
+
+		private void InitializeHudInterface()
+		{
+			_currentHudConfig = new HudConfig();
+
+			HudConstants hudConstants = new HudConstants( _droneControl.FrontCameraFieldOfViewDegrees );
+
+			_hudInterface = new HudInterface( _currentHudConfig, hudConstants );
+		}
+
+		public void StartDrone()
+		{
+			_droneCommand.Connect();
+			_timerVideoUpdate.Start();
+			_timerStatusUpdate.Start();
+		}
+
+		public void EndDrone()
+		{
+			_droneCommand.Disconnect();
+			_timerVideoUpdate.Stop();
+			_timerStatusUpdate.Stop();
+		}
+
+		//EVENT HANDLER
+		private void droneControl_ConnectionStateChanged( object sender, DroneConnectionStateChangedEventArgs e )
 		{
 			if( e.Connected )
 			{
-				
+				Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.ARDrone, "ARDrone is connected" );
 			}
 			else
 			{
-				int b = 0;
+				Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.ARDrone, "ARDrone is disconnected" );
 			}
+		}
 
-			//_droneCommand.FlatTrim();
-			_droneCommand.Takeoff();
-			_droneCommand.Land();
+		private void droneControl_Error( object sender, DroneErrorEventArgs e )
+		{
+			Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.ARDrone, e.CausingException.Message );
+		}
+
+		private void timerVideoUpdate_Tick( object sender, EventArgs e )
+		{
+			if( _droneControl.IsConnected )
+			{
+				ImageSource imageSource = _droneControl.ImageSourceImage;
+
+				if( imageSource != null &&
+					( _droneControl.CurrentCameraType == DroneCameraMode.FrontCamera ||
+					 _droneControl.CurrentCameraType == DroneCameraMode.PictureInPictureFront ) )
+				{
+					_frameCountSinceLastCapture++;
+
+					ImageSource resultingSource = _hudInterface.DrawHud( (BitmapSource)imageSource );
+
+					DroneFrameReady( this, new DroneFrameReadyEventArgs( resultingSource ) );
+				}
+			}
+		}
+
+		private void timerStatusUpdate_Tick( object sender, EventArgs e )
+		{
+		}
+	}
+
+	public class DroneFrameReadyEventArgs : EventArgs
+	{
+		private ImageSource _frame;
+		public ImageSource Frame { get { return _frame; } }
+
+		public DroneFrameReadyEventArgs( ImageSource frame )
+		{
+			_frame = Frame;
 		}
 	}
 }
