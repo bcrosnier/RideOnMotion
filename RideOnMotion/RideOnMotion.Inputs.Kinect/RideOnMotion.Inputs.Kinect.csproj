@@ -65,6 +65,7 @@
     <Compile Include="KinectModule\ImplementationTracker\LeftHandPositionTracker.cs" />
     <Compile Include="KinectModule\ImplementationTracker\Point.cs" />
     <Compile Include="KinectModule\ImplementationTracker\RightHandPositionTracker.cs" />
+    <Compile Include="KinectModule\InputState.cs" />
     <Compile Include="KinectModule\KinectDeviceSettings.xaml.cs">
       <DependentUpon>KinectDeviceSettings.xaml</DependentUpon>
     </Compile>

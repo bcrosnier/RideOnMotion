@@ -247,6 +247,7 @@ namespace RideOnMotion.UI
                 _inputController.InputImageSourceChanged -= OnInputBitmapSourceChanged;
                 _inputController.InputStatusChanged -= OnInputStatusChanged;
 				_inputController.ControllerActivity -= OnControllerActivity;
+				_inputController.InputsStateChanged -= OnInputsStateChanged;
                 _inputStatusInfo = "";
                 this.OnNotifyPropertyChange( "InputStatusInfo" );
                 this._inputController = null;
@@ -264,7 +265,13 @@ namespace RideOnMotion.UI
 
 			// Bind activity
 			_inputController.ControllerActivity += OnControllerActivity;
+			_inputController.InputsStateChanged += OnInputsStateChanged;
         }
+
+		void OnInputsStateChanged( object sender, bool[] e )
+		{
+			throw new NotImplementedException();
+		}
 
 		public void OnControllerActivity(object sender, bool e)
 		{
