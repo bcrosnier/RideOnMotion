@@ -63,7 +63,7 @@ namespace RideOnMotion
 		{
 			_currentDroneConfig = new DroneConfig();
 
-			_currentDroneConfig.StandardOwnIpAddress = "192.168.1.2";
+			_currentDroneConfig.StandardOwnIpAddress = "192.168.1.3";
 			_currentDroneConfig.DroneIpAddress = "192.168.1.1";
 			_currentDroneConfig.DroneNetworkIdentifierStart = "ardrone_006431";
 
@@ -114,17 +114,17 @@ namespace RideOnMotion
 		{
 			if( e.Connected )
 			{
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.ARDrone, "ARDrone is connected" );
+				Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "ARDrone is connected" );
 			}
 			else
 			{
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.ARDrone, "ARDrone is disconnected" );
+				Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "ARDrone is disconnected" );
 			}
 		}
 
 		private void droneControl_Error( object sender, DroneErrorEventArgs e )
 		{
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.ARDrone, e.CausingException.Message );
+			Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.ARDrone, e.CausingException.Message );
 		}
 
 		private void timerVideoUpdate_Tick( object sender, EventArgs e )
@@ -140,8 +140,8 @@ namespace RideOnMotion
 					_frameCountSinceLastCapture++;
 
 					ImageSource resultingSource = _hudInterface.DrawHud( (BitmapSource)imageSource );
-
-					DroneFrameReady( this, new DroneFrameReadyEventArgs( resultingSource ) );
+					if( DroneFrameReady != null )
+						DroneFrameReady( this, new DroneFrameReadyEventArgs( resultingSource ) );
 				}
 			}
 		}

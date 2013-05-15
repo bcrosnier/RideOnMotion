@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:RideOnMotion.UI" x:Name="MainWindow1" x:Class="RideOnMotion.UI.MainWindow"
         Title="RideOn[Motion]" Height="600" Width="800"
-        Loaded="MainWindow_Loaded" MinWidth="800" MinHeight="600"
+        MinWidth="800" MinHeight="600"
         Closing="MainWindow_Closing">
 
     <Window.CommandBindings>
@@ -67,8 +67,7 @@
             </Viewbox>
 
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >
-                <TextBox x:Name="LogString" Text="{Binding LogString}" VerticalAlignment="Stretch"
-                         ScrollViewer.VerticalScrollBarVisibility="Visible" TextChanged="LogString_TextChanged"/>
+                <ListBox x:Name="LogListBox" ItemsSource="{Binding LogData}"></ListBox>
             </DockPanel>
 
             <GridSplitter Grid.Row="2" Grid.Column="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" ResizeDirection="Rows" />

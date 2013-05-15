@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using RideOnMotion.Utilities;
 using System.Windows.Input;
 using System;
+using System.Collections.Specialized;
 
 namespace RideOnMotion.UI
 {
@@ -44,7 +45,18 @@ namespace RideOnMotion.UI
             }
 
 			drone = new DroneInitializer();
+			drone.StartDrone();
+
+            ( (INotifyCollectionChanged)this.LogListBox.Items ).CollectionChanged += LogListBox_CollectionChanged;
 		}
+
+        private void LogListBox_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )
+        {
+            if ( e.Action == NotifyCollectionChangedAction.Add )
+            {
+                this.LogListBox.ScrollIntoView( e.NewItems[0] );
+            } 
+        }
 
         private void OnInputMenuChange( object sender, MenuItem e )
         {
@@ -60,10 +72,6 @@ namespace RideOnMotion.UI
 
             this._activeInputMenuItem = e;
         }
-
-		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
-		{
-		}
 
 		private void MainWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e )
 		{
@@ -90,14 +98,6 @@ namespace RideOnMotion.UI
             this.Close();
         }
 
-        private void LogString_TextChanged( object sender, System.Windows.Controls.TextChangedEventArgs e )
-        {
-            TextBox tb = (TextBox)sender;
-
-            //tb.SelectionStart = tb.Text.Length;
-            tb.ScrollToEnd();
-        }
-
 		#region KonamiCode
 		protected string _konami = string.Empty;
 		protected System.Windows.Media.Brush _originalBackground;
@@ -106,7 +106,23 @@ namespace RideOnMotion.UI
 		{
 			if( e.Key.ToString() == "Space")
 			{
+				drone.DroneCommand.Land();
+			}
+			if( e.Key.ToString() == "L" )
+			{
+				drone.DroneCommand.PlayLED();
+			}
+			if( e.Key.ToString() == "P" )
+			{
+				drone.DroneCommand.Land();
+			}
+			if( e.Key.ToString() == "O" )
+			{
 				drone.DroneCommand.Takeoff();
+			}
+			if( e.Key.ToString() == "F" )
+			{
+				drone.DroneCommand.FlatTrim();
 			}
 
 			if( e.Key.ToString() == "A" )
@@ -146,7 +162,7 @@ namespace RideOnMotion.UI
 				drone.DroneCommand.Navigate( 1, -1, 0, 0 );
 			}
 
-			if( e.Key.ToString() == "Enter" )
+			if( e.Key.ToString() == "Return" )
 			{
 				drone.DroneCommand.Takeoff();
 			}

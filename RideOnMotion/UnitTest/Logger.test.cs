@@ -16,7 +16,7 @@ namespace RideOnMotion.test
 		public void logtest()
 		{
 			IDefaultActivityLogger Logger = new DefaultActivityLogger();
-			Logger.Tap.Register( new StringImpl() );
+			Logger.Tap.Register( new ListImpl() );
 
 			var tag1 = ActivityLogger.RegisteredTags.FindOrCreate( "Product" );
 			var tag2 = ActivityLogger.RegisteredTags.FindOrCreate( "Sql" );
@@ -26,9 +26,9 @@ namespace RideOnMotion.test
 			Logger.UnfilteredLog( tag1, LogLevel.Fatal, "Fatal Log ", DateTime.UtcNow );
 			Logger.UnfilteredLog( tag3, LogLevel.Trace, "Trace Log ", DateTime.UtcNow );
 
-			Console.WriteLine( Logger.Tap.RegisteredSinks.OfType<StringImpl>().Single().Writer );
+			Console.WriteLine( Logger.Tap.RegisteredSinks.OfType<ListImpl>().Single().LoggerContent );
 			Logger.UnfilteredLog( tag2, LogLevel.Info, "Info Log ", DateTime.UtcNow );
-			Console.WriteLine( Logger.Tap.RegisteredSinks.OfType<StringImpl>().Single().Writer );
+			Console.WriteLine( Logger.Tap.RegisteredSinks.OfType<ListImpl>().Single().LoggerContent );
 		}
 		[Test]
 		public void LogTest()
