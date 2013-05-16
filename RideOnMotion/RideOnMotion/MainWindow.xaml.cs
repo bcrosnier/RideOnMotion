@@ -36,11 +36,6 @@ namespace RideOnMotion.UI
             // Bind input menu and fire once
             this.mainWindowViewModel.InputMenuChanged += OnInputMenuChange;
             this.OnInputMenuChange( this, this.mainWindowViewModel.InputMenu );
-            // Bind input menu
-            if ( this.inputController.InputMenu != null )
-            {
-                this.MenuBar.Items.Add( this.inputController.InputMenu );
-            }
 
             ( (INotifyCollectionChanged)this.LogListBox.Items ).CollectionChanged += LogListBox_CollectionChanged;
 		}
