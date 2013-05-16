@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows.Media;
 
 namespace RideOnMotion.UI
 {
@@ -11,22 +13,26 @@ namespace RideOnMotion.UI
     /// </summary>
     class MainWindowViewModel : IViewModel, INotifyPropertyChanged
     {
+        private readonly int MAX_LOG_ENTRIES = 50; // Maximum number of log entries in the collection
+
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
         /// </summary>
         private IDroneInputController _inputController;
 
+        private DroneInitializer _droneInit;
+
         #region Values
-        private BitmapSource _droneBitmapSource;
-        private BitmapSource _inputBitmapSource;
-        private Control _inputControl;
+        private ImageSource _droneImageSource;
+        private ImageSource _inputImageSource;
+        private Control _inputControlUI;
         private MenuItem _inputMenu;
 
         private List<Type> InputTypes { get; set; }
 
 		private string _inputStatusInfo = String.Empty;
-
-        private String _logString;
+        
+        private ObservableCollection<String> _logStrings;
 
 		internal bool Konami = false;
 
@@ -41,19 +47,19 @@ namespace RideOnMotion.UI
 
         #region GettersSetters
 
-        public BitmapSource InputBitmapSource
+        public ImageSource InputImageSource
         {
             get
             {
-                return this._inputBitmapSource;
+                return this._inputImageSource;
             }
 
             set
             {
-                if ( this._inputBitmapSource != value )
+                if ( this._inputImageSource != value )
                 {
-                    this._inputBitmapSource = value;
-                    this.OnNotifyPropertyChange( "InputBitmapSource" );
+                    this._inputImageSource = value;
+                    this.OnNotifyPropertyChange( "InputImageSource" );
 					if ( IsActive == true  && Konami == true)
 					{
 						TimeSpan timeZero =  new TimeSpan( 0 );
@@ -82,36 +88,36 @@ namespace RideOnMotion.UI
             }
         }
 
-        public BitmapSource DroneBitmapSource
+        public ImageSource DroneImageSource
         {
             get
             {
-                return this._droneBitmapSource;
+                return this._droneImageSource;
             }
 
             set
             {
-                if ( this._droneBitmapSource != value )
+                if ( this._droneImageSource != value )
                 {
-                    this._droneBitmapSource = value;
-                    this.OnNotifyPropertyChange( "DroneBitmapSource" );
+                    this._droneImageSource = value;
+                    this.OnNotifyPropertyChange( "DroneImageSource" );
                 }
             }
         }
 
-        public String LogString
+        public ObservableCollection<String> LogData
         {
             get
             {
-                return this._logString;
+                return this._logStrings;
             }
 
             set
             {
-                if ( this._logString != value )
+                if ( this._logStrings != value )
                 {
-                    this._logString = value;
-                    this.OnNotifyPropertyChange( "LogString" );
+                    this._logStrings = value;
+                    this.OnNotifyPropertyChange( "LogData" );
                 }
             }
         }
@@ -128,7 +134,7 @@ namespace RideOnMotion.UI
         {
             get
             {
-                return _inputControl;
+                return _inputControlUI;
             }
         }
 
@@ -179,11 +185,27 @@ namespace RideOnMotion.UI
             InputTypes = new List<Type>();
 			InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
 
+            _logStrings = new ObservableCollection<string>();
+
 			loadInputType( InputTypes[0] );
+
 			mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
 			mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
 			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
 			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
+
+            initializeBindings();
+
+            _droneInit = new DroneInitializer();
+            _droneInit.StartDrone();
+
+            // Bind front drone camera
+            _droneInit.DroneFrameReady += OnDroneFrameReady;
+        }
+
+        void OnDroneFrameReady( object sender, DroneFrameReadyEventArgs e )
+        {
+            this.DroneImageSource = e.Frame;
         }
 
         /// <summary>
@@ -202,12 +224,16 @@ namespace RideOnMotion.UI
 
         private void OnInputBitmapSourceChanged( object sender, BitmapSource s )
         {
-            InputBitmapSource = s;
+            InputImageSource = s;
         }
 
         private void OnLogStringReceived( object sender, String e )
         {
-            this.LogString = e; // Will fire NotifyPropertyChanged
+            if ( _logStrings.Count >= MAX_LOG_ENTRIES )
+            {
+                _logStrings.RemoveAt( 0 );
+            }
+            _logStrings.Add( e );
         }
 
         private void loadInputType(Type t)
@@ -223,7 +249,7 @@ namespace RideOnMotion.UI
 
                 bindWithInputController();
 
-                _inputControl = _inputController.InputUIControl;
+                _inputControlUI = _inputController.InputUIControl;
                 this.OnNotifyPropertyChange( "InputControl" );
 
                 _inputMenu = _inputController.InputMenu;

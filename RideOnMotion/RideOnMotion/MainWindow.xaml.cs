@@ -1,8 +1,10 @@
 ﻿using System.Windows;
 using RideOnMotion.Inputs.Kinect;
 using System.Windows.Controls;
+using RideOnMotion.Utilities;
 using System.Windows.Input;
 using System;
+using System.Collections.Specialized;
 
 namespace RideOnMotion.UI
 {
@@ -11,6 +13,11 @@ namespace RideOnMotion.UI
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		/// <summary>
+		/// Active Kinect sensor controller.
+        /// </summary>
+        private IDroneInputController inputController;
+
         /// <summary>
         /// Model view for this window.
         /// </summary>
@@ -23,12 +30,28 @@ namespace RideOnMotion.UI
             InitializeComponent();
 
             this.mainWindowViewModel = new MainWindowViewModel();
+            this.inputController = new KinectSensorController();
             this.DataContext = this.mainWindowViewModel;
 
             // Bind input menu and fire once
             this.mainWindowViewModel.InputMenuChanged += OnInputMenuChange;
             this.OnInputMenuChange( this, this.mainWindowViewModel.InputMenu );
+            // Bind input menu
+            if ( this.inputController.InputMenu != null )
+            {
+                this.MenuBar.Items.Add( this.inputController.InputMenu );
+            }
+
+            ( (INotifyCollectionChanged)this.LogListBox.Items ).CollectionChanged += LogListBox_CollectionChanged;
 		}
+
+        private void LogListBox_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )
+        {
+            if ( e.Action == NotifyCollectionChangedAction.Add )
+            {
+                this.LogListBox.ScrollIntoView( e.NewItems[0] );
+            } 
+        }
 
         private void OnInputMenuChange( object sender, MenuItem e )
         {
@@ -45,13 +68,21 @@ namespace RideOnMotion.UI
             this._activeInputMenuItem = e;
         }
 
-		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
+		private void MainWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e )
 		{
+			this.mainWindowViewModel.Stop();
 		}
-
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void prepareInput()
         {
-            this.mainWindowViewModel.Stop(); 
+            if ( this.inputController.InputStatus == DroneInputStatus.Disconnected )
+            {
+                MessageBox.Show( "No input device detected.\nPlease ensure it is plugged in and correctly installed.", "No input detected" );
+            }
+            else
+            {
+                // Start Kinect
+                this.inputController.Start(); // Blocking.
+            }
         }
 
         /// <summary>
@@ -62,20 +93,76 @@ namespace RideOnMotion.UI
             this.Close();
         }
 
-        private void LogString_TextChanged( object sender, System.Windows.Controls.TextChangedEventArgs e )
-        {
-            TextBox tb = (TextBox)sender;
-
-            //tb.SelectionStart = tb.Text.Length;
-            tb.ScrollToEnd();
-        }
-
 		#region KonamiCode
 		protected string _konami = string.Empty;
 		protected System.Windows.Media.Brush _originalBackground;
 		protected UIElement _originalViewBox;
 		protected override void OnPreviewKeyDown( KeyEventArgs e )
 		{
+            /*
+			if( e.Key.ToString() == "Space")
+			{
+				drone.DroneCommand.Land();
+			}
+			if( e.Key.ToString() == "L" )
+			{
+				drone.DroneCommand.PlayLED();
+			}
+			if( e.Key.ToString() == "P" )
+			{
+				drone.DroneCommand.Land();
+			}
+			if( e.Key.ToString() == "O" )
+			{
+				drone.DroneCommand.Takeoff();
+			}
+			if( e.Key.ToString() == "F" )
+			{
+				drone.DroneCommand.FlatTrim();
+			}
+
+			if( e.Key.ToString() == "A" )
+			{
+				drone.DroneCommand.Navigate(-1, 1, 0, 0);
+			}
+			if( e.Key.ToString() == "Z" )
+			{
+				drone.DroneCommand.Navigate( 0, 1, 0, 0 );
+			}
+			if( e.Key.ToString() == "E" )
+			{
+				drone.DroneCommand.Navigate( 1, 1, 0, 0 );
+			}
+			if( e.Key.ToString() == "Q" )
+			{
+				drone.DroneCommand.Navigate( -1, 0, 0, 0 );
+			}
+			if( e.Key.ToString() == "S" )
+			{
+				drone.DroneCommand.Navigate( 0, 0, 0, 0 );
+			}
+			if( e.Key.ToString() == "D" )
+			{
+				drone.DroneCommand.Navigate( 1, 0, 0, 0 );
+			}
+			if( e.Key.ToString() == "W" )
+			{
+				drone.DroneCommand.Navigate( -1, -1, 0, 0 );
+			}
+			if( e.Key.ToString() == "X" )
+			{
+				drone.DroneCommand.Navigate( 0, -1, 0, 0 );
+			}
+			if( e.Key.ToString() == "C" )
+			{
+				drone.DroneCommand.Navigate( 1, -1, 0, 0 );
+			}
+
+			if( e.Key.ToString() == "Return" )
+			{
+				drone.DroneCommand.Takeoff();
+			}
+            */
 			if ( _originalBackground == null )
 			{
 				_originalBackground = MainPanel.Background;
