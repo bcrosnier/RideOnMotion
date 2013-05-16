@@ -25,7 +25,7 @@ namespace RideOnMotion.UI
         #region Values
         private ImageSource _droneImageSource;
         private ImageSource _inputImageSource;
-        private Control _inputControl;
+        private Control _inputControlUI;
         private MenuItem _inputMenu;
 
         private List<Type> InputTypes { get; set; }
@@ -134,7 +134,7 @@ namespace RideOnMotion.UI
         {
             get
             {
-                return _inputControl;
+                return _inputControlUI;
             }
         }
 
@@ -249,7 +249,7 @@ namespace RideOnMotion.UI
 
                 bindWithInputController();
 
-                _inputControl = _inputController.InputUIControl;
+                _inputControlUI = _inputController.InputUIControl;
                 this.OnNotifyPropertyChange( "InputControl" );
 
                 _inputMenu = _inputController.InputMenu;
