@@ -79,7 +79,6 @@
     <Compile Include="KinectModule\TriggerArea.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KinectModule\TriggerInterpreter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
