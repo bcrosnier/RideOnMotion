@@ -270,7 +270,27 @@ namespace RideOnMotion.UI
 
 		void OnInputsStateChanged( object sender, bool[] e )
 		{
-			throw new NotImplementedException();
+			DroneCommandProcessing( e );
+		}
+		/// <summary>
+		/// Control Navigation of the drone
+		/// </summary>
+		/// <param name="CurrentInputState">Must contains 8 bool value for pitch[0-1], roll[2-3], gaz[4-5], yaw[6-7] (for the AR Drone) </param>
+		public void DroneCommandProcessing( bool[] CurrentInputState )
+		{
+
+			int roll = 0; // = CurrentInputState[2-3];
+			int pitch = 0; // = CurrentInputState[0-1];
+			int yaw = 0; // = CurrentInputState[6-7];
+			int gaz = 0; // = CurrentInputState[4-5];
+
+			if ( CurrentInputState[2] ) { roll = -1; } else if ( CurrentInputState[3] ) { roll = 1; }
+			if ( CurrentInputState[0] ) { pitch = 1; } else if ( CurrentInputState[1] ) { pitch = -1; }
+			if ( CurrentInputState[6] ) { yaw = -1; } else if ( CurrentInputState[7] ) { yaw = 1; }
+			if ( CurrentInputState[4] ) { gaz = 1; } else if ( CurrentInputState[5] ) { gaz = -1; }
+
+			//drone.navigate( roll, pitch, yaw, gaz );
+
 		}
 
 		public void OnControllerActivity(object sender, bool e)
