@@ -99,70 +99,9 @@ namespace RideOnMotion.UI
 		protected UIElement _originalViewBox;
 		protected override void OnPreviewKeyDown( KeyEventArgs e )
 		{
-            /*
-			if( e.Key.ToString() == "Space")
-			{
-				drone.DroneCommand.Land();
-			}
-			if( e.Key.ToString() == "L" )
-			{
-				drone.DroneCommand.PlayLED();
-			}
-			if( e.Key.ToString() == "P" )
-			{
-				drone.DroneCommand.Land();
-			}
-			if( e.Key.ToString() == "O" )
-			{
-				drone.DroneCommand.Takeoff();
-			}
-			if( e.Key.ToString() == "F" )
-			{
-				drone.DroneCommand.FlatTrim();
-			}
+            this.mainWindowViewModel.OnPreviewKeyDown( e );
 
-			if( e.Key.ToString() == "A" )
-			{
-				drone.DroneCommand.Navigate(-1, 1, 0, 0);
-			}
-			if( e.Key.ToString() == "Z" )
-			{
-				drone.DroneCommand.Navigate( 0, 1, 0, 0 );
-			}
-			if( e.Key.ToString() == "E" )
-			{
-				drone.DroneCommand.Navigate( 1, 1, 0, 0 );
-			}
-			if( e.Key.ToString() == "Q" )
-			{
-				drone.DroneCommand.Navigate( -1, 0, 0, 0 );
-			}
-			if( e.Key.ToString() == "S" )
-			{
-				drone.DroneCommand.Navigate( 0, 0, 0, 0 );
-			}
-			if( e.Key.ToString() == "D" )
-			{
-				drone.DroneCommand.Navigate( 1, 0, 0, 0 );
-			}
-			if( e.Key.ToString() == "W" )
-			{
-				drone.DroneCommand.Navigate( -1, -1, 0, 0 );
-			}
-			if( e.Key.ToString() == "X" )
-			{
-				drone.DroneCommand.Navigate( 0, -1, 0, 0 );
-			}
-			if( e.Key.ToString() == "C" )
-			{
-				drone.DroneCommand.Navigate( 1, -1, 0, 0 );
-			}
-
-			if( e.Key.ToString() == "Return" )
-			{
-				drone.DroneCommand.Takeoff();
-			}
-            */
+            // konami code management.
 			if ( _originalBackground == null )
 			{
 				_originalBackground = MainPanel.Background;
