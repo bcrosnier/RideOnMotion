@@ -5,6 +5,8 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using System.Windows.Input;
+using RideOnMotion.Inputs.Keyboard;
 
 namespace RideOnMotion.UI
 {
@@ -19,7 +21,7 @@ namespace RideOnMotion.UI
         /// Kinect model : Handles data in and out of the Kinect
         /// </summary>
         private IDroneInputController _inputController;
-
+        private KeyboardController _keyboardController;
         private DroneInitializer _droneInit;
 
         #region Values
@@ -199,6 +201,10 @@ namespace RideOnMotion.UI
             _droneInit = new DroneInitializer();
             _droneInit.StartDrone();
 
+            // Keyboard controller is specially handled.
+            _keyboardController = new KeyboardController();
+            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
+
             // Bind front drone camera
             _droneInit.DroneFrameReady += OnDroneFrameReady;
         }
@@ -330,6 +336,14 @@ namespace RideOnMotion.UI
         }
 
         #endregion Contructor/initializers/event handlers
+
+        internal void OnPreviewKeyDown( KeyEventArgs e )
+        {
+            if ( this._keyboardController != null )
+            {
+                this._keyboardController.ProcessKey( e );
+            }
+        }
     }
 
 
