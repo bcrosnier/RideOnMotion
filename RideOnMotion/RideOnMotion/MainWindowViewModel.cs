@@ -321,7 +321,7 @@ namespace RideOnMotion.UI
 			if ( CurrentInputState[6] ) { yaw = -1; } else if ( CurrentInputState[7] ) { yaw = 1; }
 			if ( CurrentInputState[4] ) { gaz = 1; } else if ( CurrentInputState[5] ) { gaz = -1; }
 
-			//drone.navigate( roll, pitch, yaw, gaz );
+			_droneInit.DroneCommand.Navigate( roll, pitch, yaw, gaz );
 
 		}
 
