@@ -32,7 +32,7 @@ namespace RideOnMotion
 		private int _averageFrameRate = 0;
 
 		public DroneCommand DroneCommand { get { return _droneCommand; } }
-		public DroneConfig DroneConfig { get { return _DroneConfig; } }
+		public DroneConfig DroneConfig { get { return _currentDroneConfig; } }
 		public int FrameRate { get { return GetCurrentFrameRate(); } }
 
 		private int GetCurrentFrameRate()
@@ -50,15 +50,8 @@ namespace RideOnMotion
 		public event EventHandler<DroneFrameReadyEventArgs> DroneFrameReady;
 
 		public DroneInitializer()
+			: this("192.168.1.2", "192.168.1.1", "ardrone_006431")
 		{
-			InitializeDroneControl( "192.168.1.2", "192.168.1.1", "ardrone_006431" );
-
-			InitializeVideoUpdate();
-
-			InitializeHudInterface();
-
-			_droneCommand = new DroneCommand( _droneControl );
-
 		}
 
 		public DroneInitializer( string ownIPAddress, string droneIPAddress, string droneNetworkIdentifier, int videoPort = 5555, int navigationPort = 5554, int commandPort = 5556, int controlInfoPort = 5559, bool useSpecificFirmwareVersion = false, SupportedFirmwareVersion firmwareVersion = DroneConfig.DefaultSupportedFirmwareVersion, int timeoutValue = 500 )
@@ -83,7 +76,7 @@ namespace RideOnMotion
 
 			_currentDroneConfig.VideoPort = videoPort;
 			_currentDroneConfig.NavigationPort = navigationPort;
-			_currentDroneConfig.CommandPort = commandPort
+			_currentDroneConfig.CommandPort = commandPort;
 			_currentDroneConfig.ControlInfoPort = controlInfoPort;
 
 			_currentDroneConfig.UseSpecificFirmwareVersion = useSpecificFirmwareVersion;
@@ -182,7 +175,7 @@ namespace RideOnMotion
 
 		public DroneFrameReadyEventArgs( ImageSource frame )
 		{
-			_frame = Frame;
+			_frame = frame;
 		}
 	}
 }
