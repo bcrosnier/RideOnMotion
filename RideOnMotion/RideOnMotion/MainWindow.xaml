@@ -29,6 +29,9 @@
             <MenuItem Header="File">
                 <MenuItem Header="Quit" Click="MenuItem_Quit_Click" />
             </MenuItem>
+            <MenuItem Header="Drone">
+                <MenuItem Header="Settings" Command="{Binding OpenDroneSettingsCommand}" />
+            </MenuItem>
         </Menu>
 
         <Grid ShowGridLines="False">

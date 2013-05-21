@@ -16,7 +16,11 @@ using System.Windows.Threading;
 namespace RideOnMotion
 {
 	public class DroneInitializer
-	{
+    {
+        private static readonly string DEFAULT_DRONE_SSID = "ardrone_006431";
+        private static readonly string DEFAULT_DRONE_IPADDRESS = "192.168.1.1";
+        private static readonly string DEFAULT_DRONE_CLIENT_ADDRESS = "192.168.1.2";
+
 		private DispatcherTimer _timerVideoUpdate;
 		private DispatcherTimer _timerStatusUpdate;
 
@@ -55,7 +59,7 @@ namespace RideOnMotion
 		public event EventHandler<DroneDataReadyEventArgs> DroneDataReady;
 
 		public DroneInitializer()
-			: this("192.168.1.2", "192.168.1.1", "ardrone_006431")
+            : this( DEFAULT_DRONE_CLIENT_ADDRESS, DEFAULT_DRONE_IPADDRESS, DEFAULT_DRONE_SSID )
 		{
 		}
 
