@@ -4,6 +4,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Media;
+using System.Windows.Input;
+using RideOnMotion.Inputs.Keyboard;
 
 namespace RideOnMotion.UI
 {
@@ -18,11 +21,13 @@ namespace RideOnMotion.UI
         /// Kinect model : Handles data in and out of the Kinect
         /// </summary>
         private IDroneInputController _inputController;
+        private KeyboardController _keyboardController;
+        private DroneInitializer _droneInit;
 
         #region Values
-        private BitmapSource _droneBitmapSource;
-        private BitmapSource _inputBitmapSource;
-        private Control _inputControl;
+        private ImageSource _droneImageSource;
+        private ImageSource _inputImageSource;
+        private Control _inputControlUI;
         private MenuItem _inputMenu;
 
         private List<Type> InputTypes { get; set; }
@@ -44,19 +49,19 @@ namespace RideOnMotion.UI
 
         #region GettersSetters
 
-        public BitmapSource InputBitmapSource
+        public ImageSource InputImageSource
         {
             get
             {
-                return this._inputBitmapSource;
+                return this._inputImageSource;
             }
 
             set
             {
-                if ( this._inputBitmapSource != value )
+                if ( this._inputImageSource != value )
                 {
-                    this._inputBitmapSource = value;
-                    this.OnNotifyPropertyChange( "InputBitmapSource" );
+                    this._inputImageSource = value;
+                    this.OnNotifyPropertyChange( "InputImageSource" );
 					if ( IsActive == true  && Konami == true)
 					{
 						TimeSpan timeZero =  new TimeSpan( 0 );
@@ -85,19 +90,19 @@ namespace RideOnMotion.UI
             }
         }
 
-        public BitmapSource DroneBitmapSource
+        public ImageSource DroneImageSource
         {
             get
             {
-                return this._droneBitmapSource;
+                return this._droneImageSource;
             }
 
             set
             {
-                if ( this._droneBitmapSource != value )
+                if ( this._droneImageSource != value )
                 {
-                    this._droneBitmapSource = value;
-                    this.OnNotifyPropertyChange( "DroneBitmapSource" );
+                    this._droneImageSource = value;
+                    this.OnNotifyPropertyChange( "DroneImageSource" );
                 }
             }
         }
@@ -131,7 +136,7 @@ namespace RideOnMotion.UI
         {
             get
             {
-                return _inputControl;
+                return _inputControlUI;
             }
         }
 
@@ -191,7 +196,22 @@ namespace RideOnMotion.UI
 			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
 			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
 
-			initializeBindings();
+            initializeBindings();
+
+            _droneInit = new DroneInitializer();
+            _droneInit.StartDrone();
+
+            // Keyboard controller is specially handled.
+            _keyboardController = new KeyboardController();
+            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
+
+            // Bind front drone camera
+            _droneInit.DroneFrameReady += OnDroneFrameReady;
+        }
+
+        void OnDroneFrameReady( object sender, DroneFrameReadyEventArgs e )
+        {
+            this.DroneImageSource = e.Frame;
         }
 
         /// <summary>
@@ -210,7 +230,7 @@ namespace RideOnMotion.UI
 
         private void OnInputBitmapSourceChanged( object sender, BitmapSource s )
         {
-            InputBitmapSource = s;
+            InputImageSource = s;
         }
 
         private void OnLogStringReceived( object sender, String e )
@@ -235,7 +255,7 @@ namespace RideOnMotion.UI
 
                 bindWithInputController();
 
-                _inputControl = _inputController.InputUIControl;
+                _inputControlUI = _inputController.InputUIControl;
                 this.OnNotifyPropertyChange( "InputControl" );
 
                 _inputMenu = _inputController.InputMenu;
@@ -259,6 +279,7 @@ namespace RideOnMotion.UI
                 _inputController.InputImageSourceChanged -= OnInputBitmapSourceChanged;
                 _inputController.InputStatusChanged -= OnInputStatusChanged;
 				_inputController.ControllerActivity -= OnControllerActivity;
+				_inputController.InputsStateChanged -= OnInputsStateChanged;
                 _inputStatusInfo = "";
                 this.OnNotifyPropertyChange( "InputStatusInfo" );
                 this._inputController = null;
@@ -276,7 +297,33 @@ namespace RideOnMotion.UI
 
 			// Bind activity
 			_inputController.ControllerActivity += OnControllerActivity;
+			_inputController.InputsStateChanged += OnInputsStateChanged;
         }
+
+		void OnInputsStateChanged( object sender, bool[] e )
+		{
+			DroneCommandProcessing( e );
+		}
+		/// <summary>
+		/// Control Navigation of the drone
+		/// </summary>
+		/// <param name="CurrentInputState">Must contains 8 bool value for pitch[0-1], roll[2-3], gaz[4-5], yaw[6-7] (for the AR Drone) </param>
+		public void DroneCommandProcessing( bool[] CurrentInputState )
+		{
+
+			int roll = 0; // = CurrentInputState[2-3];
+			int pitch = 0; // = CurrentInputState[0-1];
+			int yaw = 0; // = CurrentInputState[6-7];
+			int gaz = 0; // = CurrentInputState[4-5];
+
+			if ( CurrentInputState[2] ) { roll = -1; } else if ( CurrentInputState[3] ) { roll = 1; }
+			if ( CurrentInputState[0] ) { pitch = 1; } else if ( CurrentInputState[1] ) { pitch = -1; }
+			if ( CurrentInputState[6] ) { yaw = -1; } else if ( CurrentInputState[7] ) { yaw = 1; }
+			if ( CurrentInputState[4] ) { gaz = 1; } else if ( CurrentInputState[5] ) { gaz = -1; }
+
+			_droneInit.DroneCommand.Navigate( roll, pitch, yaw, gaz );
+
+		}
 
 		public void OnControllerActivity(object sender, bool e)
 		{
@@ -289,6 +336,14 @@ namespace RideOnMotion.UI
         }
 
         #endregion Contructor/initializers/event handlers
+
+        internal void OnPreviewKeyDown( KeyEventArgs e )
+        {
+            if ( this._keyboardController != null )
+            {
+                this._keyboardController.ProcessKey( e );
+            }
+        }
     }
 
 

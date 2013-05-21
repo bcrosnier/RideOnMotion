@@ -45,7 +45,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel x:Name="DepthViewerPanel" MinHeight="150" Grid.Row="0" Grid.Column="0" Background="Black">
                 <Viewbox>
-                    <Image Name="DepthImage" Width="640" Height="480" Source="{Binding InputBitmapSource}"/>
+                    <Image Name="DepthImage" Width="640" Height="480" Source="{Binding InputImageSource}"/>
                 </Viewbox>
             </StackPanel>
 
@@ -60,7 +60,14 @@
             <!-- Main panel - Background -->
             <StackPanel Background="Black" x:Name="MainPanel" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
             </StackPanel>
-            
+
+            <!-- Main panel - Drone image -->
+            <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
+                <Viewbox>
+                    <Image Name="DroneImage" Source="{Binding DroneImageSource}"/>
+                </Viewbox>
+            </StackPanel>
+
             <!-- Main panel - Input control -->
             <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
                 <ContentPresenter Content="{Binding InputControl}"/>
