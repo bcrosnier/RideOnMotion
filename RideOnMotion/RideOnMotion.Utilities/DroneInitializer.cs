@@ -48,6 +48,7 @@ namespace RideOnMotion
 		}
 
 		public event EventHandler<DroneFrameReadyEventArgs> DroneFrameReady;
+		public event EventHandler<DroneDataReadyEventArgs> DroneDataReady;
 
 		public DroneInitializer()
 			: this("192.168.1.2", "192.168.1.1", "ardrone_006431")
@@ -165,6 +166,8 @@ namespace RideOnMotion
 
 		private void timerStatusUpdate_Tick( object sender, EventArgs e )
 		{
+			if( DroneDataReady != null )
+				DroneDataReady( this, new DroneDataReadyEventArgs( _droneControl.NavigationData ) );
 		}
 	}
 
@@ -176,6 +179,16 @@ namespace RideOnMotion
 		public DroneFrameReadyEventArgs( ImageSource frame )
 		{
 			_frame = frame;
+		}
+	}
+	public class DroneDataReadyEventArgs : EventArgs
+	{
+		private DroneData _data;
+		public DroneData Data { get { return _data; } }
+
+		public DroneDataReadyEventArgs( DroneData data )
+		{
+			_data = data;
 		}
 	}
 }
