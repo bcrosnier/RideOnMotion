@@ -187,7 +187,7 @@ namespace RideOnMotion
 					if( DroneFrameReady != null )
 						DroneFrameReady( this, new DroneFrameReadyEventArgs( imageSource ) );
 				}
-				
+				UpdateHudStatus();
 			}
 		}
 
@@ -197,7 +197,6 @@ namespace RideOnMotion
 			{
 				if( DroneDataReady != null )
 					DroneDataReady( this, new DroneDataReadyEventArgs( _droneControl.NavigationData ) );
-				UpdateHudStatus();
 			}
 		}
 
