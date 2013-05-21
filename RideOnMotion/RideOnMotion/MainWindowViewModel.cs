@@ -339,13 +339,20 @@ namespace RideOnMotion.UI
 
         #endregion Contructor/initializers/event handlers
 
-        internal void OnPreviewKeyDown( KeyEventArgs e )
-        {
-            if ( this._keyboardController != null )
-            {
-                this._keyboardController.ProcessKey( e );
-            }
-        }
+		internal void OnPreviewKeyDown( KeyEventArgs e )
+		{
+			if ( this._keyboardController != null )
+			{
+				this._keyboardController.ProcessKeyDown( e );
+			}
+		}
+		internal void OnPreviewKeyUp( KeyEventArgs e )
+		{
+			if ( this._keyboardController != null )
+			{
+				this._keyboardController.ProcessKeyUp( e );
+			}
+		}
     }
 
 
