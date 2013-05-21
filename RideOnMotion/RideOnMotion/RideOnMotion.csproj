@@ -112,6 +112,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ARDrone_API\ARDroneControlLibrary\ARDroneControlLibrary.csproj">
+      <Project>{92277dfc-0d55-4998-8acf-b01f3a7fb508}</Project>
+      <Name>ARDroneControlLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RideOnMotion.Inputs.Keyboard\RideOnMotion.Inputs.Keyboard.csproj">
       <Project>{1939fa1b-04f0-429b-a575-ee75114b365c}</Project>
       <Name>RideOnMotion.Inputs.Keyboard</Name>

@@ -34,6 +34,7 @@ namespace RideOnMotion.UI
 
         private String _droneNetworkStatusText;
         private bool _droneConnectionStatus;
+        private ARDrone.Control.Data.DroneData _lastDroneData;
 
         private List<Type> InputTypes { get; set; }
 
@@ -157,6 +158,36 @@ namespace RideOnMotion.UI
                     if ( this._droneNetworkStatusText != null )
                     {
                         sb.Append( this._droneNetworkStatusText );
+                        sb.Append( '\n' );
+                    }
+                    if ( this._lastDroneData != null )
+                    {
+                        sb.Append( "Battery: " );
+                        sb.Append( this._lastDroneData.BatteryLevel );
+                        sb.Append( '\n' );
+                        sb.Append( "Altitude: " );
+                        sb.Append( this._lastDroneData.Altitude );
+                        sb.Append( '\n' );
+
+                        sb.Append( "φ: " );
+                        sb.Append( this._lastDroneData.Phi );
+                        sb.Append( '\n' );
+                        sb.Append( "ψ: " );
+                        sb.Append( this._lastDroneData.Psi );
+                        sb.Append( '\n' );
+                        sb.Append( "θ: " );
+                        sb.Append( this._lastDroneData.Theta );
+                        sb.Append( '\n' );
+
+                        sb.Append( "vX: " );
+                        sb.Append( this._lastDroneData.VX );
+                        sb.Append( '\n' );
+                        sb.Append( "vY: " );
+                        sb.Append( this._lastDroneData.VY );
+                        sb.Append( '\n' );
+                        sb.Append( "vZ: " );
+                        sb.Append( this._lastDroneData.VZ );
+                        sb.Append( '\n' );
                     }
 
                     return sb.ToString();
@@ -255,6 +286,13 @@ namespace RideOnMotion.UI
             _droneInit.DroneFrameReady += OnDroneFrameReady;
             _droneInit.NetworkConnectionStateChanged += OnNetworkConnectionStateChanged;
             _droneInit.ConnectionStateChanged += OnConnectionStateChanged;
+            _droneInit.DroneDataReady += OnDroneDataReady;
+        }
+
+        void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
+        {
+            this._lastDroneData = e.Data;
+            this.OnNotifyPropertyChange( "DroneStatusInfo" );
         }
 
         private void OnNetworkConnectionStateChanged( object sender, string e )
