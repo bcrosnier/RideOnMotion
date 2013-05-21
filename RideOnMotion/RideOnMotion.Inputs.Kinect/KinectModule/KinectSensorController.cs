@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.Collections;
+using RideOnMotion.Utilities;
+using System.ComponentModel;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -100,7 +102,7 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// Collection of all ICaptionAreas for the left and right hands.
         /// </summary>
-        internal ObservableCollection<ICaptionArea> TriggerButtons { get; private set; }
+        internal ObservableCollectionEx<ICaptionArea> TriggerButtons { get; private set; }
 
         /// <summary>
         /// Fired when the active Kinect sensor changes.
@@ -131,10 +133,17 @@ namespace RideOnMotion.Inputs.Kinect
 		/// </summary>
 		internal int _triggerButtonsActive;
 
+		/// <summary>
+		/// Contain the inputState
+		/// </summary>
+		private InputState _inputState;
+
+
         #region Interface implementation
         // Events
         public event EventHandler<BitmapSource> InputImageSourceChanged;
         public event EventHandler<DroneInputStatus> InputStatusChanged;
+		public event EventHandler<bool[]> InputsStateChanged;
 		public event EventHandler<bool> ControllerActivity;
 
         // Properties
@@ -276,6 +285,17 @@ namespace RideOnMotion.Inputs.Kinect
 			get { return this._enableSmoothing; }
 		}
 
+		/// <summary>
+		/// Return the current input state 
+		/// </summary>
+		public bool[] InputState
+		{
+			get
+			{
+				return _inputState.CurrentInputState;
+			}
+		}
+
         /// <summary>
         /// Kinect sensor input controller.
         /// Handles drone control through a Kinect sensor.
@@ -284,7 +304,7 @@ namespace RideOnMotion.Inputs.Kinect
         {
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call (USB devices polling).
 
-            TriggerButtons = new ObservableCollection<ICaptionArea>();
+            TriggerButtons = new ObservableCollectionEx<ICaptionArea>();
             initTriggerZones( TRIGGER_BUTTON_WIDTH, TRIGGER_BUTTON_HEIGHT );
 
             this.InputMenu = PrepareInputMenuItem();
@@ -298,6 +318,8 @@ namespace RideOnMotion.Inputs.Kinect
             }
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
+
+			this._inputState = new InputState();
 
             this.InputUIControl = new KinectSensorControllerUI( this );
 
@@ -396,12 +418,27 @@ namespace RideOnMotion.Inputs.Kinect
             RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint, false);
 
             // Create a collection from both zones
-            TriggerButtons = new ObservableCollection<ICaptionArea>(
                 LeftTriggerArea.TriggerCaptionsCollection.Values.Union(
                         RightTriggerArea.TriggerCaptionsCollection.Values
-                ).ToList()
-            );
+                ).ToList().ForEach((element) => TriggerButtons.Add(element));
+			( (INotifyPropertyChanged)TriggerButtons ).PropertyChanged += ( x, y ) => ChangeCurrentInputState(x,y);
         }
+
+		internal void ChangeCurrentInputState( object x, PropertyChangedEventArgs y )
+		{
+			bool[] inputs = new bool[8];
+			for ( int i = 0; i < 8; i++)
+			{
+				inputs[i] = ( (ObservableCollectionEx<ICaptionArea>)x )[i].IsActive;
+			}
+			if ( _inputState.CheckInput( inputs ) )
+			{
+				if ( InputsStateChanged != null )
+				{
+					InputsStateChanged( this, InputState );
+				}
+			}
+		}
 
         /// <summary>
         /// Remove bindings on sensor disconnection

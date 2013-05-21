@@ -38,6 +38,7 @@ x64/
 *.vspscc
 *.vssscc
 .builds
+pingme.txt
 
 # Visual C++ cache files
 ipch/
@@ -102,6 +103,8 @@ ClientBin
 ~$*
 *.dbmdl
 Generated_Code #added for RIA/Silverlight projects
+*.orig
+*.base
 
 # Backup & report files from converting an old project file to a newer
 # Visual Studio version. Backup files are not needed, because we have git ;-)

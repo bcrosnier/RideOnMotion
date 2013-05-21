@@ -3,6 +3,10 @@ using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows.Media;
+using System.Windows.Input;
+using RideOnMotion.Inputs.Keyboard;
 
 namespace RideOnMotion.UI
 {
@@ -11,22 +15,26 @@ namespace RideOnMotion.UI
     /// </summary>
     class MainWindowViewModel : IViewModel, INotifyPropertyChanged
     {
+        private readonly int MAX_LOG_ENTRIES = 50; // Maximum number of log entries in the collection
+
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
         /// </summary>
         private IDroneInputController _inputController;
+        private KeyboardController _keyboardController;
+        private DroneInitializer _droneInit;
 
         #region Values
-        private BitmapSource _droneBitmapSource;
-        private BitmapSource _inputBitmapSource;
-        private Control _inputControl;
+        private ImageSource _droneImageSource;
+        private ImageSource _inputImageSource;
+        private Control _inputControlUI;
         private MenuItem _inputMenu;
 
         private List<Type> InputTypes { get; set; }
 
 		private string _inputStatusInfo = String.Empty;
-
-        private String _logString;
+        
+        private ObservableCollection<String> _logStrings;
 
 		internal bool Konami = false;
 
@@ -41,19 +49,19 @@ namespace RideOnMotion.UI
 
         #region GettersSetters
 
-        public BitmapSource InputBitmapSource
+        public ImageSource InputImageSource
         {
             get
             {
-                return this._inputBitmapSource;
+                return this._inputImageSource;
             }
 
             set
             {
-                if ( this._inputBitmapSource != value )
+                if ( this._inputImageSource != value )
                 {
-                    this._inputBitmapSource = value;
-                    this.OnNotifyPropertyChange( "InputBitmapSource" );
+                    this._inputImageSource = value;
+                    this.OnNotifyPropertyChange( "InputImageSource" );
 					if ( IsActive == true  && Konami == true)
 					{
 						TimeSpan timeZero =  new TimeSpan( 0 );
@@ -82,36 +90,36 @@ namespace RideOnMotion.UI
             }
         }
 
-        public BitmapSource DroneBitmapSource
+        public ImageSource DroneImageSource
         {
             get
             {
-                return this._droneBitmapSource;
+                return this._droneImageSource;
             }
 
             set
             {
-                if ( this._droneBitmapSource != value )
+                if ( this._droneImageSource != value )
                 {
-                    this._droneBitmapSource = value;
-                    this.OnNotifyPropertyChange( "DroneBitmapSource" );
+                    this._droneImageSource = value;
+                    this.OnNotifyPropertyChange( "DroneImageSource" );
                 }
             }
         }
 
-        public String LogString
+        public ObservableCollection<String> LogData
         {
             get
             {
-                return this._logString;
+                return this._logStrings;
             }
 
             set
             {
-                if ( this._logString != value )
+                if ( this._logStrings != value )
                 {
-                    this._logString = value;
-                    this.OnNotifyPropertyChange( "LogString" );
+                    this._logStrings = value;
+                    this.OnNotifyPropertyChange( "LogData" );
                 }
             }
         }
@@ -128,7 +136,7 @@ namespace RideOnMotion.UI
         {
             get
             {
-                return _inputControl;
+                return _inputControlUI;
             }
         }
 
@@ -179,11 +187,33 @@ namespace RideOnMotion.UI
             InputTypes = new List<Type>();
 			InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
 
+            _logStrings = new ObservableCollection<string>();
+
 			loadInputType( InputTypes[0] );
+
 			mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
 			mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
 			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
 			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
+
+            initializeBindings();
+
+            _droneInit = new DroneInitializer();
+            _droneInit.StartDrone();
+
+			_droneInit.DroneCommand.EnterHoverMode();
+
+            // Keyboard controller is specially handled.
+            _keyboardController = new KeyboardController();
+            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
+
+            // Bind front drone camera
+            _droneInit.DroneFrameReady += OnDroneFrameReady;
+        }
+
+        void OnDroneFrameReady( object sender, DroneFrameReadyEventArgs e )
+        {
+            this.DroneImageSource = e.Frame;
         }
 
         /// <summary>
@@ -202,12 +232,16 @@ namespace RideOnMotion.UI
 
         private void OnInputBitmapSourceChanged( object sender, BitmapSource s )
         {
-            InputBitmapSource = s;
+            InputImageSource = s;
         }
 
         private void OnLogStringReceived( object sender, String e )
         {
-            this.LogString = e; // Will fire NotifyPropertyChanged
+            if ( _logStrings.Count >= MAX_LOG_ENTRIES )
+            {
+                _logStrings.RemoveAt( 0 );
+            }
+            _logStrings.Add( e );
         }
 
         private void loadInputType(Type t)
@@ -223,7 +257,7 @@ namespace RideOnMotion.UI
 
                 bindWithInputController();
 
-                _inputControl = _inputController.InputUIControl;
+                _inputControlUI = _inputController.InputUIControl;
                 this.OnNotifyPropertyChange( "InputControl" );
 
                 _inputMenu = _inputController.InputMenu;
@@ -247,6 +281,7 @@ namespace RideOnMotion.UI
                 _inputController.InputImageSourceChanged -= OnInputBitmapSourceChanged;
                 _inputController.InputStatusChanged -= OnInputStatusChanged;
 				_inputController.ControllerActivity -= OnControllerActivity;
+				_inputController.InputsStateChanged -= OnInputsStateChanged;
                 _inputStatusInfo = "";
                 this.OnNotifyPropertyChange( "InputStatusInfo" );
                 this._inputController = null;
@@ -264,7 +299,33 @@ namespace RideOnMotion.UI
 
 			// Bind activity
 			_inputController.ControllerActivity += OnControllerActivity;
+			_inputController.InputsStateChanged += OnInputsStateChanged;
         }
+
+		void OnInputsStateChanged( object sender, bool[] e )
+		{
+			DroneCommandProcessing( e );
+		}
+		/// <summary>
+		/// Control Navigation of the drone
+		/// </summary>
+		/// <param name="CurrentInputState">Must contains 8 bool value for pitch[0-1], roll[2-3], gaz[4-5], yaw[6-7] (for the AR Drone) </param>
+		public void DroneCommandProcessing( bool[] CurrentInputState )
+		{
+
+			float roll = 0; // = CurrentInputState[2-3];
+			float pitch = 0; // = CurrentInputState[0-1];
+			float yaw = 0; // = CurrentInputState[6-7];
+			float gaz = 0; // = CurrentInputState[4-5];
+
+			if ( CurrentInputState[2] ) { roll = -0.15f; } else if ( CurrentInputState[3] ) { roll = 0.15f; }
+			if ( CurrentInputState[0] ) { pitch = -0.15f; } else if ( CurrentInputState[1] ) { pitch = 0.15f; }
+			if ( CurrentInputState[6] ) { yaw = -0.25f; } else if ( CurrentInputState[7] ) { yaw = 0.25f; }
+			if ( CurrentInputState[4] ) { gaz = 0.25f; } else if ( CurrentInputState[5] ) { gaz = -0.25f; }
+
+			_droneInit.DroneCommand.Navigate( roll, pitch, yaw, gaz );
+
+		}
 
 		public void OnControllerActivity(object sender, bool e)
 		{
@@ -277,6 +338,14 @@ namespace RideOnMotion.UI
         }
 
         #endregion Contructor/initializers/event handlers
+
+        internal void OnPreviewKeyDown( KeyEventArgs e )
+        {
+            if ( this._keyboardController != null )
+            {
+                this._keyboardController.ProcessKey( e );
+            }
+        }
     }
 
 
