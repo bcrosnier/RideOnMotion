@@ -19,7 +19,7 @@
             <TextBlock x:Name="KinectStatusText" Text="{Binding InputStatusInfo}"></TextBlock>
             <Separator />
             <Image Height="16" VerticalAlignment="Center" Source="Images/HelicopterIcon.png" />
-            <TextBlock x:Name="DroneStatusText" Text="{Binding DroneStatus}">No drone</TextBlock>
+            <TextBlock x:Name="DroneStatusText" Text="{Binding DroneStatus}"></TextBlock>
         </StatusBar>
 
         <Menu DockPanel.Dock="Top" x:Name="MenuBar" IsMainMenu="True">
