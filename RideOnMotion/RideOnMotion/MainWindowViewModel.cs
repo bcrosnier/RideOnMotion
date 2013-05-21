@@ -201,6 +201,8 @@ namespace RideOnMotion.UI
             _droneInit = new DroneInitializer();
             _droneInit.StartDrone();
 
+			_droneInit.DroneCommand.EnterHoverMode();
+
             // Keyboard controller is specially handled.
             _keyboardController = new KeyboardController();
             _keyboardController.ActiveDrone = _droneInit.DroneCommand;

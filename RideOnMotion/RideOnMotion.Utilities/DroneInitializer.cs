@@ -1,6 +1,7 @@
 ﻿using ARDrone.Capture;
 using ARDrone.Control;
 using ARDrone.Control.Commands;
+using ARDrone.Control.Data;
 using ARDrone.Control.Events;
 using ARDrone.Hud;
 using System;
@@ -31,6 +32,7 @@ namespace RideOnMotion
 		private int _averageFrameRate = 0;
 
 		public DroneCommand DroneCommand { get { return _droneCommand; } }
+		public DroneConfig DroneConfig { get { return _DroneConfig; } }
 		public int FrameRate { get { return GetCurrentFrameRate(); } }
 
 		private int GetCurrentFrameRate()
@@ -59,9 +61,9 @@ namespace RideOnMotion
 
 		}
 
-		public DroneInitializer( string ownIPAddress, string droneIPAddress, string droneNetworkIdentifier )
+		public DroneInitializer( string ownIPAddress, string droneIPAddress, string droneNetworkIdentifier, int videoPort = 5555, int navigationPort = 5554, int commandPort = 5556, int controlInfoPort = 5559, bool useSpecificFirmwareVersion = false, SupportedFirmwareVersion firmwareVersion = DroneConfig.DefaultSupportedFirmwareVersion, int timeoutValue = 500 )
 		{
-			InitializeDroneControl( ownIPAddress, droneIPAddress, droneNetworkIdentifier );
+			InitializeDroneControl( ownIPAddress, droneIPAddress, droneNetworkIdentifier, videoPort, navigationPort, commandPort, controlInfoPort, useSpecificFirmwareVersion, firmwareVersion, timeoutValue );
 
 			InitializeVideoUpdate();
 
@@ -71,13 +73,23 @@ namespace RideOnMotion
 
 		}
 
-		private void InitializeDroneControl( string ownIPAddress, string droneIPAddress, string droneNetworkIdentifier )
+		private void InitializeDroneControl( string ownIPAddress, string droneIPAddress, string droneNetworkIdentifier, int videoPort, int navigationPort, int commandPort, int controlInfoPort, bool useSpecificFirmwareVersion, SupportedFirmwareVersion firmwareVersion, int timeoutValue )
 		{
 			_currentDroneConfig = new DroneConfig();
 
 			_currentDroneConfig.StandardOwnIpAddress = ownIPAddress;
 			_currentDroneConfig.DroneIpAddress = droneIPAddress;
 			_currentDroneConfig.DroneNetworkIdentifierStart = droneNetworkIdentifier;
+
+			_currentDroneConfig.VideoPort = videoPort;
+			_currentDroneConfig.NavigationPort = navigationPort;
+			_currentDroneConfig.CommandPort = commandPort
+			_currentDroneConfig.ControlInfoPort = controlInfoPort;
+
+			_currentDroneConfig.UseSpecificFirmwareVersion = useSpecificFirmwareVersion;
+			_currentDroneConfig.FirmwareVersion = firmwareVersion;
+
+			_currentDroneConfig.TimeoutValue = timeoutValue;
 
 			_droneControl = new DroneControl( _currentDroneConfig );
 
