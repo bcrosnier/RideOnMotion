@@ -33,6 +33,7 @@ namespace RideOnMotion
 
 		public DroneCommand DroneCommand { get { return _droneCommand; } }
 		public DroneConfig DroneConfig { get { return _currentDroneConfig; } }
+		public DroneControl DroneConfig { get { return _droneControl; } }
 		public int FrameRate { get { return GetCurrentFrameRate(); } }
 
         public event EventHandler<String> NetworkConnectionStateChanged;
@@ -127,9 +128,12 @@ namespace RideOnMotion
 
 		public void StartDrone()
 		{
-			_droneCommand.Connect();
-			_timerVideoUpdate.Start();
-			_timerStatusUpdate.Start();
+			Task.Factory.StartNew( () =>
+			{
+				_droneCommand.Connect();
+				_timerVideoUpdate.Start();
+				_timerStatusUpdate.Start();
+			} );
 		}
 
 		public void EndDrone()
@@ -175,16 +179,23 @@ namespace RideOnMotion
 					_frameCountSinceLastCapture++;
 
 					ImageSource resultingSource = _hudInterface.DrawHud( (BitmapSource)imageSource );
-					if( DroneFrameReady != null )
-						DroneFrameReady( this, new DroneFrameReadyEventArgs( resultingSource ) );
 				}
+				else
+				{
+					if( DroneFrameReady != null )
+						DroneFrameReady( this, new DroneFrameReadyEventArgs( imageSource ) );
+				}
+				
 			}
 		}
 
 		private void timerStatusUpdate_Tick( object sender, EventArgs e )
 		{
-			if( DroneDataReady != null )
-				DroneDataReady( this, new DroneDataReadyEventArgs( _droneControl.NavigationData ) );
+			if( _droneControl.IsConnected )
+			{
+				if( DroneDataReady != null )
+					DroneDataReady( this, new DroneDataReadyEventArgs( _droneControl.NavigationData ) );
+			}
 		}
 	}
 
