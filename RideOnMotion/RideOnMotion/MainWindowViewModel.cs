@@ -448,6 +448,7 @@ namespace RideOnMotion.UI
         internal void Stop()
         {
             this._inputController.Stop();
+            this._droneInit.EndDrone();
         }
 
         #endregion Contructor/initializers/event handlers
