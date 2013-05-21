@@ -34,7 +34,7 @@ namespace RideOnMotion.Inputs.Keyboard
         /// </remarks>
         public void ProcessKeyDown( KeyEventArgs e )
         {
-            //RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, RideOnMotion.CKTraitTags.User, "Key : " + e.Key.ToString() );
+            //RideOnMotion.Logger.Instance.NewEntry( CKLogLevel.Trace, RideOnMotion.CKTraitTags.User, "Key : " + e.Key.ToString() );
 
             if ( this._drone != null )
             {

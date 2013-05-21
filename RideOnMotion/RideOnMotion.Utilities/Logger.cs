@@ -82,6 +82,16 @@ namespace RideOnMotion
 		public static CKTrait User = ActivityLogger.RegisteredTags.FindOrCreate( "User" );
 	}
 
+	public class CKLogLevel
+	{
+		public static LogLevel None = LogLevel.None;
+		public static LogLevel Trace = LogLevel.Trace;
+		public static LogLevel Info = LogLevel.Info;
+		public static LogLevel Warn = LogLevel.Warn;
+		public static LogLevel Error = LogLevel.Error;
+		public static LogLevel Fatal = LogLevel.Fatal;
+	}
+
 	public class ListImpl : IActivityLoggerSink
 	{
 		public IList<string> LoggerContent { get; private set; }

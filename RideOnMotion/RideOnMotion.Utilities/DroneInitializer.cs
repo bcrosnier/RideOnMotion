@@ -148,11 +148,11 @@ namespace RideOnMotion
 		{
 			if( e.Connected )
 			{
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "ARDrone is connected" );
+				Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "ARDrone is connected" );
 			}
 			else
 			{
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "ARDrone is disconnected" );
+				Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "ARDrone is disconnected" );
             }
 
             if ( this.ConnectionStateChanged != null )
@@ -163,7 +163,7 @@ namespace RideOnMotion
 
 		private void droneControl_Error( object sender, DroneErrorEventArgs e )
 		{
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.ARDrone, e.CausingException.Message );
+			Logger.Instance.NewEntry( CKLogLevel.Error, CKTraitTags.ARDrone, e.CausingException.Message );
 		}
 
 		private void timerVideoUpdate_Tick( object sender, EventArgs e )
