@@ -131,7 +131,6 @@ namespace RideOnMotion
 
 				Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Navigate with : " + roll + " " + pitch + " " + yaw + " " + gaz );
 			}
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Navigate with : " + roll + " " + pitch + " " + yaw + " " + gaz );
 		}
 
 		public void PlayLED()

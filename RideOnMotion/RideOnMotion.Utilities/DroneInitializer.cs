@@ -49,7 +49,7 @@ namespace RideOnMotion
 
 		public DroneInitializer()
 		{
-			InitializeDroneControl();
+			InitializeDroneControl( "192.168.1.2", "192.168.1.1", "ardrone_006431" );
 
 			InitializeVideoUpdate();
 
@@ -59,13 +59,25 @@ namespace RideOnMotion
 
 		}
 
-		private void InitializeDroneControl()
+		public DroneInitializer( string ownIPAddress, string droneIPAddress, string droneNetworkIdentifier )
+		{
+			InitializeDroneControl( ownIPAddress, droneIPAddress, droneNetworkIdentifier );
+
+			InitializeVideoUpdate();
+
+			InitializeHudInterface();
+
+			_droneCommand = new DroneCommand( _droneControl );
+
+		}
+
+		private void InitializeDroneControl( string ownIPAddress, string droneIPAddress, string droneNetworkIdentifier )
 		{
 			_currentDroneConfig = new DroneConfig();
 
-			_currentDroneConfig.StandardOwnIpAddress = "192.168.1.3";
-			_currentDroneConfig.DroneIpAddress = "192.168.1.1";
-			_currentDroneConfig.DroneNetworkIdentifierStart = "ardrone_006431";
+			_currentDroneConfig.StandardOwnIpAddress = ownIPAddress;
+			_currentDroneConfig.DroneIpAddress = droneIPAddress;
+			_currentDroneConfig.DroneNetworkIdentifierStart = droneNetworkIdentifier;
 
 			_droneControl = new DroneControl( _currentDroneConfig );
 
