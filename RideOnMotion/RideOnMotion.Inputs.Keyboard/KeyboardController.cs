@@ -82,17 +82,17 @@ namespace RideOnMotion.Inputs.Keyboard
                      * */
                     case "NumPad7":
                     case "A": // Fly ahead and to the left?
-						this._drone.Navigate( -0.1f, -0.1f, 0, 0 );
+                        this._drone.Navigate( -0.1f, -0.1f, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad8":
                     case "Z": // Fly ahead?
-						this._drone.Navigate( 0, -0.1f, 0, 0 );
+                        this._drone.Navigate( 0, -0.1f, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad9":
                     case "E": // Fly ahead and to the right?
-						this._drone.Navigate( 0.1f, -0.1f, 0, 0 );
+                        this._drone.Navigate( 0.1f, -0.1f, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad4":
@@ -119,12 +119,28 @@ namespace RideOnMotion.Inputs.Keyboard
                     case "X": // Fly backwards
 				        this._drone.Navigate( 0, 0.1f, 0, 0 );
                         e.Handled = true;
-						break;
-					case "NumPad3":
-					case "C": // Fly backwards and to the right?
-						this._drone.Navigate( 0.1f, 0.1f, 0, 0 );
-						e.Handled = true;
-						break;
+                        break;
+                    case "NumPad3":
+                    case "C": // Fly backwards and to the right?
+                        this._drone.Navigate( 0.1f, 0.1f, 0, 0 );
+                        e.Handled = true;
+                        break;
+                    case "Up": // Raise
+                        this._drone.Navigate( 0, 0, 0, 0.25f );
+                        e.Handled = true;
+                        break;
+                    case "Down": // Lower
+                        this._drone.Navigate( 0, 0, 0, -0.25f );
+                        e.Handled = true;
+                        break;
+                    case "Left": // Turn left
+                        this._drone.Navigate( 0, 0, -0.25f, 0 );
+                        e.Handled = true;
+                        break;
+                    case "Right": // Turn right
+                        this._drone.Navigate( 0, 0, 0.25f, 0 );
+                        e.Handled = true;
+                        break;
 					case "B": //
 						this._drone.EnterHoverMode();
 						e.Handled = true;
@@ -132,11 +148,11 @@ namespace RideOnMotion.Inputs.Keyboard
 					case "N": // 
 						this._drone.LeaveHoverMode();
 						e.Handled = true;
-						break;
-					case "V": // 
-						this._drone.ChangeCamera();
-						e.Handled = true;
-						break;
+                        break;
+                    case "V": // 
+                        this._drone.ChangeCamera();
+                        e.Handled = true;
+                        break;
                     default:
                         // Unknown key.
                         break;
