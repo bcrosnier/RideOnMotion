@@ -19,7 +19,7 @@
             <TextBlock x:Name="KinectStatusText" Text="{Binding InputStatusInfo}"></TextBlock>
             <Separator />
             <Image Height="16" VerticalAlignment="Center" Source="Images/HelicopterIcon.png" />
-            <TextBlock x:Name="DroneStatusText">No drone</TextBlock>
+            <TextBlock x:Name="DroneStatusText" Text="{Binding DroneStatus}">No drone</TextBlock>
         </StatusBar>
 
         <Menu DockPanel.Dock="Top" x:Name="MenuBar" IsMainMenu="True">
@@ -52,6 +52,7 @@
             <GroupBox Header="Status information" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
                 <StackPanel>
                     <TextBlock x:Name="InputStatusInfo" Text="{Binding InputStatusInfo}"/>
+                    <TextBlock x:Name="DroneStatusInfo" Text="{Binding DroneStatusInfo}"/>
                 </StackPanel>
             </GroupBox>
 

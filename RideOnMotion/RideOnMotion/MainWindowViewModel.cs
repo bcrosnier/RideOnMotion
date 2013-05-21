@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using System.Windows.Input;
 using RideOnMotion.Inputs.Keyboard;
+using System.Text;
+using System.Windows.Threading;
 
 namespace RideOnMotion.UI
 {
@@ -30,6 +32,9 @@ namespace RideOnMotion.UI
         private Control _inputControlUI;
         private MenuItem _inputMenu;
 
+        private String _droneNetworkStatusText;
+        private bool _droneConnectionStatus;
+
         private List<Type> InputTypes { get; set; }
 
 		private string _inputStatusInfo = String.Empty;
@@ -44,6 +49,8 @@ namespace RideOnMotion.UI
 		private System.Windows.Media.MediaPlayer mp4 = new System.Windows.Media.MediaPlayer();
 
         internal event EventHandler<MenuItem> InputMenuChanged;
+
+        private delegate void AddLogStringDelegate( String s );
 
         #endregion Values
 
@@ -124,11 +131,48 @@ namespace RideOnMotion.UI
             }
         }
 
+        public String DroneStatus
+        {
+            get
+            {
+                if ( this._droneConnectionStatus )
+                {
+                    return "AR Drone: Connected";
+                }
+                else
+                {
+                    return "AR Drone: Disconnected";
+                }
+            }
+        }
+
+        public String DroneStatusInfo
+        {
+            get
+            {
+                if ( this._droneConnectionStatus )
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append( "AR Drone: Connected\n" );
+                    if ( this._droneNetworkStatusText != null )
+                    {
+                        sb.Append( this._droneNetworkStatusText );
+                    }
+
+                    return sb.ToString();
+                }
+                else
+                {
+                    return "AR Drone: Disconnected"; 
+                }
+            }
+        }
+
         public String InputStatusInfo
         {
             get
             {
-                return  _inputController.Name + ": " + _inputStatusInfo;
+                return _inputController.Name + ": " + _inputStatusInfo;
             }
         }
 
@@ -209,6 +253,21 @@ namespace RideOnMotion.UI
 
             // Bind front drone camera
             _droneInit.DroneFrameReady += OnDroneFrameReady;
+            _droneInit.NetworkConnectionStateChanged += OnNetworkConnectionStateChanged;
+            _droneInit.ConnectionStateChanged += OnConnectionStateChanged;
+        }
+
+        private void OnNetworkConnectionStateChanged( object sender, string e )
+        {
+            this._droneNetworkStatusText = e;
+            this.OnNotifyPropertyChange( "DroneStatusInfo" );
+        }
+
+        private void OnConnectionStateChanged( object sender, bool e )
+        {
+            this._droneConnectionStatus = e;
+            this.OnNotifyPropertyChange( "DroneStatus" );
+            this.OnNotifyPropertyChange( "DroneStatusInfo" );
         }
 
         void OnDroneFrameReady( object sender, DroneFrameReadyEventArgs e )
@@ -237,11 +296,14 @@ namespace RideOnMotion.UI
 
         private void OnLogStringReceived( object sender, String e )
         {
-            if ( _logStrings.Count >= MAX_LOG_ENTRIES )
+            Invoke( () =>
             {
-                _logStrings.RemoveAt( 0 );
-            }
-            _logStrings.Add( e );
+                if ( _logStrings.Count >= MAX_LOG_ENTRIES )
+                {
+                    _logStrings.RemoveAt( 0 );
+                }
+                _logStrings.Add( e );
+            } );
         }
 
         private void loadInputType(Type t)
@@ -271,6 +333,19 @@ namespace RideOnMotion.UI
             else
             {
                 // Can't load, type doesn't implement interface
+            }
+        }
+
+        private static void Invoke( Action action )
+        {
+            Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
+            if ( dispatchObject == null || dispatchObject.CheckAccess() )
+            {
+                action();
+            }
+            else
+            {
+                dispatchObject.Invoke( action );
             }
         }
 

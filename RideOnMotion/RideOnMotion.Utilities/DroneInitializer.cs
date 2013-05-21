@@ -35,6 +35,9 @@ namespace RideOnMotion
 		public DroneConfig DroneConfig { get { return _currentDroneConfig; } }
 		public int FrameRate { get { return GetCurrentFrameRate(); } }
 
+        public event EventHandler<String> NetworkConnectionStateChanged;
+        public event EventHandler<bool> ConnectionStateChanged;
+
 		private int GetCurrentFrameRate()
 		{
 			int timePassed = (int)( DateTime.Now - _lastFrameRateCaptureTime ).TotalMilliseconds;
@@ -88,11 +91,20 @@ namespace RideOnMotion
 
 			_droneControl.Error += droneControl_Error;
 			_droneControl.ConnectionStateChanged += droneControl_ConnectionStateChanged;
+            _droneControl.NetworkConnectionStateChanged += droneControl_NetworkConnectionStateChanged;
 
 			_timerStatusUpdate = new DispatcherTimer();
 			_timerStatusUpdate.Interval = new TimeSpan( 0, 0, 1 );
 			_timerStatusUpdate.Tick += new EventHandler( timerStatusUpdate_Tick );
 		}
+
+        void droneControl_NetworkConnectionStateChanged(object sender, DroneNetworkConnectionStateChangedEventArgs e)
+        {
+            if ( this.NetworkConnectionStateChanged != null )
+            {
+                this.NetworkConnectionStateChanged( sender, "(" + e.CurrentInterfaceName + ")" + e.State.ToString() );
+            }
+        }
 
 		private void InitializeVideoUpdate()
 		{
@@ -136,7 +148,12 @@ namespace RideOnMotion
 			else
 			{
 				Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "ARDrone is disconnected" );
-			}
+            }
+
+            if ( this.ConnectionStateChanged != null )
+            {
+                ConnectionStateChanged( sender, e.Connected );
+            }
 		}
 
 		private void droneControl_Error( object sender, DroneErrorEventArgs e )
