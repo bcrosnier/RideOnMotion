@@ -162,6 +162,8 @@ namespace RideOnMotion
 					_frameCountSinceLastCapture++;
 
 					ImageSource resultingSource = _hudInterface.DrawHud( (BitmapSource)imageSource );
+					if( DroneFrameReady != null )
+						DroneFrameReady( this, new DroneFrameReadyEventArgs( resultingSource ) );
 				}
 				else
 				{
@@ -178,6 +180,20 @@ namespace RideOnMotion
 			{
 				if( DroneDataReady != null )
 					DroneDataReady( this, new DroneDataReadyEventArgs( _droneControl.NavigationData ) );
+				UpdateHudStatus();
+			}
+		}
+
+		private void UpdateHudStatus()
+		{
+			if( _droneControl.IsConnected )
+			{
+				DroneData data = _droneControl.NavigationData;
+
+				_hudInterface.SetFlightVariables( data.Phi, data.Theta, data.Psi );
+				_hudInterface.SetAltitude( data.Altitude );
+				_hudInterface.SetOverallSpeed( data.VX, data.VY, data.VZ );
+				_hudInterface.SetBatteryLevel( data.BatteryLevel );
 			}
 		}
 	}
