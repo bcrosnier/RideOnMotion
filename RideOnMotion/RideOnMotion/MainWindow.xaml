@@ -64,7 +64,7 @@
 
             <!-- Main panel - Drone image -->
             <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <Viewbox>
+                <Viewbox Stretch="Uniform" >
                     <Image Name="DroneImage" Source="{Binding DroneImageSource}"/>
                 </Viewbox>
             </StackPanel>
