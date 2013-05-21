@@ -313,15 +313,15 @@ namespace RideOnMotion.UI
 		public void DroneCommandProcessing( bool[] CurrentInputState )
 		{
 
-			int roll = 0; // = CurrentInputState[2-3];
-			int pitch = 0; // = CurrentInputState[0-1];
-			int yaw = 0; // = CurrentInputState[6-7];
-			int gaz = 0; // = CurrentInputState[4-5];
+			float roll = 0; // = CurrentInputState[2-3];
+			float pitch = 0; // = CurrentInputState[0-1];
+			float yaw = 0; // = CurrentInputState[6-7];
+			float gaz = 0; // = CurrentInputState[4-5];
 
-			if ( CurrentInputState[2] ) { roll = -1; } else if ( CurrentInputState[3] ) { roll = 1; }
-			if ( CurrentInputState[0] ) { pitch = 1; } else if ( CurrentInputState[1] ) { pitch = -1; }
-			if ( CurrentInputState[6] ) { yaw = -1; } else if ( CurrentInputState[7] ) { yaw = 1; }
-			if ( CurrentInputState[4] ) { gaz = 1; } else if ( CurrentInputState[5] ) { gaz = -1; }
+			if ( CurrentInputState[2] ) { roll = -0.15f; } else if ( CurrentInputState[3] ) { roll = 0.15f; }
+			if ( CurrentInputState[0] ) { pitch = -0.15f; } else if ( CurrentInputState[1] ) { pitch = 0.15f; }
+			if ( CurrentInputState[6] ) { yaw = -0.25f; } else if ( CurrentInputState[7] ) { yaw = 0.25f; }
+			if ( CurrentInputState[4] ) { gaz = 0.25f; } else if ( CurrentInputState[5] ) { gaz = -0.25f; }
 
 			_droneInit.DroneCommand.Navigate( roll, pitch, yaw, gaz );
 
