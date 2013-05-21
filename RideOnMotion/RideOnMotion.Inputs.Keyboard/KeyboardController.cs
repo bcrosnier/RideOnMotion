@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +32,7 @@ namespace RideOnMotion.Inputs.Keyboard
         /// Currently, it's only valid for an AZERTY keyboard, at the character level.
         /// To use virtual keys or scancodes instead, we might want to check KeyInterop.VirtualKeyFromKey.
         /// </remarks>
-        public void ProcessKey( KeyEventArgs e )
+        public void ProcessKeyDown( KeyEventArgs e )
         {
             //RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, RideOnMotion.CKTraitTags.User, "Key : " + e.Key.ToString() );
 
@@ -81,64 +81,77 @@ namespace RideOnMotion.Inputs.Keyboard
                      * W X C  ↙ ↓ ↘
                      * */
                     case "NumPad7":
-                    case "A": // Fly ahead and to the left?
+					case "A": // Fly ahead and to the left?
+						this._drone.LeaveHoverMode();
                         this._drone.Navigate( -0.1f, -0.1f, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad8":
-                    case "Z": // Fly ahead?
+					case "Z": // Fly ahead?
+						this._drone.LeaveHoverMode();
                         this._drone.Navigate( 0, -0.1f, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad9":
-                    case "E": // Fly ahead and to the right?
+					case "E": // Fly ahead and to the right?
+						this._drone.LeaveHoverMode();
                         this._drone.Navigate( 0.1f, -0.1f, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad4":
-                    case "Q": // Fly left?
+					case "Q": // Fly left?
+						this._drone.LeaveHoverMode();
 				        this._drone.Navigate( -0.1f, 0, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad5":
-                    case "S":// Stop
+					case "S":// Stop
+						this._drone.LeaveHoverMode();
 				        this._drone.Navigate( 0, 0, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad6":
-                    case "D": // Fly right?
+					case "D": // Fly right?
+						this._drone.LeaveHoverMode();
 				        this._drone.Navigate( 0.1f, 0, 0, 0 );
                         e.Handled = true;
                         break;
-                    case "NumPad1":
+					case "NumPad1":
                     case "W": // Fly backwards and to the left?
+						this._drone.LeaveHoverMode();
 				        this._drone.Navigate( -0.1f, 0.1f, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad2":
-                    case "X": // Fly backwards
+					case "X": // Fly backwards
+						this._drone.LeaveHoverMode();
 				        this._drone.Navigate( 0, 0.1f, 0, 0 );
                         e.Handled = true;
                         break;
                     case "NumPad3":
                     case "C": // Fly backwards and to the right?
+						this._drone.LeaveHoverMode();
                         this._drone.Navigate( 0.1f, 0.1f, 0, 0 );
                         e.Handled = true;
                         break;
-                    case "Up": // Raise
-                        this._drone.Navigate( 0, 0, 0, 0.25f );
+					case "Up": // Raise
+						this._drone.LeaveHoverMode();
+						this._drone.Navigate( 0, 0, 0, 0.25f );
                         e.Handled = true;
                         break;
-                    case "Down": // Lower
-                        this._drone.Navigate( 0, 0, 0, -0.25f );
+					case "Down": // Lower
+						this._drone.LeaveHoverMode();
+						this._drone.Navigate( 0, 0, 0, -0.25f );
                         e.Handled = true;
                         break;
-                    case "Left": // Turn left
-                        this._drone.Navigate( 0, 0, -0.25f, 0 );
+					case "Left": // Turn left
+						this._drone.LeaveHoverMode();
+						this._drone.Navigate( 0, 0, -0.25f, 0 );
                         e.Handled = true;
                         break;
-                    case "Right": // Turn right
-                        this._drone.Navigate( 0, 0, 0.25f, 0 );
+					case "Right": // Turn right
+						this._drone.LeaveHoverMode();
+						this._drone.Navigate( 0, 0, 0.25f, 0 );
                         e.Handled = true;
                         break;
 					case "B": //
@@ -159,5 +172,19 @@ namespace RideOnMotion.Inputs.Keyboard
                 }
             }
         }
+
+        /// <summary>
+        /// Event triggered on key press.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// Currently, it's only valid for an AZERTY keyboard, at the character level.
+        /// To use virtual keys or scancodes instead, we might want to check KeyInterop.VirtualKeyFromKey.
+        /// </remarks>
+		public void ProcessKeyUp( KeyEventArgs e )
+		{
+			this._drone.EnterHoverMode();
+		}
     }
 }

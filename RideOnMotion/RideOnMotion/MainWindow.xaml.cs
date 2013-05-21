@@ -92,6 +92,10 @@ namespace RideOnMotion.UI
 		protected string _konami = string.Empty;
 		protected System.Windows.Media.Brush _originalBackground;
 		protected UIElement _originalViewBox;
+		protected override void OnPreviewKeyUp( KeyEventArgs e )
+		{
+			this.mainWindowViewModel.OnPreviewKeyUp( e );
+		}
 		protected override void OnPreviewKeyDown( KeyEventArgs e )
 		{
             this.mainWindowViewModel.OnPreviewKeyDown( e );
