@@ -232,6 +232,19 @@ namespace RideOnMotion.UI
             }
         }
 
+        public Visibility InputControlVisibility
+        {
+            get
+            {
+                if ( this._inputController.InputStatus == DroneInputStatus.Ready )
+                {
+                    return Visibility.Visible;
+                } else {
+                    return Visibility.Collapsed;
+                }
+            }
+        }
+
         public MenuItem InputMenu
         {
             get
@@ -344,6 +357,7 @@ namespace RideOnMotion.UI
         {
             _inputStatusInfo = _inputController.InputStatusString;
             this.OnNotifyPropertyChange( "InputStatusInfo" );
+            this.OnNotifyPropertyChange( "InputControlVisibility" );
         }
 
         private void OnInputBitmapSourceChanged( object sender, BitmapSource s )

@@ -74,7 +74,7 @@
 
             <!-- Main panel - Input control -->
             <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <ContentPresenter Content="{Binding InputControl}"/>
+                <ContentPresenter Content="{Binding InputControl}" Visibility="{Binding InputControlVisibility}"/>
             </Viewbox>
 
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >
