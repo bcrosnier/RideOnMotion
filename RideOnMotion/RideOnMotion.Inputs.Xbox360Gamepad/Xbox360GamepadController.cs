@@ -27,6 +27,8 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		float lastPitch = 0;
 		float lastyaw = 0;
 		float lastgaz = 0;
+		bool Hover = false;
+		bool BackPressed = false;
 
         public DroneCommand ActiveDrone
         {
@@ -65,7 +67,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				_drone.Land();
 				return;
 			}
-			if ( _selectedController.IsLeftShoulderPressed)
+			if ( _selectedController.IsRightShoulderPressed)
 			{
 				_drone.Takeoff();
 				return;
@@ -74,6 +76,33 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 			{
 				_drone.FlatTrim();
 				return;
+			}
+			if ( !_selectedController.IsBackPressed )
+			{
+				BackPressed = false;
+			}
+			if ( _selectedController.IsBackPressed && !BackPressed)
+			{
+				_drone.ChangeCamera();
+				BackPressed = true;
+				return;
+			}
+			if ( _selectedController.IsLeftStickPressed )
+			{
+				if ( Hover )
+				{
+					_drone.LeaveHoverMode();
+					Hover = false;
+				}
+			}
+
+			if ( _selectedController.IsRightStickPressed )
+			{
+				if (!Hover)
+				{
+					_drone.EnterHoverMode();
+					Hover = true;
+				}
 			}
 
 			//slow
@@ -163,15 +192,15 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				int pitchScale = 14;
 
 				//reverse from the others
-				if ( _selectedController.LeftThumbStick.Y < 0 )
-				{
-					pitchScale = ( ( _selectedController.LeftThumbStick.Y + TriggerDeadZone ) - TriggerReactionscale + 1 ) / TriggerReactionscale;
-				}
-				else
+				if ( _selectedController.LeftThumbStick.Y > 0 )
 				{
 					pitchScale = ( ( _selectedController.LeftThumbStick.Y - TriggerDeadZone ) + TriggerReactionscale - 1 ) / TriggerReactionscale;
 				}
-				pitch = rollAndPitchValues * ( pitchScale / NumberOfScale );
+				else
+				{
+					pitchScale = ( ( _selectedController.LeftThumbStick.Y + TriggerDeadZone ) - TriggerReactionscale + 1 ) / TriggerReactionscale;
+				}
+				pitch = -(rollAndPitchValues * ( pitchScale / NumberOfScale ));
 			}
 			if ( _selectedController.RightThumbStick.X > TriggerDeadZone || _selectedController.RightThumbStick.X < - TriggerDeadZone
 				|| _selectedController.RightThumbStick.Y > TriggerDeadZone || _selectedController.RightThumbStick.Y < -TriggerDeadZone )

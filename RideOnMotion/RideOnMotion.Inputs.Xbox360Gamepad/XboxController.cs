@@ -63,7 +63,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
             {
                 Controllers[i] = new XboxController(i);
             }
-            UpdateFrequency = 25;
+            UpdateFrequency = 10;
         }
 
         public event EventHandler<XboxControllerStateChangedEventArgs> StateChanged = null;
