@@ -206,9 +206,9 @@
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this instance can start.
+		/// Gets or sets a value indicating whether this instance can Start.
 		/// </summary>
-		/// <value><c>true</c> if this instance can start; otherwise, <c>false</c>.</value>
+		/// <value><c>true</c> if this instance can Start; otherwise, <c>false</c>.</value>
 		public bool CanStart
 		{
 			get

@@ -63,10 +63,6 @@
       <Project>{7db44258-5127-4395-b0d6-619c899bf2a1}</Project>
       <Name>RideOnMotion.Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RideOnMotion\RideOnMotion.csproj">
-      <Project>{0dd0d3f7-5335-4745-b337-81490654cb80}</Project>
-      <Name>RideOnMotion</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

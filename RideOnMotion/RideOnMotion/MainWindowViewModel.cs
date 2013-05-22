@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using System.Windows.Input;
 using RideOnMotion.Inputs.Keyboard;
+using RideOnMotion.Inputs.Xbox360Gamepad;
 using System.Text;
 using System.Windows.Threading;
 
@@ -24,6 +25,7 @@ namespace RideOnMotion.UI
         /// </summary>
         private IDroneInputController _inputController;
         private KeyboardController _keyboardController;
+		private Xbox360GamepadController _Xbox360Gamepad;
         private DroneInitializer _droneInit;
 
         #region Values
@@ -280,7 +282,10 @@ namespace RideOnMotion.UI
 
             // Keyboard controller is specially handled.
             _keyboardController = new KeyboardController();
-            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
+			_keyboardController.ActiveDrone = _droneInit.DroneCommand;
+			_Xbox360Gamepad = new Xbox360GamepadController();
+			_Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
+			_Xbox360Gamepad.Start();
 
             // Bind front drone camera
             _droneInit.DroneFrameReady += OnDroneFrameReady;
@@ -448,6 +453,7 @@ namespace RideOnMotion.UI
         internal void Stop()
         {
             this._inputController.Stop();
+			this._Xbox360Gamepad.Stop();
             this._droneInit.EndDrone();
         }
 
