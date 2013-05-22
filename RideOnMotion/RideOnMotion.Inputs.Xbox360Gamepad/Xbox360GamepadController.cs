@@ -163,7 +163,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				int pitchScale = 14;
 
 				//reverse from the others
-				if ( _selectedController.LeftThumbStick.Y > 0 )
+				if ( _selectedController.LeftThumbStick.Y < 0 )
 				{
 					pitchScale = ( ( _selectedController.LeftThumbStick.Y + TriggerDeadZone ) - TriggerReactionscale + 1 ) / TriggerReactionscale;
 				}
