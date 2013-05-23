@@ -18,6 +18,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		readonly float normalNavigationValue2 = 0.1f;
 		readonly float slowNavigationValue = 0.1f;
 		readonly float slowNavigationValue2 = 0.05f;
+		readonly float MaximumNavigationValue = 1f;
 		readonly int TriggerDeadZone = 4096;
 		readonly int TriggerReactionscale = 2048;
 		readonly int TriggerMax = ushort.MaxValue - 4096;
@@ -106,16 +107,21 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 			}
 
 			//slow
-			if ( _selectedController.LeftTrigger > 20 && _selectedController.RightTrigger < 20 )
+			if ( _selectedController.LeftTrigger > 50 && _selectedController.RightTrigger < 50 )
 			{
 				gazAndYawValues = slowNavigationValue;
 				rollAndPitchValues = slowNavigationValue2;
 			}
 			//fast
-			else if ( _selectedController.LeftTrigger < 20 && _selectedController.RightTrigger > 20 )
+			else if ( _selectedController.LeftTrigger < 50 && _selectedController.RightTrigger > 50 )
 			{
 				gazAndYawValues = fastNavigationValue;
 				rollAndPitchValues = fastNavigationValue2;
+			}
+			else if ( _selectedController.LeftTrigger > 50 && _selectedController.RightTrigger > 50 )
+			{
+				gazAndYawValues = MaximumNavigationValue;
+				rollAndPitchValues = MaximumNavigationValue;
 			}
 			else
 			{
