@@ -102,6 +102,8 @@ namespace RideOnMotion.Inputs.Kinect
 
 		private DispatcherTimer _timerToLand;
 
+		private bool _skeletonFound = false;
+
         /// <summary>
         /// Collection of all ICaptionAreas for the left and right hands.
         /// </summary>
@@ -636,6 +638,10 @@ namespace RideOnMotion.Inputs.Kinect
                                     SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
                                 }
                              );
+							if( _skeletonFound )
+							{
+								_skeletonFound = true;
+							}
 							SecurityModeNeeded( this, 0 );
                         }
                     }
@@ -653,34 +659,37 @@ namespace RideOnMotion.Inputs.Kinect
 
 		public void securityHoverMode(Skeleton skeleton)
 		{
-			if( skeleton != null && skeleton.TrackingState == SkeletonTrackingState.Tracked )
+			if( _skeletonFound )
 			{
-				if( skeleton.Joints[JointType.HandLeft].TrackingState != JointTrackingState.Tracked
-					&& skeleton.Joints[JointType.HandRight].TrackingState != JointTrackingState.Tracked )
+				if( skeleton != null && skeleton.TrackingState == SkeletonTrackingState.Tracked )
 				{
-					if ( SecurityModeNeeded != null )
+					if( skeleton.Joints[JointType.HandLeft].TrackingState != JointTrackingState.Tracked
+						&& skeleton.Joints[JointType.HandRight].TrackingState != JointTrackingState.Tracked )
+					{
+						if( SecurityModeNeeded != null )
+						{
+							SecurityModeNeeded( this, 1 );
+						}
+
+						if( _timerToLand.IsEnabled == false )
+						{
+							_timerToLand.Start();
+						}
+					}
+					else if( _timerToLand.IsEnabled == true )
+						_timerToLand.Stop();
+				}
+				else
+				{
+					if( SecurityModeNeeded != null )
 					{
 						SecurityModeNeeded( this, 1 );
 					}
 
-					if(_timerToLand.IsEnabled == false )
+					if( _timerToLand.IsEnabled == false )
 					{
 						_timerToLand.Start();
 					}
-				}
-				else if( _timerToLand.IsEnabled == true )
-					_timerToLand.Stop();
-			}
-			else
-			{
-				if ( SecurityModeNeeded != null )
-				{
-					SecurityModeNeeded( this, 1 );
-				}
-
-				if( _timerToLand.IsEnabled == false )
-				{
-					_timerToLand.Start();
 				}
 			}
 		}
