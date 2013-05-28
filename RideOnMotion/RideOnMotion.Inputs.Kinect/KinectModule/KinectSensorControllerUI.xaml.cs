@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Kinect;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -56,6 +57,14 @@ namespace RideOnMotion.Inputs.Kinect
 				return _handsVisibility;
 			}
         }
+
+		public KinectSensor KinectSensor
+		{
+			get
+			{
+				return _controller.Sensor;
+			}
+		}
 
         public ObservableCollection<ICaptionArea> TriggerButtons
         {
