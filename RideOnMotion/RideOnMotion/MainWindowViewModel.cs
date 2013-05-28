@@ -36,6 +36,7 @@ namespace RideOnMotion.UI
         private Control _inputControlUI;
         private MenuItem _inputMenu;
 
+		ARDrone.Input.InputManager _inputManager;
 		private IntPtr _handle;
 
         private String _droneNetworkStatusText;
@@ -271,6 +272,8 @@ namespace RideOnMotion.UI
 
             _logStrings = new ObservableCollection<string>();
 
+			//_inputManager = new ARDrone.Input.InputManager( _handle );
+			//_inputManager.NewInputState += new NewInputStateHandler( OnNewInputState );
 			loadInputType( InputTypes[0] );
 
 			//mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
@@ -291,6 +294,7 @@ namespace RideOnMotion.UI
 			_Xbox360Gamepad = new Xbox360GamepadController();
 			_Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
 			_Xbox360Gamepad.Start();
+
 
             // Bind front drone camera
             _droneInit.DroneFrameReady += OnDroneFrameReady;
