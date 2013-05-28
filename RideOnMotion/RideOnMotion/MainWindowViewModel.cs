@@ -421,7 +421,21 @@ namespace RideOnMotion.UI
 
 		private void OnSecurityModeNeeded( object sender, int e )
 		{
-			throw new NotImplementedException();
+			switch( e )
+			{
+				case 0:
+					_droneInit.DroneCommand.LeaveHoverMode();
+					break;
+				case 1:
+					_droneInit.DroneCommand.EnterHoverMode();
+					break;
+				case 2:
+					_droneInit.DroneCommand.Land();
+					break;
+				default:
+					_droneInit.DroneCommand.Land();
+					break;
+			}
 		}
 
 		void OnInputsStateChanged( object sender, bool[] e )
