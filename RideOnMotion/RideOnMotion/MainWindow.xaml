@@ -31,6 +31,7 @@
             </MenuItem>
             <MenuItem Header="Drone">
                 <MenuItem Header="Settings" Command="{Binding OpenDroneSettingsCommand}" />
+                <MenuItem Header="Reconnect" Command="{Binding ReconnectDroneCommand}" />
             </MenuItem>
         </Menu>
 

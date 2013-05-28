@@ -89,6 +89,12 @@ namespace RideOnMotion.UI
             internal set;
         }
 
+        public ICommand ReconnectDroneCommand
+        {
+            get;
+            internal set;
+        }
+
         public ImageSource InputImageSource
         {
             get
@@ -574,6 +580,7 @@ namespace RideOnMotion.UI
         private void CreateDroneCommands()
         {
             OpenDroneSettingsCommand = new RelayCommand( OpenDroneSettingsExecute, CanExecuteOpenDroneSettingsCommand );
+            ReconnectDroneCommand = new RelayCommand( ReconnectDroneExecute, CanExecuteReconnectDroneCommand );
         }
 
         private bool CanExecuteOpenDroneSettingsCommand( object param )
@@ -597,6 +604,7 @@ namespace RideOnMotion.UI
                 window.DroneConfigAvailable += newDroneConfigDelegate;
 
                 _droneSettingsWindow = window;
+
                 _droneSettingsWindow.Closed += ( object sender, EventArgs args ) => {
                     _droneSettingsWindow = null;
                     window.DroneConfigAvailable -= newDroneConfigDelegate;
@@ -604,6 +612,16 @@ namespace RideOnMotion.UI
 
                 _droneSettingsWindow.Show();
             }
+        }
+
+        private bool CanExecuteReconnectDroneCommand( object param )
+        {
+            return true;
+        }
+
+        private void ReconnectDroneExecute( object param )
+        {
+            ReconnectDrone();
         }
 
         #endregion Commands
