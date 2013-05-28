@@ -623,11 +623,11 @@ namespace RideOnMotion.Inputs.Kinect
 
                     Skeleton firstSkeleton = trackedSkeletons.FirstOrDefault();
 
+					securityHoverMode( firstSkeleton );
                     if ( firstSkeleton != null )
                     {
                         _handsVisible = true;
                         _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
-						securityHoverMode( firstSkeleton );
                         if ( HandsPointReady != null )
                         {
                             HandsPointReady( this,
@@ -636,6 +636,7 @@ namespace RideOnMotion.Inputs.Kinect
                                     SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
                                 }
                              );
+							SecurityModeNeeded( this, 0 );
                         }
                     }
                     else if ( _handsVisible == true )
@@ -652,15 +653,15 @@ namespace RideOnMotion.Inputs.Kinect
 
 		public void securityHoverMode(Skeleton skeleton)
 		{
-			SkeletonTrackingState skeletonState = skeleton.TrackingState;
-
-			if( skeleton.TrackingState == SkeletonTrackingState.Tracked )
+			if( skeleton != null && skeleton.TrackingState == SkeletonTrackingState.Tracked )
 			{
 				if( skeleton.Joints[JointType.HandLeft].TrackingState != JointTrackingState.Tracked
-					|| skeleton.Joints[JointType.HandRight].TrackingState != JointTrackingState.Tracked )
+					&& skeleton.Joints[JointType.HandRight].TrackingState != JointTrackingState.Tracked )
 				{
-					
-					SecurityModeNeeded( this, 1 );
+					if ( SecurityModeNeeded != null )
+					{
+						SecurityModeNeeded( this, 1 );
+					}
 
 					if(_timerToLand.IsEnabled == false )
 					{
@@ -672,7 +673,10 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 			else
 			{
-				SecurityModeNeeded( this, 1 );
+				if ( SecurityModeNeeded != null )
+				{
+					SecurityModeNeeded( this, 1 );
+				}
 
 				if( _timerToLand.IsEnabled == false )
 				{
@@ -683,7 +687,10 @@ namespace RideOnMotion.Inputs.Kinect
 
 		private void timerToLand_Tick( object sender, EventArgs e )
 		{
-			SecurityModeNeeded( this, 2 );
+			if ( SecurityModeNeeded != null )
+			{
+				SecurityModeNeeded( this, 2 );
+			}
 		}
 
         /// <summary>
