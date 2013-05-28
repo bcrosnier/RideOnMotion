@@ -416,7 +416,13 @@ namespace RideOnMotion.UI
 			// Bind activity
 			_inputController.ControllerActivity += OnControllerActivity;
 			_inputController.InputsStateChanged += OnInputsStateChanged;
+			_inputController.SecurityModeNeeded += OnSecurityModeNeeded;
         }
+
+		private void OnSecurityModeNeeded( object sender, int e )
+		{
+			throw new NotImplementedException();
+		}
 
 		void OnInputsStateChanged( object sender, bool[] e )
 		{
