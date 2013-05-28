@@ -638,7 +638,7 @@ namespace RideOnMotion.Inputs.Kinect
                                     SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
                                 }
                              );
-							if( _skeletonFound )
+							if( !_skeletonFound )
 							{
 								_skeletonFound = true;
 							}
