@@ -33,7 +33,7 @@ namespace RideOnMotion
 
 		public DroneCommand DroneCommand { get { return _droneCommand; } }
 		public DroneConfig DroneConfig { get { return _currentDroneConfig; } }
-		public DroneControl DroneConfig { get { return _droneControl; } }
+		public DroneControl DroneControl { get { return _droneControl; } }
 		public int FrameRate { get { return GetCurrentFrameRate(); } }
 
 		private int GetCurrentFrameRate()
