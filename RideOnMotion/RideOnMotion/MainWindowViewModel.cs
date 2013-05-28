@@ -10,6 +10,8 @@ using RideOnMotion.Inputs.Keyboard;
 using RideOnMotion.Inputs.Xbox360Gamepad;
 using System.Text;
 using System.Windows.Threading;
+using ARDrone.Input.Utils;
+using System.Windows.Interop;
 
 namespace RideOnMotion.UI
 {
@@ -33,6 +35,8 @@ namespace RideOnMotion.UI
         private ImageSource _inputImageSource;
         private Control _inputControlUI;
         private MenuItem _inputMenu;
+
+		private IntPtr _handle;
 
         private String _droneNetworkStatusText;
         private bool _droneConnectionStatus;
@@ -259,8 +263,9 @@ namespace RideOnMotion.UI
         /// <summary>
         /// Initializes the ViewModel with the given IDroneInputController.
         /// </summary>
-        public MainWindowViewModel()
+        public MainWindowViewModel(IntPtr handle)
         {
+			_handle = handle;
             InputTypes = new List<Type>();
 			InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
 
@@ -268,10 +273,10 @@ namespace RideOnMotion.UI
 
 			loadInputType( InputTypes[0] );
 
-			mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
-			mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
-			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
-			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
+			//mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
+			//mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
+			//mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
+			//mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
 
             initializeBindings();
 
@@ -418,7 +423,14 @@ namespace RideOnMotion.UI
 			// Bind activity
 			_inputController.ControllerActivity += OnControllerActivity;
 			_inputController.InputsStateChanged += OnInputsStateChanged;
+			ARDrone.Input.InputManager inputManager = new ARDrone.Input.InputManager( _handle );
+			inputManager.NewInputState += new NewInputStateHandler( OnNewInputState );
         }
+
+		private void OnNewInputState( object sender, NewInputStateEventArgs e )
+		{
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, e.CurrentInputState.ToString() );
+		}
 
 		void OnInputsStateChanged( object sender, bool[] e )
 		{

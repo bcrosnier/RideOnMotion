@@ -5,6 +5,7 @@ using RideOnMotion.Utilities;
 using System.Windows.Input;
 using System;
 using System.Collections.Specialized;
+using System.Windows.Interop;
 
 namespace RideOnMotion.UI
 {
@@ -29,7 +30,7 @@ namespace RideOnMotion.UI
 		{
             InitializeComponent();
 
-            this.mainWindowViewModel = new MainWindowViewModel();
+			this.mainWindowViewModel = new MainWindowViewModel( new WindowInteropHelper( this ).Handle );
             this.inputController = new KinectSensorController();
             this.DataContext = this.mainWindowViewModel;
 
