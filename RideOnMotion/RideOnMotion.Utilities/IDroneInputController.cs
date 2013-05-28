@@ -98,6 +98,11 @@ namespace RideOnMotion
 		event EventHandler<bool> ControllerActivity;
 
 		/// <summary>
+		/// Fired when security mode is needed
+		/// </summary>
+		event EventHandler<int> SecurityModeNeeded;
+
+		/// <summary>
 		/// A switch to know if the controller is being used right now
 		/// </summary>
 		bool IsActive { get; }
