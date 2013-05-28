@@ -320,20 +320,8 @@ namespace RideOnMotion.UI
 
             initializeBindings();
 
-            _droneInit = new DroneInitializer();
-            _droneInit.StartDrone();
-
-			_droneInit.DroneCommand.EnterHoverMode();
-
-            // Keyboard controller is specially handled.
             _keyboardController = new KeyboardController();
-            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
-
-            // Bind front drone camera
-            _droneInit.DroneFrameReady += OnDroneFrameReady;
-            _droneInit.NetworkConnectionStateChanged += OnNetworkConnectionStateChanged;
-            _droneInit.ConnectionStateChanged += OnConnectionStateChanged;
-            _droneInit.DroneDataReady += OnDroneDataReady;
+            ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
         }
 
         void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
@@ -503,10 +491,47 @@ namespace RideOnMotion.UI
                 _droneSettingsWindow.Close();
             }
             this._inputController.Stop();
-            this._droneInit.EndDrone();
+
+            DisconnectDrone(this._droneInit);
         }
 
+        private void ConnectDrone( ARDrone.Control.DroneConfig config )
+        {
+            _droneInit = new DroneInitializer( config );
 
+            _droneInit.NetworkConnectionStateChanged += OnNetworkConnectionStateChanged;
+            _droneInit.ConnectionStateChanged += OnConnectionStateChanged;
+            _droneInit.DroneDataReady += OnDroneDataReady;
+            // Bind front drone camera
+            _droneInit.DroneFrameReady += OnDroneFrameReady;
+
+            // Keyboard controller is specially handled.
+            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
+
+            _droneInit.StartDrone();
+            _droneInit.DroneCommand.EnterHoverMode();
+        }
+
+        private void DisconnectDrone( DroneInitializer init )
+        {
+
+            init.NetworkConnectionStateChanged -= OnNetworkConnectionStateChanged;
+            init.ConnectionStateChanged -= OnConnectionStateChanged;
+            init.DroneDataReady -= OnDroneDataReady;
+            // Bind front drone camera
+            init.DroneFrameReady -= OnDroneFrameReady;
+
+            // Keyboard controller is specially handled.
+            _keyboardController.ActiveDrone = init.DroneCommand;
+
+            init.EndDrone();
+        }
+
+        private void ReconnectDrone()
+        {
+            DisconnectDrone( this._droneInit );
+            ConnectDrone( this._currentDroneConfig );
+        }
 
         /// <summary>
         /// Sets new maximum drone speeds the drone can reach when moving.
@@ -566,7 +591,7 @@ namespace RideOnMotion.UI
             {
                 EventHandler<ARDrone.Control.DroneConfig> newDroneConfigDelegate = (sender, e) => {
                     this._currentDroneConfig = e;
-                    // Reset drone here if changed
+                    ReconnectDrone();
                 };
                 DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig );
                 window.DroneConfigAvailable += newDroneConfigDelegate;

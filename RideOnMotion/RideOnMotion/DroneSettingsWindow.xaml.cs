@@ -39,10 +39,6 @@ namespace RideOnMotion.UI
             InitializeComponent();
         }
 
-        public DroneSettingsWindow()
-            : this(null)
-        { }
-
         private void ButtonOK_Click( object sender, RoutedEventArgs e )
         {
             _viewModel.SaveSettings();
