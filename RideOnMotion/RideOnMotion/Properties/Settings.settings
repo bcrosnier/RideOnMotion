@@ -1,7 +1,15 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RideOnMotion.UI.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DroneIPAddress" Type="System.String" Scope="User">
+      <Value Profile="(Default)">192.168.1.1</Value>
+    </Setting>
+    <Setting Name="ClientIPAddress" Type="System.String" Scope="User">
+      <Value Profile="(Default)">192.168.1.2</Value>
+    </Setting>
+    <Setting Name="DroneSSID" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ardrone_006431</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

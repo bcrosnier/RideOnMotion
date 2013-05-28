@@ -27,9 +27,9 @@
                     <Label Grid.Column="0" Grid.Row="0">Translation</Label>
                     <Label Grid.Column="0" Grid.Row="1">Rotation</Label>
                     <Label Grid.Column="0" Grid.Row="2">Elevation</Label>
-                    <TextBox Grid.Column="1" Grid.Row="0" Text="15"/>
-                    <TextBox Grid.Column="1" Grid.Row="1" Text="25"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" Text="25"/>
+                    <TextBox Grid.Column="1" Grid.Row="0" Text="-" IsEnabled="False"/>
+                    <TextBox Grid.Column="1" Grid.Row="1" Text="-" IsEnabled="False"/>
+                    <TextBox Grid.Column="1" Grid.Row="2" Text="-" IsEnabled="False"/>
                 </Grid>
             </GroupBox>
             <GroupBox Header="Connection information" Padding="3">
@@ -46,12 +46,10 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Grid.Row="0">Drone IP address</Label>
                     <Label Grid.Column="0" Grid.Row="1">Client IP address</Label>
-                    <Label Grid.Column="0" Grid.Row="2">Control port</Label>
-                    <Label Grid.Column="0" Grid.Row="3">Drone SSID</Label>
-                    <TextBox Grid.Column="1" Grid.Row="0" Text="192.168.1.1"/>
-                    <TextBox Grid.Column="1" Grid.Row="1" Text="192.168.1.2"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" Text="5554"/>
-                    <TextBox Grid.Column="1" Grid.Row="3" Text="ardrone_0643"/>
+                    <Label Grid.Column="0" Grid.Row="2">Drone SSID</Label>
+                    <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding DroneIPAddress}"/>
+                    <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding ClientIPAddress}"/>
+                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding DroneSSID}"/>
 				</Grid>
             </GroupBox>
         </StackPanel>

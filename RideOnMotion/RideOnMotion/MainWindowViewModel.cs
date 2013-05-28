@@ -10,6 +10,7 @@ using RideOnMotion.Inputs.Keyboard;
 using System.Text;
 using System.Windows.Threading;
 using System.Windows;
+using RideOnMotion.UI.Properties;
 
 namespace RideOnMotion.UI
 {
@@ -23,6 +24,19 @@ namespace RideOnMotion.UI
         private static readonly float DEFAULT_MAXIMUM_DRONE_TRANSLATION_SPEED = 0.15f;
         private static readonly float DEFAULT_MAXIMUM_DRONE_ROTATION_SPEED = 0.25f;
         private static readonly float DEFAULT_MAXIMUM_DRONE_ELEVATION_SPEED = 0.25f;
+        public static ARDrone.Control.DroneConfig DefaultDroneConfig = new ARDrone.Control.DroneConfig()
+        {
+            DroneIpAddress = Settings.Default.DroneIPAddress,
+            StandardOwnIpAddress = Settings.Default.ClientIPAddress,
+            DroneNetworkIdentifierStart = Settings.Default.DroneSSID,
+            NavigationPort = 5554,
+            VideoPort = 5555,
+            CommandPort = 5556,
+            ControlInfoPort = 5559,
+            UseSpecificFirmwareVersion = false,
+            FirmwareVersion = ARDrone.Control.DroneConfig.DefaultSupportedFirmwareVersion,
+            TimeoutValue = 500
+        };
 
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
@@ -45,6 +59,7 @@ namespace RideOnMotion.UI
 
         private String _droneNetworkStatusText;
         private bool _droneConnectionStatus;
+        private ARDrone.Control.DroneConfig _currentDroneConfig = DefaultDroneConfig;
         private ARDrone.Control.Data.DroneData _lastDroneData;
 
         private List<Type> InputTypes { get; set; }
@@ -549,8 +564,19 @@ namespace RideOnMotion.UI
             }
             else
             {
-                _droneSettingsWindow = new DroneSettingsWindow();
-                _droneSettingsWindow.Closed += ( object sender, EventArgs args ) => { _droneSettingsWindow = null; };
+                EventHandler<ARDrone.Control.DroneConfig> newDroneConfigDelegate = (sender, e) => {
+                    this._currentDroneConfig = e;
+                    // Reset drone here if changed
+                };
+                DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig );
+                window.DroneConfigAvailable += newDroneConfigDelegate;
+
+                _droneSettingsWindow = window;
+                _droneSettingsWindow.Closed += ( object sender, EventArgs args ) => {
+                    _droneSettingsWindow = null;
+                    window.DroneConfigAvailable -= newDroneConfigDelegate;
+                };
+
                 _droneSettingsWindow.Show();
             }
         }
