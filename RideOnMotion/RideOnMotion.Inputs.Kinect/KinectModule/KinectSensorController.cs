@@ -11,6 +11,8 @@ using System.Windows.Shapes;
 using System.Collections;
 using RideOnMotion.Utilities;
 using System.ComponentModel;
+using Microsoft.Kinect.Toolkit.Interaction;
+using System.Collections.Generic;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -137,6 +139,8 @@ namespace RideOnMotion.Inputs.Kinect
 		/// Contain the inputState
 		/// </summary>
 		private InputState _inputState;
+
+		InteractionStream _interactionStream;
 
 
         #region Interface implementation
@@ -266,7 +270,7 @@ namespace RideOnMotion.Inputs.Kinect
         private bool HasSensor
         {
             // If _kinectSensor exists, return true, else return false
-            get { return ( _kinectSensor != null && _kinectSensor.Status != KinectStatus.Disconnected ) ? true : false; }
+			get { return _kinectSensor != null && _kinectSensor.Status != KinectStatus.Disconnected; }
         }
 
         /// <summary>
@@ -315,6 +319,10 @@ namespace RideOnMotion.Inputs.Kinect
                 KinectSensor kinectSensor = KinectSensor.KinectSensors.Where( item => item.Status == KinectStatus.Connected ).FirstOrDefault();
                 SetSkeletonSmoothingEnabled( false );
                 initializeKinectSensor( kinectSensor );
+
+				InteractionClient interactionClient = new InteractionClient();
+				_interactionStream = new InteractionStream( kinectSensor, interactionClient );
+				_interactionStream.InteractionFrameReady += new EventHandler<InteractionFrameReadyEventArgs>( InteractiontStream_InteractionFrameReady );
             }
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
@@ -322,6 +330,7 @@ namespace RideOnMotion.Inputs.Kinect
 			this._inputState = new InputState();
 
             this.InputUIControl = new KinectSensorControllerUI( this );
+
 
         }
 
@@ -347,7 +356,7 @@ namespace RideOnMotion.Inputs.Kinect
                 return;
             }
 
-            _kinectSensor = sensor;
+              _kinectSensor = sensor;
 
 
             if ( !_kinectSensor.SkeletonStream.IsEnabled )
@@ -630,6 +639,83 @@ namespace RideOnMotion.Inputs.Kinect
             }
         }
 
+		private void InteractiontStream_InteractionFrameReady( object sender, InteractionFrameReadyEventArgs e )
+		{
+			InteractionFrame iFrame = e.OpenInteractionFrame();
+			if( iFrame == null ) return;
+
+
+			UserInfo[] usrInfo = new UserInfo[6];
+
+			iFrame.CopyInteractionDataTo( usrInfo );
+
+
+			List<UserInfo> curUsers = usrInfo.Where( x => x.SkeletonTrackingId > 0 ).ToList<UserInfo>();
+
+			//if( curUsers.Count > 0 )
+			//{
+			//	UserInfo curUser = curUsers[0];
+
+			//	lblR1.Visible = true;
+			//	lblL1.Visible = true;
+
+			//	if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+			//		lblR1.BackColor = Color.Red;
+			//	if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.GripRelease )
+			//		lblR1.BackColor = Color.Gray;
+
+			//	if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+			//		lblL1.BackColor = Color.Red;
+			//	if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.GripRelease )
+			//		lblL1.BackColor = Color.Gray;
+
+
+			//	lblL1.Left = (int)( curUser.HandPointers[0].X * this.Width );
+			//	lblL1.Top = (int)( curUser.HandPointers[0].Y * this.Height );
+			//	lblR1.Left = (int)( curUser.HandPointers[1].X * this.Width );
+			//	lblR1.Top = (int)( curUser.HandPointers[1].Y * this.Height );
+			//}
+			//else
+			//{
+			//	lblR1.Visible = false;
+			//	lblL1.Visible = false;
+			//}
+
+
+			//if( curUsers.Count > 1 )
+			//{
+			//	UserInfo curUser = curUsers[1];
+
+			//	lblR2.Visible = true;
+			//	lblL2.Visible = true;
+
+			//	if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+			//		lblR2.BackColor = Color.Red;
+			//	if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.GripRelease )
+			//		lblR2.BackColor = Color.Gray;
+
+			//	if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+			//		lblL2.BackColor = Color.Red;
+			//	if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.GripRelease )
+			//		lblL2.BackColor = Color.Gray;
+
+
+
+
+			//	lblL2.Left = (int)( curUser.HandPointers[0].X * this.Width );
+			//	lblL2.Top = (int)( curUser.HandPointers[0].Y * this.Height );
+			//	lblR2.Left = (int)( curUser.HandPointers[1].X * this.Width );
+			//	lblR2.Top = (int)( curUser.HandPointers[1].Y * this.Height );
+			//}
+			//else
+			//{
+			//	lblR2.Visible = false;
+			//	lblL2.Visible = false;
+			//}
+		}
+
+		
+
         /// <summary>
         /// Converts a SkeletonPoint to a DepthImagePoint, taking only the X and Y values.
         /// </summary>
@@ -805,4 +891,18 @@ namespace RideOnMotion.Inputs.Kinect
             e.Handled = true;
         }
     }
+
+	public class InteractionClient : IInteractionClient
+	{
+		public InteractionClient()
+		{
+		}
+
+		public InteractionInfo GetInteractionInfoAtLocation( int skeletonTrackingId, InteractionHandType handType, double x, double y )
+		{
+			InteractionInfo interactionInfo = new InteractionInfo();
+
+			return interactionInfo;
+		}
+	}
 }

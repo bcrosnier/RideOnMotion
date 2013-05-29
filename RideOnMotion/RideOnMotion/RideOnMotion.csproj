@@ -40,7 +40,6 @@
     <Reference Include="CK.Core">
       <HintPath>..\packages\CK.Core.2.8.7-develop\lib\net45\CK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Kinect, Version=1.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ReachFramework" />
     <Reference Include="System" />
@@ -113,14 +112,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Kinect.Toolkit.Controls\Microsoft.Kinect.Toolkit.Controls.csproj">
-      <Project>{4508c4d1-85bb-4f3f-9e3b-cc93d231c65d}</Project>
-      <Name>Microsoft.Kinect.Toolkit.Controls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Kinect.Toolkit\Microsoft.Kinect.Toolkit.csproj">
-      <Project>{c6f9c31b-6130-4443-a5cc-ef0664552ecd}</Project>
-      <Name>Microsoft.Kinect.Toolkit</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RideOnMotion.Inputs.Keyboard\RideOnMotion.Inputs.Keyboard.csproj">
       <Project>{1939fa1b-04f0-429b-a575-ee75114b365c}</Project>
       <Name>RideOnMotion.Inputs.Keyboard</Name>
