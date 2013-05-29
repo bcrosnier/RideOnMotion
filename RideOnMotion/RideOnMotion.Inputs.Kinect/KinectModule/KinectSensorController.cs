@@ -642,6 +642,10 @@ namespace RideOnMotion.Inputs.Kinect
 							{
 								_skeletonFound = true;
 							}
+							//if( _timerToLand.IsEnabled )
+							//{
+							//	_timerToLand.Stop();
+							//}
 							SecurityModeNeeded( this, 0 );
                         }
                     }
