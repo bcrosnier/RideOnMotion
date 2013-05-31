@@ -34,12 +34,12 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// Width of the depth frame. Must match DEPTH_IMAGE_FORMAT.
         /// </summary>
-        private static readonly int DEPTH_FRAME_WIDTH = 640;
+        public static readonly int DEPTH_FRAME_WIDTH = 640;
 
         /// <summary>
         /// Height of the depth frame. Must match DEPTH_IMAGE_FORMAT.
         /// </summary>
-        private static readonly int DEPTH_FRAME_HEIGHT = 480;
+		public static readonly int DEPTH_FRAME_HEIGHT = 480;
 
         /// <summary>
         /// Default trigger zone width (side size)
@@ -405,8 +405,8 @@ namespace RideOnMotion.Inputs.Kinect
         {
             _positionTrackerController = new PositionTrackerController();
 
-            IPositionTracker leftTracker = new LeftHandPositionTracker( LeftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
-            IPositionTracker rightTracker = new RightHandPositionTracker( RightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker<UserInfo> leftTracker = new LeftHandPositionTracker( LeftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker<UserInfo> rightTracker = new RightHandPositionTracker( RightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
 
             this.PositionTrackerController.AttachPositionTracker( leftTracker );
             this.PositionTrackerController.AttachPositionTracker( rightTracker );
@@ -423,8 +423,8 @@ namespace RideOnMotion.Inputs.Kinect
             int zoneHeight = DEPTH_FRAME_HEIGHT;
 
             // Create caption areas
-            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint, true);
-            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint, false);
+            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, true);
+            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, false);
 
             // Create a collection from both zones
                 LeftTriggerArea.TriggerCaptionsCollection.Values.Union(
@@ -615,7 +615,7 @@ namespace RideOnMotion.Inputs.Kinect
                     if ( firstSkeleton != null )
                     {
                         _handsVisible = true;
-                        _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
+                        //_positionTrackerController.NotifyPositionTrackers( firstSkeleton );
 
                         if ( HandsPointReady != null )
                         {
@@ -652,66 +652,30 @@ namespace RideOnMotion.Inputs.Kinect
 
 			List<UserInfo> curUsers = usrInfo.Where( x => x.SkeletonTrackingId > 0 ).ToList<UserInfo>();
 
-			//if( curUsers.Count > 0 )
-			//{
-			//	UserInfo curUser = curUsers[0];
+			if( curUsers.Count > 0 )
+			{
+				UserInfo curUser = curUsers[0];
+				_handsVisible = true;
+				_positionTrackerController.NotifyPositionTrackers( curUser );
 
-			//	lblR1.Visible = true;
-			//	lblL1.Visible = true;
-
-			//	if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
-			//		lblR1.BackColor = Color.Red;
-			//	if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.GripRelease )
-			//		lblR1.BackColor = Color.Gray;
-
-			//	if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
-			//		lblL1.BackColor = Color.Red;
-			//	if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.GripRelease )
-			//		lblL1.BackColor = Color.Gray;
-
-
-			//	lblL1.Left = (int)( curUser.HandPointers[0].X * this.Width );
-			//	lblL1.Top = (int)( curUser.HandPointers[0].Y * this.Height );
-			//	lblR1.Left = (int)( curUser.HandPointers[1].X * this.Width );
-			//	lblR1.Top = (int)( curUser.HandPointers[1].Y * this.Height );
-			//}
-			//else
-			//{
-			//	lblR1.Visible = false;
-			//	lblL1.Visible = false;
-			//}
-
-
-			//if( curUsers.Count > 1 )
-			//{
-			//	UserInfo curUser = curUsers[1];
-
-			//	lblR2.Visible = true;
-			//	lblL2.Visible = true;
-
-			//	if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
-			//		lblR2.BackColor = Color.Red;
-			//	if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.GripRelease )
-			//		lblR2.BackColor = Color.Gray;
-
-			//	if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
-			//		lblL2.BackColor = Color.Red;
-			//	if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.GripRelease )
-			//		lblL2.BackColor = Color.Gray;
-
-
-
-
-			//	lblL2.Left = (int)( curUser.HandPointers[0].X * this.Width );
-			//	lblL2.Top = (int)( curUser.HandPointers[0].Y * this.Height );
-			//	lblR2.Left = (int)( curUser.HandPointers[1].X * this.Width );
-			//	lblR2.Top = (int)( curUser.HandPointers[1].Y * this.Height );
-			//}
-			//else
-			//{
-			//	lblR2.Visible = false;
-			//	lblL2.Visible = false;
-			//}
+				if( HandsPointReady != null )
+				{
+					HandsPointReady( this,
+						new System.Windows.Point[2] {
+								new System.Windows.Point( (float)(curUser.HandPointers[0].X * DEPTH_FRAME_WIDTH), (float)(curUser.HandPointers[0].Y * DEPTH_FRAME_HEIGHT) ),
+                                new System.Windows.Point( (float)(curUser.HandPointers[1].X * DEPTH_FRAME_WIDTH), (float)(curUser.HandPointers[1].Y * DEPTH_FRAME_HEIGHT) )
+                            }
+						);
+				}
+			}
+			else if( _handsVisible == true )
+			{
+				if( HandsPointReady != null )
+				{
+					HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
+				}
+				_handsVisible = false;
+			}
 		}
 
 		

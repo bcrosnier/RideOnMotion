@@ -18,7 +18,7 @@ namespace RideOnMotion.Inputs.Kinect
 		int Id { get; }
 
 		IReadOnlyList<Point> Points { get; }
-		void CheckPosition( Joint joint );
+		void CheckPosition( float x, float y );
 		IReadOnlyList<Action> AssociateFunctions { get; }
 		bool IsActive { get; }
 	}

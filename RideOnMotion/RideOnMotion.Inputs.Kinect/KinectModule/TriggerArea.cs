@@ -28,7 +28,6 @@ namespace RideOnMotion.Inputs.Kinect
         public ICaptionArea DownButton { get { return this.TriggerCaptionsCollection[Buttons.Down]; } }
 
         public Dictionary<Buttons, ICaptionArea> TriggerCaptionsCollection { get; private set; }
-        private KinectSensorController.SkelPointToDepthPoint _converter;
 
 		//private Action Quack;
 
@@ -42,7 +41,7 @@ namespace RideOnMotion.Inputs.Kinect
         /// <param name="buttonWidth">Width of each button. Side size of the area.</param>
         /// <param name="buttonHeight">Height of each button; "thickness" of the area.</param>
 		/// <param name="position">True if the trigger area is on the left, false if it is on the right</param>
-        public TriggerArea( int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight, KinectSensorController.SkelPointToDepthPoint converter, bool position )
+        public TriggerArea( int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight, bool position )
         {
             this.AreaHeight = areaHeight;
             this.AreaWidth = areaWidth;
@@ -50,8 +49,6 @@ namespace RideOnMotion.Inputs.Kinect
             this.OffsetY = offsetY;
             this.ButtonWidth = buttonWidth;
             this.ButtonHeight = buttonHeight;
-
-            this._converter = converter;
 
             this.TriggerCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
 
@@ -152,7 +149,6 @@ namespace RideOnMotion.Inputs.Kinect
                     ),
                     width,
                     height,
-                    _converter,
 					id
                );
         }
