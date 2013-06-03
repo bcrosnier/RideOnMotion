@@ -358,6 +358,10 @@ namespace RideOnMotion.Inputs.Kinect
 
               _kinectSensor = sensor;
 
+			if( !_kinectSensor.SkeletonStream.IsEnabled && !_kinectSensor.DepthStream.IsEnabled )
+			{
+				_kinectSensor.AllFramesReady += sensor_AllFramesReady;
+			}
 
             if ( !_kinectSensor.SkeletonStream.IsEnabled )
             {
@@ -389,6 +393,7 @@ namespace RideOnMotion.Inputs.Kinect
             {
                 _kinectSensor.DepthStream.Disable();
             }
+
             _handsVisible = false;
 
             _kinectSensor.DepthStream.Enable( DEPTH_IMAGE_FORMAT );
@@ -397,6 +402,35 @@ namespace RideOnMotion.Inputs.Kinect
             initializePositionTrackerController();
             // Call Start(); from outside.
         }
+
+		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
+		{
+			short[] depthPix;
+			using( DepthImageFrame dif = e.OpenDepthImageFrame() )
+			{
+				if( dif == null )
+				{
+					return;
+				}
+
+				depthPix = new short[dif.PixelDataLength];
+
+				dif.CopyPixelDataTo( depthPix );
+
+				_interactionStream.ProcessDepth( dif.GetRawPixelData(), dif.Timestamp );
+			}
+
+			Skeleton[] skeletons;
+			using( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
+			{
+				if( skeletonFrame != null )
+				{
+					skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+					skeletonFrame.CopySkeletonDataTo( skeletons );
+					_interactionStream.ProcessSkeleton( skeletons, _kinectSensor.AccelerometerGetCurrentReading(), skeletonFrame.Timestamp );
+				}
+			}
+		}
 
         /// <summary>
         /// Initializes the position tracker and its related trigger zones for the hands.
@@ -470,6 +504,7 @@ namespace RideOnMotion.Inputs.Kinect
 
             _kinectSensor.DepthFrameReady -= sensor_DepthFrameReady;
             _kinectSensor.SkeletonFrameReady -= sensor_SkeletonFrameReady;
+			_kinectSensor.AllFramesReady -= sensor_AllFramesReady;
 
             if ( _kinectSensor.DepthStream != null )
             {
@@ -505,12 +540,9 @@ namespace RideOnMotion.Inputs.Kinect
             {
                 try
                 {
-                    Sensor.Start(); // Blocking call. May throw IOException on already used, or worse...!
+					_kinectSensor.Start(); // Blocking call. May throw IOException on already used, or worse...!
 
-                    if ( SensorChanged != null )
-                    {
-                        SensorChanged( this, Sensor );
-                    }
+					OnSensorChanged( _kinectSensor );
 
                 }
                 catch ( System.IO.IOException e )
@@ -594,8 +626,6 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// Method fired when a new skeleton frame is ready.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
         {
             using ( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
@@ -617,15 +647,15 @@ namespace RideOnMotion.Inputs.Kinect
                         _handsVisible = true;
                         //_positionTrackerController.NotifyPositionTrackers( firstSkeleton );
 
-                        if ( HandsPointReady != null )
-                        {
-                            HandsPointReady( this,
-                                new System.Windows.Point[2] {
-                                    SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandLeft].Position ),
-                                    SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
-                                }
-                             );
-                        }
+						//if ( HandsPointReady != null )
+						//{
+						//	HandsPointReady( this,
+						//		new System.Windows.Point[2] {
+						//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandLeft].Position ),
+						//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
+						//		}
+						//	 );
+						//}
                     }
                     else if ( _handsVisible == true )
                     {
@@ -719,8 +749,6 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// Fired on every depth frame.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )
         {
             DepthImageFrame imageFrame = e.OpenDepthImageFrame();
@@ -732,18 +760,14 @@ namespace RideOnMotion.Inputs.Kinect
             _depthFrameIsReady = true;
             _depthBitmapSource = DepthToBitmapSource( imageFrame );
 
-            if ( InputImageSourceChanged != null )
-            {
-                InputImageSourceChanged( this, _depthBitmapSource );
-            }
+			OnInputImageSourceChanged( _depthBitmapSource );
+
             imageFrame.Dispose();
         }
         
         /// <summary>
         /// Fired every time any sensor on the system changes its status.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void sensors_StatusChanged( object sender, StatusChangedEventArgs e )
         {
 
@@ -768,16 +792,10 @@ namespace RideOnMotion.Inputs.Kinect
             }
 
             // Throw event
-            if ( SensorChanged != null )
-            {
-                SensorChanged( this, e.Sensor );
-            }
+			OnSensorChanged( e.Sensor );
 
             // Throw interface event
-            if ( InputStatusChanged != null )
-            {
-                InputStatusChanged( this, this.InputStatus );
-            }
+            OnInputStatusChanged( InputStatus );
         }
 
         /// <summary>
@@ -854,6 +872,30 @@ namespace RideOnMotion.Inputs.Kinect
 
             e.Handled = true;
         }
+
+		private void OnInputImageSourceChanged( BitmapSource bitmapSource )
+		{
+			if( InputImageSourceChanged != null )
+			{
+				InputImageSourceChanged( this, bitmapSource );
+			}
+		}
+
+		private void OnSensorChanged( KinectSensor sensor)
+		{
+			if( SensorChanged != null )
+			{
+				SensorChanged( this, Sensor );
+			}
+		}
+
+		private void OnInputStatusChanged( DroneInputStatus droneInputStatus )
+		{
+			if( InputStatusChanged != null )
+			{
+				InputStatusChanged( this, this.InputStatus );
+			}
+		}
     }
 
 	public class InteractionClient : IInteractionClient

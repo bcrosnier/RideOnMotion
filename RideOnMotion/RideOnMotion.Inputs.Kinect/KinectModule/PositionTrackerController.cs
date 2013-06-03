@@ -34,7 +34,7 @@ namespace RideOnMotion.Inputs.Kinect
 
 		public void NotifyPositionTrackers( UserInfo userInfo )
 		{
-				foreach( IPositionTracker<UserInfo> positionTracker in _positionTrackers ) positionTracker.Hooking( userInfo );
+			foreach( IPositionTracker<UserInfo> positionTracker in _positionTrackers ) positionTracker.Hooking( userInfo );
 		}
 
 		protected void OnAreaActivated( ICaptionArea captionArea )

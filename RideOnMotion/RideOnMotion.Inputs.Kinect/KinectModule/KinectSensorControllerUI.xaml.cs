@@ -82,16 +82,7 @@ namespace RideOnMotion.Inputs.Kinect
 			this._controller.HandsPointReady += OnHandsPoint;
 
 			InitializeComponent();
-
-			this.kinectRegion.KinectSensor = _controller.Sensor;
-			Microsoft.Kinect.KinectSensor.KinectSensors.StatusChanged += Controller_InputStatusChanged;
         }
-
-		private void Controller_InputStatusChanged( object sender, StatusChangedEventArgs e )
-		{
-			if( e.Status == KinectStatus.Connected )
-				this.kinectRegion.KinectSensor = _controller.Sensor;
-		}
 
         private void OnHandsPoint( object sender, System.Windows.Point[] e )
         {

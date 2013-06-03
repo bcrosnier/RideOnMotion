@@ -31,8 +31,8 @@ namespace RideOnMotion.Inputs.Kinect
 
 		public void Hooking( UserInfo userInfo )
 		{
-			float x = (float)( userInfo.HandPointers[0].X * KinectSensorController.DEPTH_FRAME_WIDTH );
-			float y = (float)( userInfo.HandPointers[0].Y * KinectSensorController.DEPTH_FRAME_HEIGHT );
+			float x = (float)( userInfo.HandPointers[1].X * KinectSensorController.DEPTH_FRAME_WIDTH );
+			float y = (float)( userInfo.HandPointers[1].Y * KinectSensorController.DEPTH_FRAME_HEIGHT );
 			foreach( ICaptionArea captionArea in _captionAreas ) captionArea.CheckPosition( x, y );
 		}
 

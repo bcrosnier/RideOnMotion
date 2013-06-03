@@ -59,10 +59,10 @@
 
 
 
-        <k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
+        <!--<k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
         <k:KinectUserViewer VerticalAlignment="Top" HorizontalAlignment="Center" k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="100" UserColoringMode="Manual" />
         <k:KinectRegion Name="kinectRegion">
-        </k:KinectRegion>
+        </k:KinectRegion>-->
 
     </Grid>
 </UserControl>
