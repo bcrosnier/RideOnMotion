@@ -705,7 +705,7 @@ namespace RideOnMotion.Inputs.Kinect
 
 			UserInfo[] usrInfo = new UserInfo[6];
 
-					securityHoverMode( firstSkeleton );
+			//securityHoverMode( firstSkeleton ); // TODO - Merge pending
 			iFrame.CopyInteractionDataTo( usrInfo );
 
 
@@ -729,6 +729,7 @@ namespace RideOnMotion.Inputs.Kinect
 					y = ( y < -1 ) ? -1 : y;
 					System.Windows.Point right = new System.Windows.Point( x, y );
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
+                    /* // TODO - Merge pending
 							if( !_skeletonFound )
 							{
 								_skeletonFound = true;
@@ -738,6 +739,7 @@ namespace RideOnMotion.Inputs.Kinect
 								_timerToLand.Stop();
 							}
 							SecurityModeNeeded( this, 0 );
+                     */
 				}
 			}
 			else if( _handsVisible == true )
