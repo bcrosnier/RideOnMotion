@@ -153,7 +153,7 @@ namespace RideOnMotion.Inputs.Kinect
 		/// </summary>
 		private InputState _inputState;
 
-		InteractionStream _interactionStream;
+		private InteractionStream _interactionStream;
 
         /// <summary>
         /// Active settings Window. Closed on Stop(), can be null.
@@ -381,13 +381,9 @@ namespace RideOnMotion.Inputs.Kinect
 				_kinectSensor.AllFramesReady += sensor_AllFramesReady;
 			}
 
-            if ( !_kinectSensor.SkeletonStream.IsEnabled )
-            {
-                _kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
-            }
-            else
-            {
-                _kinectSensor.SkeletonStream.Disable();
+            if ( _kinectSensor.SkeletonStream.IsEnabled )
+			{
+				_kinectSensor.SkeletonStream.Disable();
             }
 
             _totalSkeleton = new Skeleton[6];
@@ -403,13 +399,9 @@ namespace RideOnMotion.Inputs.Kinect
             }
 
 
-            if ( !_kinectSensor.DepthStream.IsEnabled )
-            {
-                _kinectSensor.DepthFrameReady += sensor_DepthFrameReady;
-            }
-            else
-            {
-                _kinectSensor.DepthStream.Disable();
+            if ( _kinectSensor.DepthStream.IsEnabled )
+			{
+				_kinectSensor.DepthStream.Disable();
             }
 
             _handsVisible = false;
@@ -493,13 +485,9 @@ namespace RideOnMotion.Inputs.Kinect
 
             // Throw last BitmapSource to blank picture
             _depthBitmapSource = null;
-            if ( InputImageSourceChanged != null )
-            {
-                InputImageSourceChanged( this, null );
-            }
 
-            _kinectSensor.DepthFrameReady -= sensor_DepthFrameReady;
-            _kinectSensor.SkeletonFrameReady -= sensor_SkeletonFrameReady;
+            OnInputImageSourceChanged( null );
+
 			_kinectSensor.AllFramesReady -= sensor_AllFramesReady;
 
             if ( _kinectSensor.DepthStream != null )
@@ -623,68 +611,29 @@ namespace RideOnMotion.Inputs.Kinect
                 imageFrame.Width * imageFrame.BytesPerPixel );
             return bmap;
         }
-        
-        /// <summary>
-        /// Method fired when a new skeleton frame is ready.
-        /// </summary>
-        private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
-        {
-			//using ( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
-			//{
-			//	if ( skeletonFrame != null )
-			//	{
-			//		// copy the frame data in to the collection
-			//		skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
-
-			//		var trackedSkeletons = ( from trackskeleton in _totalSkeleton
-			//								 where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
-			//								 select trackskeleton );
-
-			//		int skeletonCount = trackedSkeletons.Count();
-
-			//		Skeleton firstSkeleton = trackedSkeletons.FirstOrDefault();
-			//		if ( firstSkeleton != null )
-			//		{
-			//			_handsVisible = true;
-			//			//_positionTrackerController.NotifyPositionTrackers( firstSkeleton );
-
-			//			//if ( HandsPointReady != null )
-			//			//{
-			//			//	HandsPointReady( this,
-			//			//		new System.Windows.Point[2] {
-			//			//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandLeft].Position ),
-			//			//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
-			//			//		}
-			//			//	 );
-			//			//}
-			//		}
-			//		else if ( _handsVisible == true )
-			//		{
-			//			if ( HandsPointReady != null )
-			//			{
-			//				HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
-			//			}
-			//			_handsVisible = false;
-			//		}
-			//	}
-			//}
-        }
 
 		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
 		{
 			short[] depthPix;
-			using( DepthImageFrame dif = e.OpenDepthImageFrame() )
+			using( DepthImageFrame imageFrame = e.OpenDepthImageFrame() )
 			{
-				if( dif == null )
+				if( imageFrame == null )
 				{
-					return;
+					return; // Clear frame
 				}
 
-				depthPix = new short[dif.PixelDataLength];
+				depthPix = new short[imageFrame.PixelDataLength];
 
-				dif.CopyPixelDataTo( depthPix );
+				imageFrame.CopyPixelDataTo( depthPix );
 
-				_interactionStream.ProcessDepth( dif.GetRawPixelData(), dif.Timestamp );
+				_interactionStream.ProcessDepth( imageFrame.GetRawPixelData(), imageFrame.Timestamp );
+
+				_depthFrameIsReady = true;
+				_depthBitmapSource = DepthToBitmapSource( imageFrame );
+
+				OnInputImageSourceChanged( _depthBitmapSource );
+
+				imageFrame.Dispose();
 			}
 
 			using( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
@@ -729,6 +678,10 @@ namespace RideOnMotion.Inputs.Kinect
 					y = ( y < -1 ) ? -1 : y;
 					System.Windows.Point right = new System.Windows.Point( x, y );
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
+					if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+						SecurityModeNeeded( this, 3 );
+					if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+						SecurityModeNeeded( this, 2 );
                     /* // TODO - Merge pending
 							if( !_skeletonFound )
 							{
@@ -833,25 +786,6 @@ namespace RideOnMotion.Inputs.Kinect
             DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
                  p, DEPTH_IMAGE_FORMAT );
             return depthPoint;
-        }
-
-        /// <summary>
-        /// Fired on every depth frame.
-        /// </summary>
-        private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )
-        {
-            DepthImageFrame imageFrame = e.OpenDepthImageFrame();
-            if ( imageFrame == null )
-            {
-                return; // Clear frame
-            }
-
-            _depthFrameIsReady = true;
-            _depthBitmapSource = DepthToBitmapSource( imageFrame );
-
-			OnInputImageSourceChanged( _depthBitmapSource );
-
-            imageFrame.Dispose();
         }
         
         /// <summary>
