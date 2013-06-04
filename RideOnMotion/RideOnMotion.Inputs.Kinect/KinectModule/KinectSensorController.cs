@@ -403,35 +403,6 @@ namespace RideOnMotion.Inputs.Kinect
             // Call Start(); from outside.
         }
 
-		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
-		{
-			short[] depthPix;
-			using( DepthImageFrame dif = e.OpenDepthImageFrame() )
-			{
-				if( dif == null )
-				{
-					return;
-				}
-
-				depthPix = new short[dif.PixelDataLength];
-
-				dif.CopyPixelDataTo( depthPix );
-
-				_interactionStream.ProcessDepth( dif.GetRawPixelData(), dif.Timestamp );
-			}
-
-			Skeleton[] skeletons;
-			using( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
-			{
-				if( skeletonFrame != null )
-				{
-					skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-					skeletonFrame.CopySkeletonDataTo( skeletons );
-					_interactionStream.ProcessSkeleton( skeletons, _kinectSensor.AccelerometerGetCurrentReading(), skeletonFrame.Timestamp );
-				}
-			}
-		}
-
         /// <summary>
         /// Initializes the position tracker and its related trigger zones for the hands.
         /// </summary>
@@ -628,46 +599,73 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
         {
-            using ( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
-            {
-                if ( skeletonFrame != null )
-                {
-                    // copy the frame data in to the collection
-                    skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
+			//using ( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
+			//{
+			//	if ( skeletonFrame != null )
+			//	{
+			//		// copy the frame data in to the collection
+			//		skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
 
-                    var trackedSkeletons = ( from trackskeleton in _totalSkeleton
-                                             where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
-                                             select trackskeleton );
+			//		var trackedSkeletons = ( from trackskeleton in _totalSkeleton
+			//								 where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
+			//								 select trackskeleton );
 
-                    int skeletonCount = trackedSkeletons.Count();
+			//		int skeletonCount = trackedSkeletons.Count();
 
-                    Skeleton firstSkeleton = trackedSkeletons.FirstOrDefault();
-                    if ( firstSkeleton != null )
-                    {
-                        _handsVisible = true;
-                        //_positionTrackerController.NotifyPositionTrackers( firstSkeleton );
+			//		Skeleton firstSkeleton = trackedSkeletons.FirstOrDefault();
+			//		if ( firstSkeleton != null )
+			//		{
+			//			_handsVisible = true;
+			//			//_positionTrackerController.NotifyPositionTrackers( firstSkeleton );
 
-						//if ( HandsPointReady != null )
-						//{
-						//	HandsPointReady( this,
-						//		new System.Windows.Point[2] {
-						//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandLeft].Position ),
-						//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
-						//		}
-						//	 );
-						//}
-                    }
-                    else if ( _handsVisible == true )
-                    {
-                        if ( HandsPointReady != null )
-                        {
-                            HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
-                        }
-                        _handsVisible = false;
-                    }
-                }
-            }
+			//			//if ( HandsPointReady != null )
+			//			//{
+			//			//	HandsPointReady( this,
+			//			//		new System.Windows.Point[2] {
+			//			//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandLeft].Position ),
+			//			//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
+			//			//		}
+			//			//	 );
+			//			//}
+			//		}
+			//		else if ( _handsVisible == true )
+			//		{
+			//			if ( HandsPointReady != null )
+			//			{
+			//				HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
+			//			}
+			//			_handsVisible = false;
+			//		}
+			//	}
+			//}
         }
+
+		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
+		{
+			short[] depthPix;
+			using( DepthImageFrame dif = e.OpenDepthImageFrame() )
+			{
+				if( dif == null )
+				{
+					return;
+				}
+
+				depthPix = new short[dif.PixelDataLength];
+
+				dif.CopyPixelDataTo( depthPix );
+
+				_interactionStream.ProcessDepth( dif.GetRawPixelData(), dif.Timestamp );
+			}
+
+			using( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
+			{
+				if( skeletonFrame != null )
+				{
+					skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
+					_interactionStream.ProcessSkeleton( _totalSkeleton, _kinectSensor.AccelerometerGetCurrentReading(), skeletonFrame.Timestamp );
+				}
+			}
+		}
 
 		private void InteractiontStream_InteractionFrameReady( object sender, InteractionFrameReadyEventArgs e )
 		{
@@ -690,12 +688,17 @@ namespace RideOnMotion.Inputs.Kinect
 
 				if( HandsPointReady != null )
 				{
-					HandsPointReady( this,
-						new System.Windows.Point[2] {
-								new System.Windows.Point( (float)(curUser.HandPointers[0].X * DEPTH_FRAME_WIDTH), (float)(curUser.HandPointers[0].Y * DEPTH_FRAME_HEIGHT) ),
-                                new System.Windows.Point( (float)(curUser.HandPointers[1].X * DEPTH_FRAME_WIDTH), (float)(curUser.HandPointers[1].Y * DEPTH_FRAME_HEIGHT) )
-                            }
-						);
+					float x = (float)( curUser.HandPointers[0].X * ( KinectSensorController.DEPTH_FRAME_WIDTH / 1.5 ) );
+					float y = (float)( curUser.HandPointers[0].Y * ( KinectSensorController.DEPTH_FRAME_HEIGHT / 1.5 ) );
+					x = ( x < -1 ) ? -1 : x;
+					y = ( y < -1 ) ? -1 : y;
+					System.Windows.Point left = new System.Windows.Point( x, y );
+					x = (float)( curUser.HandPointers[1].X * ( KinectSensorController.DEPTH_FRAME_WIDTH / 1.5 ) );
+					y = (float)( curUser.HandPointers[1].Y * ( KinectSensorController.DEPTH_FRAME_HEIGHT / 1.5 ) );
+					x = ( x < -1 ) ? -1 : x;
+					y = ( y < -1 ) ? -1 : y;
+					System.Windows.Point right = new System.Windows.Point( x, y );
+					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
 				}
 			}
 			else if( _handsVisible == true )
