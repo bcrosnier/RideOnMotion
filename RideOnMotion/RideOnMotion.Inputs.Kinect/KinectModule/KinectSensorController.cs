@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using System.Collections;
 using RideOnMotion.Utilities;
 using System.ComponentModel;
+using System.Windows.Threading;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -99,6 +100,8 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private Skeleton[] _totalSkeleton;
 
+		private DispatcherTimer _timerToLand;
+
         /// <summary>
         /// Collection of all ICaptionAreas for the left and right hands.
         /// </summary>
@@ -113,6 +116,14 @@ namespace RideOnMotion.Inputs.Kinect
         /// Fired when new points are available for the hands.
         /// </summary>
         public event EventHandler<System.Windows.Point[]> HandsPointReady;
+
+		/// <summary>
+		/// Fired when security recquire hover mode.
+		/// 0 -> No problem
+		/// 1 -> Hover mode activation
+		/// 2 -> Land the drone
+		/// </summary>
+		public event EventHandler<int> SecurityModeNeeded;
 
         /// <summary>
         /// Converts a DepthImagePoint to a SkeletonPoint, using this controller's depth tracking data.
@@ -315,6 +326,7 @@ namespace RideOnMotion.Inputs.Kinect
                 KinectSensor kinectSensor = KinectSensor.KinectSensors.Where( item => item.Status == KinectStatus.Connected ).FirstOrDefault();
                 SetSkeletonSmoothingEnabled( false );
                 initializeKinectSensor( kinectSensor );
+				initializeSecurityTimer();
             }
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
@@ -388,6 +400,13 @@ namespace RideOnMotion.Inputs.Kinect
             initializePositionTrackerController();
             // Call Start(); from outside.
         }
+
+		private void initializeSecurityTimer()
+		{
+			_timerToLand = new DispatcherTimer();
+			_timerToLand.Interval = new TimeSpan( 0, 0, 3 );
+			_timerToLand.Tick += new EventHandler( timerToLand_Tick );
+		}
 
         /// <summary>
         /// Initializes the position tracker and its related trigger zones for the hands.
@@ -603,11 +622,12 @@ namespace RideOnMotion.Inputs.Kinect
                     int skeletonCount = trackedSkeletons.Count();
 
                     Skeleton firstSkeleton = trackedSkeletons.FirstOrDefault();
+
+					securityHoverMode( firstSkeleton );
                     if ( firstSkeleton != null )
                     {
                         _handsVisible = true;
                         _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
-
                         if ( HandsPointReady != null )
                         {
                             HandsPointReady( this,
@@ -616,6 +636,7 @@ namespace RideOnMotion.Inputs.Kinect
                                     SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
                                 }
                              );
+							SecurityModeNeeded( this, 0 );
                         }
                     }
                     else if ( _handsVisible == true )
@@ -629,6 +650,48 @@ namespace RideOnMotion.Inputs.Kinect
                 }
             }
         }
+
+		public void securityHoverMode(Skeleton skeleton)
+		{
+			if( skeleton != null && skeleton.TrackingState == SkeletonTrackingState.Tracked )
+			{
+				if( skeleton.Joints[JointType.HandLeft].TrackingState != JointTrackingState.Tracked
+					&& skeleton.Joints[JointType.HandRight].TrackingState != JointTrackingState.Tracked )
+				{
+					if ( SecurityModeNeeded != null )
+					{
+						SecurityModeNeeded( this, 1 );
+					}
+
+					if(_timerToLand.IsEnabled == false )
+					{
+						_timerToLand.Start();
+					}
+				}
+				else if( _timerToLand.IsEnabled == true )
+					_timerToLand.Stop();
+			}
+			else
+			{
+				if ( SecurityModeNeeded != null )
+				{
+					SecurityModeNeeded( this, 1 );
+				}
+
+				if( _timerToLand.IsEnabled == false )
+				{
+					_timerToLand.Start();
+				}
+			}
+		}
+
+		private void timerToLand_Tick( object sender, EventArgs e )
+		{
+			if ( SecurityModeNeeded != null )
+			{
+				SecurityModeNeeded( this, 2 );
+			}
+		}
 
         /// <summary>
         /// Converts a SkeletonPoint to a DepthImagePoint, taking only the X and Y values.

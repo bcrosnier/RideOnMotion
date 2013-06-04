@@ -19,6 +19,9 @@ namespace RideOnMotion.UI
     class MainWindowViewModel : IViewModel, INotifyPropertyChanged
     {
         private readonly int MAX_LOG_ENTRIES = 50; // Maximum number of log entries in the collection
+        private readonly float DRONE_PITCH_YAW_SPEED = 0.15f;
+        private readonly float DRONE_ROTATION_SPEED = 0.25f;
+        private readonly float DRONE_ELEVATION_SPEED = 0.25f;
 
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
@@ -424,7 +427,27 @@ namespace RideOnMotion.UI
 			// Bind activity
 			_inputController.ControllerActivity += OnControllerActivity;
 			_inputController.InputsStateChanged += OnInputsStateChanged;
+			_inputController.SecurityModeNeeded += OnSecurityModeNeeded;
         }
+
+		private void OnSecurityModeNeeded( object sender, int e )
+		{
+			switch( e )
+			{
+				case 0:
+					_droneInit.DroneCommand.LeaveHoverMode();
+					break;
+				case 1:
+					_droneInit.DroneCommand.EnterHoverMode();
+					break;
+				case 2:
+					_droneInit.DroneCommand.Land();
+					break;
+				default:
+					_droneInit.DroneCommand.Land();
+					break;
+			}
+		}
 		void OnInputsStateChanged( object sender, bool[] e )
 		{
 			DroneCommandProcessing( e );
@@ -441,10 +464,10 @@ namespace RideOnMotion.UI
 			float yaw = 0; // = CurrentInputState[6-7];
 			float gaz = 0; // = CurrentInputState[4-5];
 
-			if ( CurrentInputState[2] ) { roll = -0.15f; } else if ( CurrentInputState[3] ) { roll = 0.15f; }
-			if ( CurrentInputState[0] ) { pitch = -0.15f; } else if ( CurrentInputState[1] ) { pitch = 0.15f; }
-			if ( CurrentInputState[6] ) { yaw = -0.25f; } else if ( CurrentInputState[7] ) { yaw = 0.25f; }
-			if ( CurrentInputState[4] ) { gaz = 0.25f; } else if ( CurrentInputState[5] ) { gaz = -0.25f; }
+            if ( CurrentInputState[2] ) { roll = -DRONE_PITCH_YAW_SPEED; } else if ( CurrentInputState[3] ) { roll = DRONE_PITCH_YAW_SPEED; }
+            if ( CurrentInputState[0] ) { pitch = -DRONE_PITCH_YAW_SPEED; } else if ( CurrentInputState[1] ) { pitch = DRONE_PITCH_YAW_SPEED; }
+            if ( CurrentInputState[6] ) { yaw = -DRONE_ROTATION_SPEED; } else if ( CurrentInputState[7] ) { yaw = DRONE_ROTATION_SPEED; }
+            if ( CurrentInputState[4] ) { gaz = DRONE_ELEVATION_SPEED; } else if ( CurrentInputState[5] ) { gaz = -DRONE_ELEVATION_SPEED; }
 
 			_droneInit.DroneCommand.Navigate( roll, pitch, yaw, gaz );
 
