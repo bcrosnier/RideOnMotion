@@ -629,45 +629,45 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
         {
-			//using ( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
-			//{
-			//	if ( skeletonFrame != null )
-			//	{
-			//		// copy the frame data in to the collection
-			//		skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
+			using( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
+			{
+				if( skeletonFrame != null )
+				{
+					// copy the frame data in to the collection
+					skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
 
-			//		var trackedSkeletons = ( from trackskeleton in _totalSkeleton
-			//								 where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
-			//								 select trackskeleton );
+					var trackedSkeletons = ( from trackskeleton in _totalSkeleton
+											 where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
+											 select trackskeleton );
 
-			//		int skeletonCount = trackedSkeletons.Count();
+					int skeletonCount = trackedSkeletons.Count();
 
-			//		Skeleton firstSkeleton = trackedSkeletons.FirstOrDefault();
-			//		if ( firstSkeleton != null )
-			//		{
-			//			_handsVisible = true;
-			//			//_positionTrackerController.NotifyPositionTrackers( firstSkeleton );
+					Skeleton firstSkeleton = trackedSkeletons.FirstOrDefault();
+					if( firstSkeleton != null )
+					{
+						_handsVisible = true;
+// TODO - Merge pending		// _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
 
-			//			//if ( HandsPointReady != null )
-			//			//{
-			//			//	HandsPointReady( this,
-			//			//		new System.Windows.Point[2] {
-			//			//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandLeft].Position ),
-			//			//			SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
-			//			//		}
-			//			//	 );
-			//			//}
-			//		}
-			//		else if ( _handsVisible == true )
-			//		{
-			//			if ( HandsPointReady != null )
-			//			{
-			//				HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
-			//			}
-			//			_handsVisible = false;
-			//		}
-			//	}
-			//}
+						if( HandsPointReady != null )
+						{
+							HandsPointReady( this,
+								new System.Windows.Point[2] {
+									SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandLeft].Position ),
+									SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
+								}
+							 );
+						}
+					}
+					else if( _handsVisible == true )
+					{
+						if( HandsPointReady != null )
+						{
+							HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
+						}
+						_handsVisible = false;
+					}
+				}
+			}
         }
 
 		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
@@ -704,16 +704,15 @@ namespace RideOnMotion.Inputs.Kinect
 
 
 			UserInfo[] usrInfo = new UserInfo[6];
-
-			//securityHoverMode( firstSkeleton ); // TODO - Merge pending
+						
 			iFrame.CopyInteractionDataTo( usrInfo );
-
 
 			List<UserInfo> curUsers = usrInfo.Where( x => x.SkeletonTrackingId > 0 ).ToList<UserInfo>();
 
 			if( curUsers.Count > 0 )
 			{
 				UserInfo curUser = curUsers[0];
+				SecurityHoverMode( usrInfo ); // TODO - Merge pending
 				_handsVisible = true;
 				_positionTrackerController.NotifyPositionTrackers( curUser );
 				if( HandsPointReady != null )
@@ -729,7 +728,7 @@ namespace RideOnMotion.Inputs.Kinect
 					y = ( y < -1 ) ? -1 : y;
 					System.Windows.Point right = new System.Windows.Point( x, y );
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
-                    /* // TODO - Merge pending
+                    /*// TODO - Merge pending
 							if( !_skeletonFound )
 							{
 								_skeletonFound = true;
@@ -752,16 +751,16 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 		}
 
-		
 
-		public void securityHoverMode(Skeleton skeleton)
+
+		public void SecurityHoverMode( UserInfo[] usrInfo )
 		{
 			if( _skeletonFound )
 			{
-				if( skeleton != null && skeleton.TrackingState == SkeletonTrackingState.Tracked )
+				if( usrInfo != null )
 				{
-					if( skeleton.Joints[JointType.HandLeft].TrackingState != JointTrackingState.Tracked
-						&& skeleton.Joints[JointType.HandRight].TrackingState != JointTrackingState.Tracked )
+					if( usrInfo[0].HandPointers[0].IsTracked
+						&& usrInfo[0].HandPointers[1].IsTracked )
 					{
 						if( SecurityModeNeeded != null )
 						{
