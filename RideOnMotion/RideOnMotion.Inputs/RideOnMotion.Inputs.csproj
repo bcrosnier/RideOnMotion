@@ -4,15 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1939FA1B-04F0-429B-A575-EE75114B365C}</ProjectGuid>
+    <ProjectGuid>{C214CBF4-359D-40FD-8F0C-102E04D4742C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RideOnMotion.Inputs.Keyboard</RootNamespace>
-    <AssemblyName>RideOnMotion.Inputs.Keyboard</AssemblyName>
+    <RootNamespace>RideOnMotion.Inputs</RootNamespace>
+    <AssemblyName>RideOnMotion.Inputs</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,41 +30,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CK.Core, Version=2.8.8.0, Culture=neutral, PublicKeyToken=731c291b31fb8d27, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CK.Core.2.8.8-develop\lib\net45\CK.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KeyboardController.cs" />
+    <Compile Include="InputState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SendDroneCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RideOnMotion.Inputs\RideOnMotion.Inputs.csproj">
-      <Project>{c214cbf4-359d-40fd-8f0c-102e04d4742c}</Project>
-      <Name>RideOnMotion.Inputs</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RideOnMotion.Utilities\RideOnMotion.Utilities.csproj">
       <Project>{7db44258-5127-4395-b0d6-619c899bf2a1}</Project>
       <Name>RideOnMotion.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -14,6 +14,35 @@ namespace RideOnMotion
 	{
 		private DroneControl _droneControl;
 
+		public bool CanTakeoff
+		{
+			get
+			{
+				return _droneControl.CanTakeoff;
+			}
+		}
+		public bool CanLand
+		{
+			get
+			{
+				return _droneControl.CanLand;
+			}
+		}
+		public bool CanEnterHoverMode
+		{
+			get
+			{
+				return _droneControl.CanEnterHoverMode;
+			}
+		}
+		public bool CanLeaveHoverMode
+		{
+			get
+			{
+				return _droneControl.CanLeaveHoverMode;
+			}
+		}
+
 		public DroneCommand( DroneControl droneControl )
 		{
 			_droneControl = droneControl;
