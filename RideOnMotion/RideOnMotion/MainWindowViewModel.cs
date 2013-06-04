@@ -10,8 +10,6 @@ using RideOnMotion.Inputs.Keyboard;
 using RideOnMotion.Inputs.Xbox360Gamepad;
 using System.Text;
 using System.Windows.Threading;
-using ARDrone.Input.Utils;
-using System.Windows.Interop;
 
 namespace RideOnMotion.UI
 {
@@ -36,7 +34,6 @@ namespace RideOnMotion.UI
         private Control _inputControlUI;
         private MenuItem _inputMenu;
 
-		ARDrone.Input.InputManager _inputManager;
 		private IntPtr _handle;
 
         private String _droneNetworkStatusText;
@@ -427,15 +424,7 @@ namespace RideOnMotion.UI
 			// Bind activity
 			_inputController.ControllerActivity += OnControllerActivity;
 			_inputController.InputsStateChanged += OnInputsStateChanged;
-			ARDrone.Input.InputManager inputManager = new ARDrone.Input.InputManager( _handle );
-			inputManager.NewInputState += new NewInputStateHandler( OnNewInputState );
         }
-
-		private void OnNewInputState( object sender, NewInputStateEventArgs e )
-		{
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, e.CurrentInputState.ToString() );
-		}
-
 		void OnInputsStateChanged( object sender, bool[] e )
 		{
 			DroneCommandProcessing( e );

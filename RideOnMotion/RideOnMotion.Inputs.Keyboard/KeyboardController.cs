@@ -10,7 +10,6 @@ namespace RideOnMotion.Inputs.Keyboard
     public class KeyboardController // : IDroneInputController // Fired until interface is fixed and/or valid.
     {
         DroneCommand _drone;
-        bool _keyDown = false;
 		bool[] _heldDown;
 		Key _lastKey;
 
@@ -40,162 +39,8 @@ namespace RideOnMotion.Inputs.Keyboard
         {
 			Key currentKey = e.Key;
 			_heldDown[(int)e.Key] = true;
-			//System.Windows.Input.Keyboard.IsKeyDown( Key.A );
-			for ( int i = 0; i < 256 && currentKey!=_lastKey; i++ )
-			{
-				if ( _heldDown[i] )
-				{
-					Logger.Instance.NewEntry( CKLogLevel.Trace, RideOnMotion.CKTraitTags.User, "key pressed : "+ (Key)i );
-				}
-			}
-			if ( currentKey != _lastKey )
-			{
-				Logger.Instance.NewEntry( CKLogLevel.Trace, RideOnMotion.CKTraitTags.User, "CurrentKey : " + (Key)currentKey + ", lastKey : " + (Key)_lastKey );
-			}
-            //RideOnMotion.Logger.Instance.NewEntry( CKLogLevel.Trace, RideOnMotion.CKTraitTags.User, "Key : " + e.Key.ToString() );
-            if ( _keyDown )
-            {
-                return;
-            }
-
-            if ( this._drone != null )
-            {
-                // Drone control.
-                switch( e.Key.ToString() ) {
-                    // O or Enter: Take off
-                    case "O":
-                    case "Return":
-                        this._drone.Takeoff();
-                        e.Handled = true; // Halt further propagation.
-                        break;
-
-                    // Landing
-                    case "P":
-                    case "Space":
-                        this._drone.Land();
-                        e.Handled = true;
-                        break;
-                        
-                    // LED testing
-                    case "L":
-                        this._drone.PlayLED();
-                        e.Handled = true;
-                        break;
-                       
-                    // Calibrate flat trim
-                    case "F":
-                        this._drone.FlatTrim();
-                        e.Handled = true;
-                        break;
-                    
-                    /* Navigation commands:
-                     * Navigate( roll, pitch, yaw, gaz )
-                     * Reminder:
-                     * Roll: Translate left or right
-                     * Pitch Translate ahead or backwards
-                     * Yaw: Turn left or right
-                     * Gaz: Propelling power (ie. elevation)
-                     * */
-
-                    /* Arranged like the number pad:
-                     * A Z E  ↖ ↑ ↗
-                     * Q S D  ← ⇎ →
-                     * W X C  ↙ ↓ ↘
-                     * */
-                    case "NumPad7":
-					case "A": // Fly ahead and to the left?
-						///this._drone.LeaveHoverMode();
-                        this._drone.Navigate( -0.1f, -0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad8":
-					case "Z": // Fly ahead?
-						///this._drone.LeaveHoverMode();
-                        this._drone.Navigate( 0, -0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad9":
-					case "E": // Fly ahead and to the right?
-						///this._drone.LeaveHoverMode();
-                        this._drone.Navigate( 0.1f, -0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad4":
-					case "Q": // Fly left?
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( -0.1f, 0, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad5":
-					case "S":// Stop
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( 0, 0, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad6":
-					case "D": // Fly right?
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( 0.1f, 0, 0, 0 );
-                        e.Handled = true;
-                        break;
-					case "NumPad1":
-                    case "W": // Fly backwards and to the left?
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( -0.1f, 0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad2":
-					case "X": // Fly backwards
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( 0, 0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad3":
-                    case "C": // Fly backwards and to the right?
-						///this._drone.LeaveHoverMode();
-                        this._drone.Navigate( 0.1f, 0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-					case "Up": // Raise
-						///this._drone.LeaveHoverMode();
-						this._drone.Navigate( 0, 0, 0, 0.25f );
-                        e.Handled = true;
-                        break;
-					case "Down": // Lower
-						///this._drone.LeaveHoverMode();
-						this._drone.Navigate( 0, 0, 0, -0.25f );
-                        e.Handled = true;
-                        break;
-					case "Left": // Turn left
-						///this._drone.LeaveHoverMode();
-						this._drone.Navigate( 0, 0, -0.25f, 0 );
-                        e.Handled = true;
-                        break;
-					case "Right": // Turn right
-						///this._drone.LeaveHoverMode();
-						this._drone.Navigate( 0, 0, 0.25f, 0 );
-                        e.Handled = true;
-                        break;
-					case "B": //
-						this._drone.EnterHoverMode();
-						e.Handled = true;
-						break;
-					case "N": // 
-						this._drone.LeaveHoverMode();
-						e.Handled = true;
-                        break;
-                    case "V": // 
-                        this._drone.ChangeCamera();
-                        e.Handled = true;
-                        break;
-                    default:
-                        // Unknown key.
-                        break;
-                }
-            }
 
 			_lastKey = currentKey;
-            //_keyDown = true;
         }
 
         /// <summary>
@@ -210,9 +55,6 @@ namespace RideOnMotion.Inputs.Keyboard
 		public void ProcessKeyUp( KeyEventArgs e )
 		{
 			_heldDown[(int)e.Key] = false;
-            //this._drone.EnterHoverMode();
-            this._drone.Navigate( 0, 0, 0, 0 );
-            _keyDown = false;
 		}
 	}
 }
