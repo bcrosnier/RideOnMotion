@@ -16,7 +16,11 @@ using System.Windows.Threading;
 namespace RideOnMotion
 {
 	public class DroneInitializer
-	{
+    {
+        private static readonly string DEFAULT_DRONE_SSID = "ardrone_006431";
+        private static readonly string DEFAULT_DRONE_IPADDRESS = "192.168.1.1";
+        private static readonly string DEFAULT_DRONE_CLIENT_ADDRESS = "192.168.1.2";
+
 		private DispatcherTimer _timerVideoUpdate;
 		private DispatcherTimer _timerStatusUpdate;
 
@@ -36,6 +40,9 @@ namespace RideOnMotion
 		public DroneControl DroneControl { get { return _droneControl; } }
 		public int FrameRate { get { return GetCurrentFrameRate(); } }
 
+        public event EventHandler<String> NetworkConnectionStateChanged;
+        public event EventHandler<bool> ConnectionStateChanged;
+
 		private int GetCurrentFrameRate()
 		{
 			int timePassed = (int)( DateTime.Now - _lastFrameRateCaptureTime ).TotalMilliseconds;
@@ -51,50 +58,31 @@ namespace RideOnMotion
 		public event EventHandler<DroneFrameReadyEventArgs> DroneFrameReady;
 		public event EventHandler<DroneDataReadyEventArgs> DroneDataReady;
 
-		public DroneInitializer()
-			: this("192.168.1.2", "192.168.1.1", "ardrone_006431")
-		{
-		}
+        public DroneInitializer( DroneConfig config )
+        {
+            _currentDroneConfig = config;
+            _droneControl = new DroneControl( _currentDroneConfig );
+            _droneCommand = new DroneCommand( _droneControl );
 
-		public DroneInitializer( string ownIPAddress, string droneIPAddress, string droneNetworkIdentifier, int videoPort = 5555, int navigationPort = 5554, int commandPort = 5556, int controlInfoPort = 5559, bool useSpecificFirmwareVersion = false, SupportedFirmwareVersion firmwareVersion = DroneConfig.DefaultSupportedFirmwareVersion, int timeoutValue = 500 )
-		{
-			InitializeDroneControl( ownIPAddress, droneIPAddress, droneNetworkIdentifier, videoPort, navigationPort, commandPort, controlInfoPort, useSpecificFirmwareVersion, firmwareVersion, timeoutValue );
+            _droneControl.Error += droneControl_Error;
+            _droneControl.ConnectionStateChanged += droneControl_ConnectionStateChanged;
+            _droneControl.NetworkConnectionStateChanged += droneControl_NetworkConnectionStateChanged;
 
-			InitializeVideoUpdate();
+            InitializeVideoUpdate();
+            InitializeHudInterface();
 
-			InitializeHudInterface();
+            _timerStatusUpdate = new DispatcherTimer();
+            _timerStatusUpdate.Interval = new TimeSpan( 0, 0, 1 );
+            _timerStatusUpdate.Tick += new EventHandler( timerStatusUpdate_Tick );
+        }
 
-			_droneCommand = new DroneCommand( _droneControl );
-
-		}
-
-		private void InitializeDroneControl( string ownIPAddress, string droneIPAddress, string droneNetworkIdentifier, int videoPort, int navigationPort, int commandPort, int controlInfoPort, bool useSpecificFirmwareVersion, SupportedFirmwareVersion firmwareVersion, int timeoutValue )
-		{
-			_currentDroneConfig = new DroneConfig();
-
-			_currentDroneConfig.StandardOwnIpAddress = ownIPAddress;
-			_currentDroneConfig.DroneIpAddress = droneIPAddress;
-			_currentDroneConfig.DroneNetworkIdentifierStart = droneNetworkIdentifier;
-
-			_currentDroneConfig.VideoPort = videoPort;
-			_currentDroneConfig.NavigationPort = navigationPort;
-			_currentDroneConfig.CommandPort = commandPort;
-			_currentDroneConfig.ControlInfoPort = controlInfoPort;
-
-			_currentDroneConfig.UseSpecificFirmwareVersion = useSpecificFirmwareVersion;
-			_currentDroneConfig.FirmwareVersion = firmwareVersion;
-
-			_currentDroneConfig.TimeoutValue = timeoutValue;
-
-			_droneControl = new DroneControl( _currentDroneConfig );
-
-			_droneControl.Error += droneControl_Error;
-			_droneControl.ConnectionStateChanged += droneControl_ConnectionStateChanged;
-
-			_timerStatusUpdate = new DispatcherTimer();
-			_timerStatusUpdate.Interval = new TimeSpan( 0, 0, 1 );
-			_timerStatusUpdate.Tick += new EventHandler( timerStatusUpdate_Tick );
-		}
+        void droneControl_NetworkConnectionStateChanged(object sender, DroneNetworkConnectionStateChangedEventArgs e)
+        {
+            if ( this.NetworkConnectionStateChanged != null )
+            {
+                this.NetworkConnectionStateChanged( sender, "(" + e.CurrentInterfaceName + ")" + e.State.ToString() );
+            }
+        }
 
 		private void InitializeVideoUpdate()
 		{
@@ -141,7 +129,12 @@ namespace RideOnMotion
 			else
 			{
 				Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "ARDrone is disconnected" );
-			}
+            }
+
+            if ( this.ConnectionStateChanged != null )
+            {
+                ConnectionStateChanged( sender, e.Connected );
+            }
 		}
 
 		private void droneControl_Error( object sender, DroneErrorEventArgs e )

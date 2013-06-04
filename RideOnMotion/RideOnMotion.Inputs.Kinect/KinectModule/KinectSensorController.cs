@@ -142,6 +142,10 @@ namespace RideOnMotion.Inputs.Kinect
 
 		InteractionStream _interactionStream;
 
+        /// <summary>
+        /// Active settings Window. Closed on Stop(), can be null.
+        /// </summary>
+        private Window _deviceSettingsWindow;
 
         #region Interface implementation
         // Events
@@ -540,6 +544,11 @@ namespace RideOnMotion.Inputs.Kinect
             {
                 _kinectSensor.Stop();
             }
+
+            if ( this._deviceSettingsWindow != null )
+            {
+                this._deviceSettingsWindow.Close();
+            }
         }
 
         /// <summary>
@@ -865,15 +874,29 @@ namespace RideOnMotion.Inputs.Kinect
         /// <param name="e"></param>
         void settingsMenuItem_Click( object sender, RoutedEventArgs e )
         {
-            if ( this.InputStatus != DroneInputStatus.Ready )
+            if ( this._deviceSettingsWindow != null )
+            {
+                this._deviceSettingsWindow.Activate();
+            }
+            else if ( this.InputStatus != DroneInputStatus.Ready )
             {
                 return; // Command should be disabled anyway
             }
+            else
+            {
+                // Prepare and open window
 
-            Window deviceSettingsWindow = new KinectDeviceSettings( this );
-            deviceSettingsWindow.Show();
+                this._deviceSettingsWindow = new KinectDeviceSettings( this );
+                _deviceSettingsWindow.Closed += deviceSettingsWindow_Closed;
+                _deviceSettingsWindow.Show();
+            }
 
             e.Handled = true;
+        }
+
+        void deviceSettingsWindow_Closed( object sender, EventArgs e )
+        {
+            _deviceSettingsWindow = null;
         }
 
 		private void OnInputImageSourceChanged( BitmapSource bitmapSource )

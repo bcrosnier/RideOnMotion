@@ -7,6 +7,10 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using System.Windows.Input;
 using RideOnMotion.Inputs.Keyboard;
+using System.Text;
+using System.Windows.Threading;
+using System.Windows;
+using RideOnMotion.UI.Properties;
 
 namespace RideOnMotion.UI
 {
@@ -17,6 +21,23 @@ namespace RideOnMotion.UI
     {
         private readonly int MAX_LOG_ENTRIES = 50; // Maximum number of log entries in the collection
 
+        private static readonly float DEFAULT_MAXIMUM_DRONE_TRANSLATION_SPEED = 0.15f;
+        private static readonly float DEFAULT_MAXIMUM_DRONE_ROTATION_SPEED = 0.25f;
+        private static readonly float DEFAULT_MAXIMUM_DRONE_ELEVATION_SPEED = 0.25f;
+        public static ARDrone.Control.DroneConfig DefaultDroneConfig = new ARDrone.Control.DroneConfig()
+        {
+            DroneIpAddress = Settings.Default.DroneIPAddress,
+            StandardOwnIpAddress = Settings.Default.ClientIPAddress,
+            DroneNetworkIdentifierStart = Settings.Default.DroneSSID,
+            NavigationPort = 5554,
+            VideoPort = 5555,
+            CommandPort = 5556,
+            ControlInfoPort = 5559,
+            UseSpecificFirmwareVersion = false,
+            FirmwareVersion = ARDrone.Control.DroneConfig.DefaultSupportedFirmwareVersion,
+            TimeoutValue = 500
+        };
+
         /// <summary>
         /// Kinect model : Handles data in and out of the Kinect
         /// </summary>
@@ -24,11 +45,22 @@ namespace RideOnMotion.UI
         private KeyboardController _keyboardController;
         private DroneInitializer _droneInit;
 
+        private float _droneTranslationSpeed = DEFAULT_MAXIMUM_DRONE_TRANSLATION_SPEED;
+        private float _droneRotationSpeed = DEFAULT_MAXIMUM_DRONE_ROTATION_SPEED;
+        private float _droneElevationSpeed = DEFAULT_MAXIMUM_DRONE_ELEVATION_SPEED;
+
         #region Values
         private ImageSource _droneImageSource;
         private ImageSource _inputImageSource;
         private Control _inputControlUI;
         private MenuItem _inputMenu;
+
+        private Window _droneSettingsWindow;
+
+        private String _droneNetworkStatusText;
+        private bool _droneConnectionStatus;
+        private ARDrone.Control.DroneConfig _currentDroneConfig = DefaultDroneConfig;
+        private ARDrone.Control.Data.DroneData _lastDroneData;
 
         private List<Type> InputTypes { get; set; }
 
@@ -45,9 +77,23 @@ namespace RideOnMotion.UI
 
         internal event EventHandler<MenuItem> InputMenuChanged;
 
+        private delegate void AddLogStringDelegate( String s );
+
         #endregion Values
 
         #region GettersSetters
+
+        public ICommand OpenDroneSettingsCommand
+        {
+            get;
+            internal set;
+        }
+
+        public ICommand ReconnectDroneCommand
+        {
+            get;
+            internal set;
+        }
 
         public ImageSource InputImageSource
         {
@@ -124,11 +170,78 @@ namespace RideOnMotion.UI
             }
         }
 
+        public String DroneStatus
+        {
+            get
+            {
+                if ( this._droneConnectionStatus )
+                {
+                    return "AR Drone: Connected";
+                }
+                else
+                {
+                    return "AR Drone: Disconnected";
+                }
+            }
+        }
+
+        public String DroneStatusInfo
+        {
+            get
+            {
+                if ( this._droneConnectionStatus )
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append( "AR Drone: Connected\n" );
+                    if ( this._droneNetworkStatusText != null )
+                    {
+                        sb.Append( this._droneNetworkStatusText );
+                        sb.Append( '\n' );
+                    }
+                    if ( this._lastDroneData != null )
+                    {
+                        sb.Append( "Battery: " );
+                        sb.Append( this._lastDroneData.BatteryLevel );
+                        sb.Append( '\n' );
+                        sb.Append( "Altitude: " );
+                        sb.Append( this._lastDroneData.Altitude );
+                        sb.Append( '\n' );
+
+                        sb.Append( "φ: " );
+                        sb.Append( this._lastDroneData.Phi );
+                        sb.Append( '\n' );
+                        sb.Append( "ψ: " );
+                        sb.Append( this._lastDroneData.Psi );
+                        sb.Append( '\n' );
+                        sb.Append( "θ: " );
+                        sb.Append( this._lastDroneData.Theta );
+                        sb.Append( '\n' );
+
+                        sb.Append( "vX: " );
+                        sb.Append( this._lastDroneData.VX );
+                        sb.Append( '\n' );
+                        sb.Append( "vY: " );
+                        sb.Append( this._lastDroneData.VY );
+                        sb.Append( '\n' );
+                        sb.Append( "vZ: " );
+                        sb.Append( this._lastDroneData.VZ );
+                        sb.Append( '\n' );
+                    }
+
+                    return sb.ToString();
+                }
+                else
+                {
+                    return "AR Drone: Disconnected"; 
+                }
+            }
+        }
+
         public String InputStatusInfo
         {
             get
             {
-                return  _inputController.Name + ": " + _inputStatusInfo;
+                return _inputController.Name + ": " + _inputStatusInfo;
             }
         }
 
@@ -137,6 +250,19 @@ namespace RideOnMotion.UI
             get
             {
                 return _inputControlUI;
+            }
+        }
+
+        public Visibility InputControlVisibility
+        {
+            get
+            {
+                if ( this._inputController.InputStatus == DroneInputStatus.Ready )
+                {
+                    return Visibility.Visible;
+                } else {
+                    return Visibility.Collapsed;
+                }
             }
         }
 
@@ -184,6 +310,8 @@ namespace RideOnMotion.UI
         /// </summary>
         public MainWindowViewModel()
         {
+            CreateDroneCommands();
+
             InputTypes = new List<Type>();
 			InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
 
@@ -198,17 +326,27 @@ namespace RideOnMotion.UI
 
             initializeBindings();
 
-            _droneInit = new DroneInitializer();
-            _droneInit.StartDrone();
-
-			_droneInit.DroneCommand.EnterHoverMode();
-
-            // Keyboard controller is specially handled.
             _keyboardController = new KeyboardController();
-            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
+            ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
+        }
 
-            // Bind front drone camera
-            _droneInit.DroneFrameReady += OnDroneFrameReady;
+        void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
+        {
+            this._lastDroneData = e.Data;
+            this.OnNotifyPropertyChange( "DroneStatusInfo" );
+        }
+
+        private void OnNetworkConnectionStateChanged( object sender, string e )
+        {
+            this._droneNetworkStatusText = e;
+            this.OnNotifyPropertyChange( "DroneStatusInfo" );
+        }
+
+        private void OnConnectionStateChanged( object sender, bool e )
+        {
+            this._droneConnectionStatus = e;
+            this.OnNotifyPropertyChange( "DroneStatus" );
+            this.OnNotifyPropertyChange( "DroneStatusInfo" );
         }
 
         void OnDroneFrameReady( object sender, DroneFrameReadyEventArgs e )
@@ -228,6 +366,7 @@ namespace RideOnMotion.UI
         {
             _inputStatusInfo = _inputController.InputStatusString;
             this.OnNotifyPropertyChange( "InputStatusInfo" );
+            this.OnNotifyPropertyChange( "InputControlVisibility" );
         }
 
         private void OnInputBitmapSourceChanged( object sender, BitmapSource s )
@@ -237,11 +376,30 @@ namespace RideOnMotion.UI
 
         private void OnLogStringReceived( object sender, String e )
         {
-            if ( _logStrings.Count >= MAX_LOG_ENTRIES )
+            Invoke( () =>
             {
-                _logStrings.RemoveAt( 0 );
+                if ( _logStrings.Count >= MAX_LOG_ENTRIES )
+                {
+                    _logStrings.RemoveAt( 0 );
+                }
+                _logStrings.Add( e );
+            } );
+        }
+
+        internal void OnPreviewKeyDown( KeyEventArgs e )
+        {
+            if ( this._keyboardController != null )
+            {
+                this._keyboardController.ProcessKeyDown( e );
             }
-            _logStrings.Add( e );
+        }
+
+        internal void OnPreviewKeyUp( KeyEventArgs e )
+        {
+            if ( this._keyboardController != null )
+            {
+                this._keyboardController.ProcessKeyUp( e );
+            }
         }
 
         private void loadInputType(Type t)
@@ -318,10 +476,10 @@ namespace RideOnMotion.UI
 			float yaw = 0; // = CurrentInputState[6-7];
 			float gaz = 0; // = CurrentInputState[4-5];
 
-			if ( CurrentInputState[2] ) { roll = -0.15f; } else if ( CurrentInputState[3] ) { roll = 0.15f; }
-			if ( CurrentInputState[0] ) { pitch = -0.15f; } else if ( CurrentInputState[1] ) { pitch = 0.15f; }
-			if ( CurrentInputState[6] ) { yaw = -0.25f; } else if ( CurrentInputState[7] ) { yaw = 0.25f; }
-			if ( CurrentInputState[4] ) { gaz = 0.25f; } else if ( CurrentInputState[5] ) { gaz = -0.25f; }
+            if ( CurrentInputState[2] ) { roll = -_droneTranslationSpeed; } else if ( CurrentInputState[3] ) { roll = _droneTranslationSpeed; }
+            if ( CurrentInputState[0] ) { pitch = -_droneTranslationSpeed; } else if ( CurrentInputState[1] ) { pitch = _droneTranslationSpeed; }
+            if ( CurrentInputState[6] ) { yaw = -_droneRotationSpeed; } else if ( CurrentInputState[7] ) { yaw = _droneRotationSpeed; }
+            if ( CurrentInputState[4] ) { gaz = _droneElevationSpeed; } else if ( CurrentInputState[5] ) { gaz = -_droneElevationSpeed; }
 
 			_droneInit.DroneCommand.Navigate( roll, pitch, yaw, gaz );
 
@@ -334,25 +492,204 @@ namespace RideOnMotion.UI
 
         internal void Stop()
         {
+            if ( _droneSettingsWindow != null )
+            {
+                _droneSettingsWindow.Close();
+            }
             this._inputController.Stop();
+
+            DisconnectDrone(this._droneInit);
+        }
+
+        private void ConnectDrone( ARDrone.Control.DroneConfig config )
+        {
+            _droneInit = new DroneInitializer( config );
+
+            _droneInit.NetworkConnectionStateChanged += OnNetworkConnectionStateChanged;
+            _droneInit.ConnectionStateChanged += OnConnectionStateChanged;
+            _droneInit.DroneDataReady += OnDroneDataReady;
+            // Bind front drone camera
+            _droneInit.DroneFrameReady += OnDroneFrameReady;
+
+            // Keyboard controller is specially handled.
+            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
+
+            _droneInit.StartDrone();
+            _droneInit.DroneCommand.EnterHoverMode();
+        }
+
+        private void DisconnectDrone( DroneInitializer init )
+        {
+
+            init.NetworkConnectionStateChanged -= OnNetworkConnectionStateChanged;
+            init.ConnectionStateChanged -= OnConnectionStateChanged;
+            init.DroneDataReady -= OnDroneDataReady;
+            // Bind front drone camera
+            init.DroneFrameReady -= OnDroneFrameReady;
+
+            // Keyboard controller is specially handled.
+            _keyboardController.ActiveDrone = init.DroneCommand;
+
+            init.EndDrone();
+        }
+
+        private void ReconnectDrone()
+        {
+            DisconnectDrone( this._droneInit );
+            ConnectDrone( this._currentDroneConfig );
+        }
+
+        /// <summary>
+        /// Sets new maximum drone speeds the drone can reach when moving.
+        /// </summary>
+        /// <param name="translationSpeed">(Between 0 and 1) Speed to move on the pitch and yaw axis. 0: No change.</param>
+        /// <param name="rotationSpeed">(Between 0 and 1) Speed to move on the roll axis. 0: No change.</param>
+        /// <param name="elevationSpeed">(Between 0 and 1) Speed to raise or lower at. 0: No change.</param>
+        internal void SetDroneSpeeds( float translationSpeed, float rotationSpeed, float elevationSpeed )
+        {
+            if ( translationSpeed > 0.0 && translationSpeed <= 1.0 )
+            {
+                this._droneTranslationSpeed = translationSpeed;
+            }
+
+            if ( rotationSpeed > 0.0 && rotationSpeed <= 1.0 )
+            {
+                this._droneRotationSpeed = rotationSpeed;
+            }
+
+            if ( rotationSpeed > 0.0 && rotationSpeed <= 1.0 )
+            {
+                this._droneElevationSpeed = elevationSpeed;
+            }
+        }
+
+        /// <summary>
+        /// Reset drone speeds to their defaults.
+        /// </summary>
+        internal void SetDroneSpeeds()
+        {
+            this._droneTranslationSpeed = DEFAULT_MAXIMUM_DRONE_TRANSLATION_SPEED;
+            this._droneRotationSpeed = DEFAULT_MAXIMUM_DRONE_ROTATION_SPEED;
+            this._droneElevationSpeed = DEFAULT_MAXIMUM_DRONE_ELEVATION_SPEED;
         }
 
         #endregion Contructor/initializers/event handlers
 
-		internal void OnPreviewKeyDown( KeyEventArgs e )
-		{
-			if ( this._keyboardController != null )
-			{
-				this._keyboardController.ProcessKeyDown( e );
-			}
-		}
-		internal void OnPreviewKeyUp( KeyEventArgs e )
-		{
-			if ( this._keyboardController != null )
-			{
-				this._keyboardController.ProcessKeyUp( e );
-			}
-		}
+        #region Commands
+
+        private void CreateDroneCommands()
+        {
+            OpenDroneSettingsCommand = new RelayCommand( OpenDroneSettingsExecute, CanExecuteOpenDroneSettingsCommand );
+            ReconnectDroneCommand = new RelayCommand( ReconnectDroneExecute, CanExecuteReconnectDroneCommand );
+        }
+
+        private bool CanExecuteOpenDroneSettingsCommand( object param )
+        {
+            return true;
+        }
+
+        private void OpenDroneSettingsExecute( object param )
+        {
+            if ( _droneSettingsWindow != null )
+            {
+                _droneSettingsWindow.Activate();
+            }
+            else
+            {
+                EventHandler<ARDrone.Control.DroneConfig> newDroneConfigDelegate = (sender, e) => {
+                    this._currentDroneConfig = e;
+                    ReconnectDrone();
+                };
+                DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig );
+                window.DroneConfigAvailable += newDroneConfigDelegate;
+
+                _droneSettingsWindow = window;
+
+                _droneSettingsWindow.Closed += ( object sender, EventArgs args ) => {
+                    _droneSettingsWindow = null;
+                    window.DroneConfigAvailable -= newDroneConfigDelegate;
+                };
+
+                _droneSettingsWindow.Show();
+            }
+        }
+
+        private bool CanExecuteReconnectDroneCommand( object param )
+        {
+            return true;
+        }
+
+        private void ReconnectDroneExecute( object param )
+        {
+            ReconnectDrone();
+        }
+
+        #endregion Commands
+
+        #region Utilities
+
+        private static void Invoke( Action action )
+        {
+            Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
+            if ( dispatchObject == null || dispatchObject.CheckAccess() )
+            {
+                action();
+            }
+            else
+            {
+                dispatchObject.Invoke( action );
+            }
+        }
+
+        public class RelayCommand : ICommand
+        {
+            #region Fields
+
+            readonly Action<object> _execute;
+            readonly Predicate<object> _canExecute;        
+
+            #endregion // Fields
+
+            #region Constructors
+
+            public RelayCommand(Action<object> execute)
+            : this(execute, null)
+            {
+            }
+
+            public RelayCommand(Action<object> execute, Predicate<object> canExecute)
+            {
+                if (execute == null)
+                    throw new ArgumentNullException("execute");
+
+                _execute = execute;
+                _canExecute = canExecute;           
+            }
+            #endregion // Constructors
+
+            #region ICommand Members
+
+            [System.Diagnostics.DebuggerStepThrough]
+            public bool CanExecute(object parameter)
+            {
+                return _canExecute == null ? true : _canExecute(parameter);
+            }
+
+            public event EventHandler CanExecuteChanged
+            {
+                add { CommandManager.RequerySuggested += value; }
+                remove { CommandManager.RequerySuggested -= value; }
+            }
+
+            public void Execute(object parameter)
+            {
+                _execute(parameter);
+            }
+
+            #endregion // ICommand Members
+        }
+        #endregion Utilities
+
     }
 
 

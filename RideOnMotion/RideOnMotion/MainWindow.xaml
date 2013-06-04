@@ -19,7 +19,7 @@
             <TextBlock x:Name="KinectStatusText" Text="{Binding InputStatusInfo}"></TextBlock>
             <Separator />
             <Image Height="16" VerticalAlignment="Center" Source="Images/HelicopterIcon.png" />
-            <TextBlock x:Name="DroneStatusText">No drone</TextBlock>
+            <TextBlock x:Name="DroneStatusText" Text="{Binding DroneStatus}"></TextBlock>
         </StatusBar>
 
         <Menu DockPanel.Dock="Top" x:Name="MenuBar" IsMainMenu="True">
@@ -28,6 +28,10 @@
             </Menu.Background>
             <MenuItem Header="File">
                 <MenuItem Header="Quit" Click="MenuItem_Quit_Click" />
+            </MenuItem>
+            <MenuItem Header="Drone">
+                <MenuItem Header="Settings" Command="{Binding OpenDroneSettingsCommand}" />
+                <MenuItem Header="Reconnect" Command="{Binding ReconnectDroneCommand}" />
             </MenuItem>
         </Menu>
 
@@ -52,6 +56,7 @@
             <GroupBox Header="Status information" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
                 <StackPanel>
                     <TextBlock x:Name="InputStatusInfo" Text="{Binding InputStatusInfo}"/>
+                    <TextBlock x:Name="DroneStatusInfo" Text="{Binding DroneStatusInfo}"/>
                 </StackPanel>
             </GroupBox>
 
@@ -63,14 +68,14 @@
 
             <!-- Main panel - Drone image -->
             <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <Viewbox>
+                <Viewbox Stretch="Uniform" >
                     <Image Name="DroneImage" Source="{Binding DroneImageSource}"/>
                 </Viewbox>
             </StackPanel>
 
             <!-- Main panel - Input control -->
             <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <ContentPresenter Content="{Binding InputControl}"/>
+                <ContentPresenter Content="{Binding InputControl}" Visibility="{Binding InputControlVisibility}"/>
             </Viewbox>
 
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >

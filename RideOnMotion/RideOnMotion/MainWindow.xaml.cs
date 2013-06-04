@@ -106,7 +106,7 @@ namespace RideOnMotion.UI
 				_originalBackground = MainPanel.Background;
 				_originalViewBox = DepthViewerPanel.Children[0];
 			}
-			string i = "UpUpDownDownLeftRightLeftRightBAReturn";
+			string i = "UpUpDownDownLeftRightLeftRightBA";
 			if ( e.Key.ToString() == "Up" && _konami != "Up" )
 			{
 				_konami = "";
