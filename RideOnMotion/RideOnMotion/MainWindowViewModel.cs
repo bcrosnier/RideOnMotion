@@ -458,7 +458,27 @@ namespace RideOnMotion.UI
 			// Bind activity
 			_inputController.ControllerActivity += OnControllerActivity;
 			_inputController.InputsStateChanged += OnInputsStateChanged;
+			_inputController.SecurityModeNeeded += OnSecurityModeNeeded;
         }
+
+		private void OnSecurityModeNeeded( object sender, int e )
+		{
+			switch( e )
+			{
+				case 0:
+					_droneInit.DroneCommand.LeaveHoverMode();
+					break;
+				case 1:
+					_droneInit.DroneCommand.EnterHoverMode();
+					break;
+				case 2:
+					_droneInit.DroneCommand.Land();
+					break;
+				default:
+					_droneInit.DroneCommand.Land();
+					break;
+			}
+		}
 
 		void OnInputsStateChanged( object sender, bool[] e )
 		{
