@@ -679,9 +679,9 @@ namespace RideOnMotion.Inputs.Kinect
 					System.Windows.Point right = new System.Windows.Point( x, y );
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
 					if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
-						SecurityModeNeeded( this, 3 );
-					if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 						SecurityModeNeeded( this, 2 );
+					if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+						SecurityModeNeeded( this, 3 );
                     /* // TODO - Merge pending
 							if( !_skeletonFound )
 							{
