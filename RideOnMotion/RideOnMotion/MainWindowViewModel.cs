@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using System.Windows.Input;
 using RideOnMotion.Inputs.Keyboard;
+using RideOnMotion.Inputs.Xbox360Gamepad;
 using System.Text;
 using System.Windows.Threading;
 using System.Windows;
@@ -43,6 +44,7 @@ namespace RideOnMotion.UI
         /// </summary>
         private IDroneInputController _inputController;
         private KeyboardController _keyboardController;
+		private Xbox360GamepadController _Xbox360Gamepad;
         private DroneInitializer _droneInit;
 
         private float _droneTranslationSpeed = DEFAULT_MAXIMUM_DRONE_TRANSLATION_SPEED;
@@ -328,6 +330,9 @@ namespace RideOnMotion.UI
 
             _keyboardController = new KeyboardController();
             ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
+			_Xbox360Gamepad = new Xbox360GamepadController();
+			_Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
+			_Xbox360Gamepad.Start();
         }
 
         void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
@@ -517,6 +522,7 @@ namespace RideOnMotion.UI
                 _droneSettingsWindow.Close();
             }
             this._inputController.Stop();
+			this._Xbox360Gamepad.Stop();
 
             DisconnectDrone(this._droneInit);
         }

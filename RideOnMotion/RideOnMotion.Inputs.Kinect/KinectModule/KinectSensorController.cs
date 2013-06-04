@@ -543,13 +543,13 @@ namespace RideOnMotion.Inputs.Kinect
                 }
                 catch ( System.IO.IOException e )
                 {
-                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Kinect is already in use by another process. Error:" );
-                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, e.Message );
+                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Kinect is already in use by another process. Error:" );
+                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, e.Message );
                 }
                 catch ( Exception e )
                 {
-                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Unexpected Kinect API error:" );
-                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, e.Message );
+                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Unexpected Kinect API error:" );
+                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, e.Message );
                 }
             }
 
@@ -860,7 +860,7 @@ namespace RideOnMotion.Inputs.Kinect
         private void sensors_StatusChanged( object sender, StatusChangedEventArgs e )
         {
 
-            Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.Kinect, "Status changed to : " + e.Status.ToString() );
+            Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.Kinect, "Status changed to : " + e.Status.ToString() );
             if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
                 && e.Sensor == _kinectSensor )
             {

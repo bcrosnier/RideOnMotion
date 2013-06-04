@@ -46,7 +46,7 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 			else
 			{
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Array out of bound in commands attribution" );
+				Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Array out of bound in commands attribution" );
 				return false;
 			}
 		}

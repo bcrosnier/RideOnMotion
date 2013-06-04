@@ -131,6 +131,10 @@
       <Project>{f351a907-f922-4986-ad6b-cb04d9307040}</Project>
       <Name>RideOnMotion.Inputs.Kinect</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RideOnMotion.Inputs.Xbox360Gamepad\RideOnMotion.Inputs.Xbox360Gamepad.csproj">
+      <Project>{146bcdf6-0354-4401-bbdd-57a52d2598a6}</Project>
+      <Name>RideOnMotion.Inputs.Xbox360Gamepad</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RideOnMotion.Utilities\RideOnMotion.Utilities.csproj">
       <Project>{7db44258-5127-4395-b0d6-619c899bf2a1}</Project>
       <Name>RideOnMotion.Utilities</Name>

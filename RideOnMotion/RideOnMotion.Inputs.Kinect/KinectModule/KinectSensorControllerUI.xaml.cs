@@ -92,12 +92,12 @@ namespace RideOnMotion.Inputs.Kinect
 			if ( this._rightHandPoint.Y != -1.0 && _handsVisibility == Visibility.Collapsed )
 			{
 				_handsVisibility = Visibility.Visible;
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands visible" );
+				Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.User, "Hands visible" );
 			}
 			else if ( this._rightHandPoint.Y == -1.0 && _handsVisibility == Visibility.Visible )
 			{
 				_handsVisibility = Visibility.Collapsed;
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.User, "Hands not visible" );
+				Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.User, "Hands not visible" );
 			}
 
             this.OnNotifyPropertyChange( "LeftHandX" );

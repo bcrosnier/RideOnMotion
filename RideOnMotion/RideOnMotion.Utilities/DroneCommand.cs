@@ -23,14 +23,14 @@ namespace RideOnMotion
 		{
 			_droneControl.ConnectToDrone();
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : Connect" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Connect" );
 		}
 
 		public void Disconnect()
 		{
 			_droneControl.Disconnect();
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : Disconnect" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Disconnect" );
 		}
 
 		public void ChangeCamera()
@@ -42,7 +42,7 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( switchCameraCommand );
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : ChangeCamera" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : ChangeCamera" );
 
 		}
 
@@ -55,7 +55,7 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( takeOffCommand );
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : Takeoff" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Takeoff" );
 
 		}
 
@@ -68,7 +68,7 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( landCommand );
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : Land" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Land" );
 		}
 
 		public void Emergency()
@@ -80,7 +80,7 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( emergencyCommand );
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : Emergency" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Emergency" );
 		}
 
 		public void FlatTrim()
@@ -94,7 +94,7 @@ namespace RideOnMotion
 			_droneControl.SendCommand( resetCommand );
 			_droneControl.SendCommand( flatTrimCommand );
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : FlatTrim" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : FlatTrim" );
 		}
 
 		public void EnterHoverMode()
@@ -106,7 +106,7 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( enterHoverModeCommand );
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : EnterHoverMode" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : EnterHoverMode" );
 		}
 
 		public void LeaveHoverMode()
@@ -118,7 +118,7 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( leaveHoverModeCommand );
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : LeaveHoverMode" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : LeaveHoverMode" );
 		}
 
 		public void Navigate( float roll, float pitch, float yaw, float gaz )
@@ -129,7 +129,7 @@ namespace RideOnMotion
 			{
 				_droneControl.SendCommand( flightMoveCommand );
 
-				Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Navigate with : " + roll + " " + pitch + " " + yaw + " " + gaz );
+				Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Navigate with : " + roll + " " + pitch + " " + yaw + " " + gaz );
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( PlayLedCommand );
 
-			Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Command : PlayLED" );
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : PlayLED" );
 		}
 	}
 }
