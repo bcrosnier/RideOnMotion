@@ -338,6 +338,7 @@ namespace RideOnMotion.UI
 			_Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
 			_Xbox360Gamepad.Start();
 
+
         }
 
         void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
