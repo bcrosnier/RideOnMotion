@@ -327,6 +327,8 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         public KinectSensorController()
         {
+            this.DepthImageEnabled = true; // Enable depth image by default?
+
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call (USB devices polling).
 
             TriggerButtons = new ObservableCollectionEx<ICaptionArea>();
@@ -618,7 +620,6 @@ namespace RideOnMotion.Inputs.Kinect
 
 		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
 		{
-			short[] depthPix;
 			using( DepthImageFrame imageFrame = e.OpenDepthImageFrame() )
 			{
 				if( imageFrame == null )
@@ -626,16 +627,14 @@ namespace RideOnMotion.Inputs.Kinect
 					return; // Clear frame
 				}
 
-				depthPix = new short[imageFrame.PixelDataLength];
-
-				imageFrame.CopyPixelDataTo( depthPix );
-
 				_interactionStream.ProcessDepth( imageFrame.GetRawPixelData(), imageFrame.Timestamp );
 
 				_depthFrameIsReady = true;
-				_depthBitmapSource = DepthToBitmapSource( imageFrame );
-
-				OnInputImageSourceChanged( _depthBitmapSource );
+                if ( this.DepthImageEnabled )
+                {
+                    _depthBitmapSource = DepthToBitmapSource( imageFrame );
+                    OnInputImageSourceChanged( _depthBitmapSource );
+                }
 
 				imageFrame.Dispose();
 			}
@@ -965,6 +964,8 @@ namespace RideOnMotion.Inputs.Kinect
 				InputStatusChanged( this, this.InputStatus );
 			}
 		}
+
+        public bool DepthImageEnabled { get; set; }
     }
 
 	public class InteractionClient : IInteractionClient
