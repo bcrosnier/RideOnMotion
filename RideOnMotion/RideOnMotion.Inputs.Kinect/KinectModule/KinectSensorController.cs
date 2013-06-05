@@ -712,9 +712,9 @@ namespace RideOnMotion.Inputs.Kinect
 			if( curUsers.Count > 0 )
 			{
 				UserInfo curUser = curUsers[0];
-				SecurityHoverMode( usrInfo ); // TODO - Merge pending
 				_handsVisible = true;
 				_positionTrackerController.NotifyPositionTrackers( curUser );
+				SecurityHoverMode( curUser );
 				if( HandsPointReady != null )
 				{
 					float x = (float)( curUser.HandPointers[0].X * ( KinectSensorController.DEPTH_FRAME_WIDTH / 1.5 ) );
@@ -728,17 +728,17 @@ namespace RideOnMotion.Inputs.Kinect
 					y = ( y < -1 ) ? -1 : y;
 					System.Windows.Point right = new System.Windows.Point( x, y );
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
-                    /*// TODO - Merge pending
-							if( !_skeletonFound )
-							{
-								_skeletonFound = true;
-							}
-							if( _timerToLand.IsEnabled )
-							{
-								_timerToLand.Stop();
-							}
-							SecurityModeNeeded( this, 0 );
-                     */
+
+					if( !_skeletonFound )
+					{
+						_skeletonFound = true;
+					}
+					if( _timerToLand.IsEnabled )
+					{
+						_timerToLand.Stop();
+					}
+					SecurityModeNeeded( this, 0 );
+                     
 				}
 			}
 			else if( _handsVisible == true )
@@ -753,14 +753,14 @@ namespace RideOnMotion.Inputs.Kinect
 
 
 
-		public void SecurityHoverMode( UserInfo[] usrInfo )
+		public void SecurityHoverMode( UserInfo usrInfo )
 		{
 			if( _skeletonFound )
 			{
 				if( usrInfo != null )
 				{
-					if( usrInfo[0].HandPointers[0].IsTracked
-						&& usrInfo[0].HandPointers[1].IsTracked )
+					if( usrInfo.HandPointers[0].IsTracked
+						&& usrInfo.HandPointers[1].IsTracked )
 					{
 						if( SecurityModeNeeded != null )
 						{
