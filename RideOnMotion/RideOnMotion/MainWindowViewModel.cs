@@ -479,6 +479,9 @@ namespace RideOnMotion.UI
 				case 2:
 					_droneInit.DroneCommand.Land();
 					break;
+                case 3:
+                    _droneInit.DroneCommand.Takeoff();
+                    break;
 				default:
 					_droneInit.DroneCommand.Land();
 					break;
