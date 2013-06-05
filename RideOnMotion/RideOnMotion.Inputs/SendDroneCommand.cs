@@ -12,25 +12,31 @@ namespace RideOnMotion.Inputs
 
 		public void process( RideOnMotion.Inputs.InputState inputState )
 		{
-			if ( inputState.TakeOff && _drone.CanTakeoff )
-				_drone.Takeoff();
-			else if ( inputState.Land && _drone.CanLand )
+			if ( inputState.Land && _drone.CanLand )
 				_drone.Land();
+			else if ( inputState.TakeOff && _drone.CanTakeoff )
+				_drone.Takeoff();
 
 			if ( inputState.Hover && _drone.CanEnterHoverMode )
 				_drone.EnterHoverMode();
 			else if ( inputState.Hover && _drone.CanLeaveHoverMode )
 				_drone.LeaveHoverMode();
 
+			if ( inputState.CameraSwap )
+				_drone.ChangeCamera();
+
 			if ( inputState.Emergency )
 				_drone.Emergency();
 			else if ( inputState.FlatTrim )
 				_drone.FlatTrim();
 
-			float roll = inputState.Roll / 1.0f;
-			float pitch = inputState.Pitch / 1.0f;
+			if ( inputState.SpecialAction )
+				_drone.PlayLED();
+
+			float roll = inputState.Roll / 3.0f;
+			float pitch = inputState.Pitch / 3.0f;
 			float yaw = inputState.Yaw / 2.0f;
-			float gaz = inputState.Gaz / 2.0f;
+			float gaz = inputState.Gaz / 3.0f;
 				_drone.Navigate( roll, pitch, yaw, gaz );
 		}
 

@@ -85,6 +85,7 @@ namespace RideOnMotion.Inputs.Keyboard
 			bool emergency = false;
 
 			bool flatTrim = false;
+			bool specialActionButton = false;
 
 			if ( _heldDown[(int)Key.Q] && !_heldDown[(int)Key.D])
 			{
@@ -142,13 +143,21 @@ namespace RideOnMotion.Inputs.Keyboard
 			{
 				emergency = true;
 			}
+			if ( _heldDown[(int)Key.F] )
+			{
+				flatTrim = true;
+			}
+			if ( _heldDown[(int)Key.L] )
+			{
+				specialActionButton = true;
+			}
 			
 			// TODO test
 
 			if ( roll != _lastInputState.Roll || pitch != _lastInputState.Pitch || yaw != _lastInputState.Yaw || gaz != _lastInputState.Gaz || cameraSwap != _lastInputState.CameraSwap || takeOff != _lastInputState.TakeOff ||
-				land != _lastInputState.Land || hover != _lastInputState.Hover || emergency != _lastInputState.Emergency || flatTrim != _lastInputState.FlatTrim )
+				land != _lastInputState.Land || hover != _lastInputState.Hover || emergency != _lastInputState.Emergency || flatTrim != _lastInputState.FlatTrim || specialActionButton  != _lastInputState.SpecialAction)
 			{
-				InputState newInputState = new InputState( roll, pitch, yaw, gaz, cameraSwap, takeOff, land, hover, emergency, flatTrim, false );
+				InputState newInputState = new InputState( roll, pitch, yaw, gaz, cameraSwap, takeOff, land, hover, emergency, flatTrim, specialActionButton );
 				_lastInputState = newInputState;
 				return newInputState;
 			}
