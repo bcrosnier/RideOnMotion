@@ -67,11 +67,9 @@
             </StackPanel>
 
             <!-- Main panel - Drone image -->
-            <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <Viewbox Stretch="Uniform" >
-                    <Image Name="DroneImage" Source="{Binding DroneImageSource}"/>
-                </Viewbox>
-            </StackPanel>
+            <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Image Name="DroneImage" Source="{Binding DroneImageSource}" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            </Viewbox>
 
             <!-- Main panel - Input control -->
             <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">

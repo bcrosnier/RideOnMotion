@@ -5,6 +5,7 @@ using RideOnMotion.Utilities;
 using System.Windows.Input;
 using System;
 using System.Collections.Specialized;
+using System.Windows.Media.Imaging;
 
 namespace RideOnMotion.UI
 {
@@ -38,6 +39,27 @@ namespace RideOnMotion.UI
             this.OnInputMenuChange( this, this.mainWindowViewModel.InputMenu );
 
             ( (INotifyCollectionChanged)this.LogListBox.Items ).CollectionChanged += LogListBox_CollectionChanged;
+
+            /*
+            // Drone bitmap placeholder. The image is from Atelier Totori, by the way. --BC
+            var uriSource = new Uri( @"http://intech.bcrosnier.com/franck_is_a_lolicon.jpg", UriKind.Absolute );
+            
+            var bi = new BitmapImage();
+            bi.BeginInit();
+            bi.CacheOption = BitmapCacheOption.OnLoad;
+            bi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bi.UriSource = uriSource;
+            bi.DownloadCompleted += ( object sender, EventArgs e ) =>
+            {
+                mainWindowViewModel.DroneImageSource = bi;
+            };
+            bi.DownloadFailed += ( sender, e ) =>
+            {
+                RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Application, "Image download failed: " + e.ErrorException.Message );
+            };
+            bi.EndInit();
+            mainWindowViewModel.DroneImageSource = bi;
+            */
 		}
 
         private void LogListBox_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )

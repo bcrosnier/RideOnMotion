@@ -1,17 +1,17 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows.Media.Imaging;
-using System.Windows.Controls;
+﻿using RideOnMotion.Inputs.Keyboard;
+using RideOnMotion.Inputs.Xbox360Gamepad;
+using RideOnMotion.UI.Properties;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Media;
-using System.Windows.Input;
-using RideOnMotion.Inputs.Keyboard;
-using RideOnMotion.Inputs.Xbox360Gamepad;
+using System.ComponentModel;
 using System.Text;
-using System.Windows.Threading;
 using System.Windows;
-using RideOnMotion.UI.Properties;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace RideOnMotion.UI
 {

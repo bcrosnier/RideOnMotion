@@ -650,6 +650,26 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 		}
 
+        public static System.Windows.Point WindowPointFromHandPointer( InteractionHandPointer p )
+        {
+            double offset = 0.325;
+            double min = 0;
+            double max = 1.5;
+
+            double pointX = p.X + offset;
+            double pointY = p.Y + offset;
+
+            if ( pointX < min ) pointX = min;
+            else if ( pointX > max ) pointX = max;
+            if ( pointY < min ) pointY = min;
+            else if ( pointY > max ) pointY = max;
+
+            float x = (float)( pointX / 1.5 * KinectSensorController.DEPTH_FRAME_WIDTH );
+            float y = (float)( pointY / 1.5 * KinectSensorController.DEPTH_FRAME_HEIGHT );
+
+            return new System.Windows.Point( x, y );
+        }
+
 		private void InteractiontStream_InteractionFrameReady( object sender, InteractionFrameReadyEventArgs e )
 		{
 			InteractionFrame iFrame = e.OpenInteractionFrame();
@@ -669,17 +689,10 @@ namespace RideOnMotion.Inputs.Kinect
 				_handsVisible = true;
 				_positionTrackerController.NotifyPositionTrackers( curUser );
 				if( HandsPointReady != null )
-				{
-					float x = (float)( curUser.HandPointers[0].X * ( KinectSensorController.DEPTH_FRAME_WIDTH / 1.5 ) );
-					float y = (float)( curUser.HandPointers[0].Y * ( KinectSensorController.DEPTH_FRAME_HEIGHT / 1.5 ) );
-					x = ( x < -1 ) ? -1 : x;
-					y = ( y < -1 ) ? -1 : y;
-					System.Windows.Point left = new System.Windows.Point( x, y );
-					x = (float)( curUser.HandPointers[1].X * ( KinectSensorController.DEPTH_FRAME_WIDTH / 1.5 ) );
-					y = (float)( curUser.HandPointers[1].Y * ( KinectSensorController.DEPTH_FRAME_HEIGHT / 1.5 ) );
-					x = ( x < -1 ) ? -1 : x;
-					y = ( y < -1 ) ? -1 : y;
-					System.Windows.Point right = new System.Windows.Point( x, y );
+                {
+                    System.Windows.Point left = WindowPointFromHandPointer( curUser.HandPointers[0] );
+                    System.Windows.Point right = WindowPointFromHandPointer( curUser.HandPointers[1] );
+
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
 					if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
 						|| curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )

@@ -32,22 +32,22 @@ namespace RideOnMotion.Inputs.Kinect
 
         public int LeftHandX
         {
-            get { return (int)this._leftHandPoint.X; }
+            get { return (int)(this._leftHandPoint.X - 7.5); }
         }
 
         public int LeftHandY
         {
-            get { return (int)this._leftHandPoint.Y; }
+            get { return (int)(this._leftHandPoint.Y - 7.5); }
         }
 
         public int RightHandX
         {
-            get { return (int)this._rightHandPoint.X; }
+            get { return (int)(this._rightHandPoint.X - 7.5); }
         }
 
         public int RightHandY
         {
-            get { return (int)this._rightHandPoint.Y; }
+            get { return (int)(this._rightHandPoint.Y - 7.5); }
         }
 
         public Visibility HandsVisibility
