@@ -106,6 +106,11 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				}
 			}
 
+			if ( _selectedController.IsXPressed )
+			{
+				_drone.PlayLED();
+			}
+
 			//slow
 			if ( _selectedController.LeftTrigger > 50 && _selectedController.RightTrigger < 50 )
 			{
@@ -129,57 +134,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				rollAndPitchValues = normalNavigationValue2;
 			}
 
-
-
-			if ( (_selectedController.IsAPressed || _selectedController.IsYPressed)
-				&& !(_selectedController.IsAPressed && _selectedController.IsYPressed) )
-			{
-				if( _selectedController.IsAPressed)
-				{
-					gaz = - gazAndYawValues;
-				}
-				else if ( _selectedController.IsYPressed )
-				{
-					gaz = gazAndYawValues;
-				}
-			}
-			if ( ( _selectedController.IsXPressed || _selectedController.IsBPressed )
-				&& !( _selectedController.IsXPressed && _selectedController.IsBPressed ) )
-			{
-				if ( _selectedController.IsXPressed )
-				{
-					yaw = - gazAndYawValues;
-				}
-				else if ( _selectedController.IsBPressed )
-				{
-					yaw = gazAndYawValues;
-				}
-			}
-
-			if ( ( _selectedController.IsDPadDownPressed || _selectedController.IsDPadUpPressed )
-				&& !( _selectedController.IsDPadDownPressed && _selectedController.IsDPadUpPressed ) )
-			{
-				if ( _selectedController.IsDPadDownPressed )
-				{
-					pitch = rollAndPitchValues;
-				}
-				else if ( _selectedController.IsDPadUpPressed )
-				{
-					pitch = -rollAndPitchValues;
-				}
-			}
-			if ( ( _selectedController.IsDPadLeftPressed || _selectedController.IsDPadRightPressed )
-				&& !( _selectedController.IsDPadLeftPressed && _selectedController.IsDPadRightPressed ) )
-			{
-				if ( _selectedController.IsDPadLeftPressed )
-				{
-					roll = rollAndPitchValues;
-				}
-				else if ( _selectedController.IsDPadRightPressed )
-				{
-					roll = -rollAndPitchValues;
-				}
-			}
 
 			if ( _selectedController.LeftThumbStick.X > TriggerDeadZone || _selectedController.LeftThumbStick.X < -TriggerDeadZone
 				|| _selectedController.LeftThumbStick.Y > TriggerDeadZone || _selectedController.LeftThumbStick.Y < -TriggerDeadZone )

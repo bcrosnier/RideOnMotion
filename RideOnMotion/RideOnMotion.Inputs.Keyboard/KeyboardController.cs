@@ -9,18 +9,23 @@ namespace RideOnMotion.Inputs.Keyboard
 {
     public class KeyboardController // : IDroneInputController // Fired until interface is fixed and/or valid.
     {
-        DroneCommand _drone;
-        bool _keyDown = false;
+		SendDroneCommand _sendDroneCommand;
+		bool[] _heldDown;
+		Key _lastKey;
+		InputState _lastInputState;
 
         public KeyboardController()
-        {
+		{
+			_heldDown = new bool[256];
+			_sendDroneCommand = new SendDroneCommand();
+			_lastInputState = new InputState();
         }
 
         public DroneCommand ActiveDrone
         {
             set
             {
-                this._drone = value;
+                this._sendDroneCommand.ActiveDrone = value;
             }
         }
 
@@ -35,149 +40,11 @@ namespace RideOnMotion.Inputs.Keyboard
         /// </remarks>
         public void ProcessKeyDown( KeyEventArgs e )
         {
-            //RideOnMotion.Logger.Instance.NewEntry( CKLogLevel.Trace, RideOnMotion.CKTraitTags.User, "Key : " + e.Key.ToString() );
-            if ( _keyDown )
-            {
-                return;
-            }
+			Key currentKey = e.Key;
+			_heldDown[(int)e.Key] = true;
 
-            if ( this._drone != null )
-            {
-                // Drone control.
-                switch( e.Key.ToString() ) {
-                    // O or Enter: Take off
-                    case "O":
-                    case "Return":
-                        this._drone.Takeoff();
-                        e.Handled = true; // Halt further propagation.
-                        break;
-
-                    // Landing
-                    case "P":
-                    case "Space":
-                        this._drone.Land();
-                        e.Handled = true;
-                        break;
-                        
-                    // LED testing
-                    case "L":
-                        this._drone.PlayLED();
-                        e.Handled = true;
-                        break;
-                       
-                    // Calibrate flat trim
-                    case "F":
-                        this._drone.FlatTrim();
-                        e.Handled = true;
-                        break;
-                    
-                    /* Navigation commands:
-                     * Navigate( roll, pitch, yaw, gaz )
-                     * Reminder:
-                     * Roll: Translate left or right
-                     * Pitch Translate ahead or backwards
-                     * Yaw: Turn left or right
-                     * Gaz: Propelling power (ie. elevation)
-                     * */
-
-                    /* Arranged like the number pad:
-                     * A Z E  ↖ ↑ ↗
-                     * Q S D  ← ⇎ →
-                     * W X C  ↙ ↓ ↘
-                     * */
-                    case "NumPad7":
-					case "A": // Fly ahead and to the left?
-						///this._drone.LeaveHoverMode();
-                        this._drone.Navigate( -0.1f, -0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad8":
-					case "Z": // Fly ahead?
-						///this._drone.LeaveHoverMode();
-                        this._drone.Navigate( 0, -0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad9":
-					case "E": // Fly ahead and to the right?
-						///this._drone.LeaveHoverMode();
-                        this._drone.Navigate( 0.1f, -0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad4":
-					case "Q": // Fly left?
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( -0.1f, 0, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad5":
-					case "S":// Stop
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( 0, 0, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad6":
-					case "D": // Fly right?
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( 0.1f, 0, 0, 0 );
-                        e.Handled = true;
-                        break;
-					case "NumPad1":
-                    case "W": // Fly backwards and to the left?
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( -0.1f, 0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad2":
-					case "X": // Fly backwards
-						///this._drone.LeaveHoverMode();
-				        this._drone.Navigate( 0, 0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-                    case "NumPad3":
-                    case "C": // Fly backwards and to the right?
-						///this._drone.LeaveHoverMode();
-                        this._drone.Navigate( 0.1f, 0.1f, 0, 0 );
-                        e.Handled = true;
-                        break;
-					case "Up": // Raise
-						///this._drone.LeaveHoverMode();
-						this._drone.Navigate( 0, 0, 0, 0.25f );
-                        e.Handled = true;
-                        break;
-					case "Down": // Lower
-						///this._drone.LeaveHoverMode();
-						this._drone.Navigate( 0, 0, 0, -0.25f );
-                        e.Handled = true;
-                        break;
-					case "Left": // Turn left
-						///this._drone.LeaveHoverMode();
-						this._drone.Navigate( 0, 0, -0.25f, 0 );
-                        e.Handled = true;
-                        break;
-					case "Right": // Turn right
-						///this._drone.LeaveHoverMode();
-						this._drone.Navigate( 0, 0, 0.25f, 0 );
-                        e.Handled = true;
-                        break;
-					case "B": //
-						this._drone.EnterHoverMode();
-						e.Handled = true;
-						break;
-					case "N": // 
-						this._drone.LeaveHoverMode();
-						e.Handled = true;
-                        break;
-                    case "V": // 
-                        this._drone.ChangeCamera();
-                        e.Handled = true;
-                        break;
-                    default:
-                        // Unknown key.
-                        break;
-                }
-            }
-
-            _keyDown = true;
+			_lastKey = currentKey;
+			ProcessAction();
         }
 
         /// <summary>
@@ -191,9 +58,114 @@ namespace RideOnMotion.Inputs.Keyboard
         /// </remarks>
 		public void ProcessKeyUp( KeyEventArgs e )
 		{
-            //this._drone.EnterHoverMode();
-            this._drone.Navigate( 0, 0, 0, 0 );
-            _keyDown = false;
+			_heldDown[(int)e.Key] = false;
+			ProcessAction();
 		}
-    }
+
+		public void ProcessAction()
+		{
+			InputState currentInput = GetCurrentControlInput();
+			if ( currentInput != null )
+			{
+				_sendDroneCommand.process( currentInput );
+			}
+		}
+
+		public InputState GetCurrentControlInput()
+		{
+			float roll = 0;
+			float pitch = 0;
+			float yaw = 0;
+			float gaz = 0;
+
+			bool cameraSwap = false;
+			bool takeOff = false;
+			bool land = false;
+			bool hover = false;
+			bool emergency = false;
+
+			bool flatTrim = false;
+			bool specialActionButton = false;
+
+			if ( _heldDown[(int)Key.Q] && !_heldDown[(int)Key.D])
+			{
+				roll = -1;
+			}
+			else if ( _heldDown[(int)Key.D] && !_heldDown[(int)Key.Q] )
+			{
+				roll = 1;
+			}
+
+			if ( _heldDown[(int)Key.Z] && !_heldDown[(int)Key.S] )
+			{
+				pitch = -1;
+			}
+			else if ( _heldDown[(int)Key.S] && !_heldDown[(int)Key.Z] )
+			{
+				pitch = 1;
+			}
+
+			if ( _heldDown[(int)Key.Down] && !_heldDown[(int)Key.Up] )
+			{
+				gaz = -1;
+			}
+			else if ( _heldDown[(int)Key.Up] && !_heldDown[(int)Key.Down] )
+			{
+				gaz = 1;
+			}
+
+			if ( _heldDown[(int)Key.Left] && !_heldDown[(int)Key.Right] )
+			{
+				yaw = -1;
+			}
+			else if ( _heldDown[(int)Key.Right] && !_heldDown[(int)Key.Left] )
+			{
+				yaw = 1;
+			}
+
+			if ( _heldDown[(int)Key.C] )
+			{
+				cameraSwap = true;
+			}
+			if ( _heldDown[(int)Key.Return] )
+			{
+				takeOff = true;
+			}
+			if ( _heldDown[(int)Key.Space] )
+			{
+				land = true;
+			}
+			if ( _heldDown[(int)Key.LeftCtrl] || _heldDown[(int)Key.RightCtrl] )
+			{
+				hover = true;
+			}
+			if ( _heldDown[(int)Key.End] )
+			{
+				emergency = true;
+			}
+			if ( _heldDown[(int)Key.F] )
+			{
+				flatTrim = true;
+			}
+			if ( _heldDown[(int)Key.L] )
+			{
+				specialActionButton = true;
+			}
+			
+			// TODO test
+
+			if ( roll != _lastInputState.Roll || pitch != _lastInputState.Pitch || yaw != _lastInputState.Yaw || gaz != _lastInputState.Gaz || cameraSwap != _lastInputState.CameraSwap || takeOff != _lastInputState.TakeOff ||
+				land != _lastInputState.Land || hover != _lastInputState.Hover || emergency != _lastInputState.Emergency || flatTrim != _lastInputState.FlatTrim || specialActionButton  != _lastInputState.SpecialAction)
+			{
+				InputState newInputState = new InputState( roll, pitch, yaw, gaz, cameraSwap, takeOff, land, hover, emergency, flatTrim, specialActionButton );
+				_lastInputState = newInputState;
+				return newInputState;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+	}
 }

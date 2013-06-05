@@ -58,6 +58,7 @@ namespace RideOnMotion.UI
         private MenuItem _inputMenu;
 
         private Window _droneSettingsWindow;
+		private IntPtr _handle;
 
         private String _droneNetworkStatusText;
         private bool _droneConnectionStatus;
@@ -310,21 +311,24 @@ namespace RideOnMotion.UI
         /// <summary>
         /// Initializes the ViewModel with the given IDroneInputController.
         /// </summary>
-        public MainWindowViewModel()
+        public MainWindowViewModel(IntPtr handle)
         {
             CreateDroneCommands();
+			_handle = handle;
 
             InputTypes = new List<Type>();
 			InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
 
             _logStrings = new ObservableCollection<string>();
 
+			//_inputManager = new ARDrone.Input.InputManager( _handle );
+			//_inputManager.NewInputState += new NewInputStateHandler( OnNewInputState );
 			loadInputType( InputTypes[0] );
 
-			mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
-			mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
-			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
-			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
+			//mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
+			//mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
+			//mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
+			//mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
 
             initializeBindings();
 
@@ -333,6 +337,7 @@ namespace RideOnMotion.UI
 			_Xbox360Gamepad = new Xbox360GamepadController();
 			_Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
 			_Xbox360Gamepad.Start();
+
         }
 
         void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
@@ -487,7 +492,6 @@ namespace RideOnMotion.UI
 					break;
 			}
 		}
-
 		void OnInputsStateChanged( object sender, bool[] e )
 		{
 			DroneCommandProcessing( e );

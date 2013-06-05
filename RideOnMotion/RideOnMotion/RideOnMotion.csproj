@@ -123,6 +123,10 @@
       <Project>{92277dfc-0d55-4998-8acf-b01f3a7fb508}</Project>
       <Name>ARDroneControlLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ARDrone_API\ARDroneInput\ARDroneInput.csproj">
+      <Project>{104c0b70-4d35-4090-942a-9223222d0e6c}</Project>
+      <Name>ARDroneInput</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RideOnMotion.Inputs.Keyboard\RideOnMotion.Inputs.Keyboard.csproj">
       <Project>{1939fa1b-04f0-429b-a575-ee75114b365c}</Project>
       <Name>RideOnMotion.Inputs.Keyboard</Name>
