@@ -736,8 +736,10 @@ namespace RideOnMotion.Inputs.Kinect
 					if( _timerToLand.IsEnabled )
 					{
 						_timerToLand.Stop();
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Timer to land is now disabled" );
 					}
 					SecurityModeNeeded( this, 0 );
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Security mode no longer required" );
                      
 				}
 			}
@@ -765,26 +767,31 @@ namespace RideOnMotion.Inputs.Kinect
 						if( SecurityModeNeeded != null )
 						{
 							SecurityModeNeeded( this, 1 );
+							Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Security mode required due to \"HandPointer is no longer tracked\"" );
 						}
 
 						if( _timerToLand.IsEnabled == false )
 						{
 							_timerToLand.Start();
+							Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Timer to land is now enabled" );
 						}
 					}
 					else if( _timerToLand.IsEnabled == true )
 						_timerToLand.Stop();
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Timer to land is now disabled" );
 				}
 				else
 				{
 					if( SecurityModeNeeded != null )
 					{
 						SecurityModeNeeded( this, 1 );
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Security mode required due to \"HandPointer is no longer tracked\"" );
 					}
 
 					if( _timerToLand.IsEnabled == false )
 					{
 						_timerToLand.Start();
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Timer to land is now enabled" );
 					}
 				}
 			}
@@ -795,6 +802,7 @@ namespace RideOnMotion.Inputs.Kinect
 			if ( SecurityModeNeeded != null )
 			{
 				SecurityModeNeeded( this, 2 );
+				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Security mode will now process to land the drone" );
 			}
 		}
 
