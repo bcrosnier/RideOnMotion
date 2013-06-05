@@ -21,8 +21,9 @@ namespace RideOnMotion.Inputs.Kinect
     /// Main controller class for drone input through a Kinect sensor device.
     /// </summary>
     public class KinectSensorController : IDroneInputController
-    {
-        /// <summary>
+	{
+		#region declarations
+		/// <summary>
         /// A user-friendly input name!
         /// </summary>
         private static readonly string INPUT_NAME = "Kinect";
@@ -159,9 +160,10 @@ namespace RideOnMotion.Inputs.Kinect
         /// Active settings Window. Closed on Stop(), can be null.
         /// </summary>
         private Window _deviceSettingsWindow;
+		#endregion
 
-        #region Interface implementation
-        // Events
+		#region Interface implementation
+		// Events
         public event EventHandler<BitmapSource> InputImageSourceChanged;
         public event EventHandler<DroneInputStatus> InputStatusChanged;
 		public event EventHandler<bool[]> InputsStateChanged;
@@ -646,7 +648,8 @@ namespace RideOnMotion.Inputs.Kinect
 					if( firstSkeleton != null )
 					{
 						_handsVisible = true;
-// TODO - Merge pending		// _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
+						// TODO - Merge pending		
+						// _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
 
 						if( HandsPointReady != null )
 						{
@@ -714,7 +717,6 @@ namespace RideOnMotion.Inputs.Kinect
 				UserInfo curUser = curUsers[0];
 				_handsVisible = true;
 				_positionTrackerController.NotifyPositionTrackers( curUser );
-				SecurityHoverMode( curUser );
 				if( HandsPointReady != null )
 				{
 					float x = (float)( curUser.HandPointers[0].X * ( KinectSensorController.DEPTH_FRAME_WIDTH / 1.5 ) );
@@ -729,6 +731,8 @@ namespace RideOnMotion.Inputs.Kinect
 					System.Windows.Point right = new System.Windows.Point( x, y );
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
 
+					SecurityHoverMode( curUser );
+
 					if( !_skeletonFound )
 					{
 						_skeletonFound = true;
@@ -736,10 +740,12 @@ namespace RideOnMotion.Inputs.Kinect
 					if( _timerToLand.IsEnabled )
 					{
 						_timerToLand.Stop();
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Timer to land is now disabled" );
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
+							"Timer to land is now disabled" );
 					}
 					SecurityModeNeeded( this, 0 );
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Security mode no longer required" );
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
+						"Security mode no longer required" );
                      
 				}
 			}
@@ -754,44 +760,49 @@ namespace RideOnMotion.Inputs.Kinect
 		}
 
 
-
-		public void SecurityHoverMode( UserInfo usrInfo )
+		#region Security
+		public void SecurityHoverMode( UserInfo curUser )
 		{
 			if( _skeletonFound )
 			{
-				if( usrInfo != null )
+				if( curUser != null )
 				{
-					if( usrInfo.HandPointers[0].IsTracked
-						&& usrInfo.HandPointers[1].IsTracked )
+					if( curUser.HandPointers[0].IsTracked
+						&& curUser.HandPointers[1].IsTracked )
 					{
 						if( SecurityModeNeeded != null )
 						{
 							SecurityModeNeeded( this, 1 );
-							Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Security mode required due to \"HandPointer is no longer tracked\"" );
+							Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
+								"Security mode required due to \"HandPointer is no longer tracked\"" );
 						}
 
 						if( _timerToLand.IsEnabled == false )
 						{
 							_timerToLand.Start();
-							Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Timer to land is now enabled" );
+							Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
+								"Timer to land is now enabled" );
 						}
 					}
 					else if( _timerToLand.IsEnabled == true )
 						_timerToLand.Stop();
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Timer to land is now disabled" );
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
+						"Timer to land is now disabled" );
 				}
 				else
 				{
 					if( SecurityModeNeeded != null )
 					{
 						SecurityModeNeeded( this, 1 );
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Security mode required due to \"HandPointer is no longer tracked\"" );
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
+							"Security mode required due to \"HandPointer is no longer tracked\"" );
 					}
 
 					if( _timerToLand.IsEnabled == false )
 					{
 						_timerToLand.Start();
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Timer to land is now enabled" );
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
+							"Timer to land is now enabled" );
 					}
 				}
 			}
@@ -802,11 +813,13 @@ namespace RideOnMotion.Inputs.Kinect
 			if ( SecurityModeNeeded != null )
 			{
 				SecurityModeNeeded( this, 2 );
-				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, "Security mode will now process to land the drone" );
+				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
+					"Security mode will now process to land the drone" );
 			}
 		}
+		#endregion
 
-        /// <summary>
+		/// <summary>
         /// Converts a SkeletonPoint to a DepthImagePoint, taking only the X and Y values.
         /// </summary>
         /// <param name="skeletonPoint">SkeletonPoint to convert</param>
