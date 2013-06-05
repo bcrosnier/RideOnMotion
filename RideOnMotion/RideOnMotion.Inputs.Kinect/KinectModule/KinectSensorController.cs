@@ -106,6 +106,8 @@ namespace RideOnMotion.Inputs.Kinect
 
 		private bool _skeletonFound = false;
 
+		private bool _canTakeOff = false;
+
         /// <summary>
         /// Collection of all ICaptionAreas for the left and right hands.
         /// </summary>
@@ -128,6 +130,8 @@ namespace RideOnMotion.Inputs.Kinect
 		/// 2 -> Land the drone
 		/// </summary>
 		public event EventHandler<int> SecurityModeNeeded;
+
+		public event EventHandler CanTakeOffMotherFucker;
 
         /// <summary>
         /// Converts a DepthImagePoint to a SkeletonPoint, using this controller's depth tracking data.
@@ -678,10 +682,28 @@ namespace RideOnMotion.Inputs.Kinect
 					y = ( y < -1 ) ? -1 : y;
 					System.Windows.Point right = new System.Windows.Point( x, y );
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
-					if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
-						SecurityModeNeeded( this, 2 );
-					if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
-						SecurityModeNeeded( this, 3 );
+					if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
+						|| curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+					{
+						if( !_canTakeOff && ( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
+						&& curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip ) )
+						{
+							_canTakeOff = true;
+							CanTakeOffMotherFucker( this, null );
+						}
+						else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+						{
+							SecurityModeNeeded( this, 2 );
+						}
+						else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+						{
+							SecurityModeNeeded( this, 3 );
+							_canTakeOff = false;
+						}
+					}
+
+
+					
                     /* // TODO - Merge pending
 							if( !_skeletonFound )
 							{
@@ -704,8 +726,6 @@ namespace RideOnMotion.Inputs.Kinect
 				_handsVisible = false;
 			}
 		}
-
-		
 
 		public void securityHoverMode(Skeleton skeleton)
 		{
