@@ -101,7 +101,6 @@ namespace RideOnMotion.UI
 
         #region Members
 
-        private String _droneIPAddress, _clientIPAddress, _droneSSID;
         private DroneConfig _droneConfig;
         #endregion Members
 
