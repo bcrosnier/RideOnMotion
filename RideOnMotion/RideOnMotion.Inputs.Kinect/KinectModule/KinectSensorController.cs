@@ -159,6 +159,12 @@ namespace RideOnMotion.Inputs.Kinect
 
 		private InteractionStream _interactionStream;
 
+		/// <summary>
+		/// Manage the grip and grip release
+		/// </summary>
+		private bool _leftGrip = false;
+		private bool _rightGrip = false;
+
         /// <summary>
         /// Active settings Window. Closed on Stop(), can be null.
         /// </summary>
@@ -693,14 +699,36 @@ namespace RideOnMotion.Inputs.Kinect
                     System.Windows.Point right = WindowPointFromHandPointer( curUser.HandPointers[1] );
 
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
+					
+					// HandEvent are a single occurence, so we must store the current state
+					if ( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+					{
+						_leftGrip = true;
+					}
+					else if ( curUser.HandPointers[0].HandEventType == InteractionHandEventType.GripRelease )
+					{
+						_leftGrip = false;
+					}
+					if ( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+					{
+						_rightGrip = true;
+					}
+					else if ( curUser.HandPointers[1].HandEventType == InteractionHandEventType.GripRelease )
+					{
+						_rightGrip = false;
+					}
+
+
 					if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
 						|| curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 					{
-						if( !_canTakeOff && ( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
-						&& curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip ) )
+						if( !_canTakeOff && ( _leftGrip && _rightGrip ) )
 						{
 							_canTakeOff = true;
-							CanTakeOffMotherFucker( this, null );
+							if ( CanTakeOffMotherFucker != null )
+							{
+								CanTakeOffMotherFucker( this, null );
+							}
 						}
 						else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 						{
