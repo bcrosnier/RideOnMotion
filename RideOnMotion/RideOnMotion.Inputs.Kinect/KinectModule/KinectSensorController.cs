@@ -150,6 +150,11 @@ namespace RideOnMotion.Inputs.Kinect
 		internal int _triggerButtonsActive;
 
 		/// <summary>
+		/// Used to know if the safety has already forced the drone to land
+		/// </summary>
+		internal bool _safetyLandingtriggered = false;
+
+		/// <summary>
 		/// Contain the inputState
 		/// </summary>
 		private InputState _inputState;
@@ -714,6 +719,10 @@ namespace RideOnMotion.Inputs.Kinect
 
 			if( curUsers.Count > 0 )
 			{
+				if ( !_skeletonFound )
+				{
+					_skeletonFound = true;
+				}
 				UserInfo curUser = curUsers[0];
 				_handsVisible = true;
 				_positionTrackerController.NotifyPositionTrackers( curUser );
@@ -731,79 +740,86 @@ namespace RideOnMotion.Inputs.Kinect
 					System.Windows.Point right = new System.Windows.Point( x, y );
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
 
-					SecurityHoverMode( curUser );
-
-					if( !_skeletonFound )
-					{
-						_skeletonFound = true;
-					}
-					if( _timerToLand.IsEnabled )
-					{
-						_timerToLand.Stop();
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
-							"Timer to land is now disabled" );
-					}
-					SecurityModeNeeded( this, 0 );
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
-						"Security mode no longer required" );
+					SafetyModeCheck( curUser );
                      
 				}
 			}
-			else if( _handsVisible == true )
+			else if ( _handsVisible == true )
 			{
-				if( HandsPointReady != null )
+				if ( HandsPointReady != null )
 				{
 					HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
 				}
 				_handsVisible = false;
+				if ( _skeletonFound )
+				{
+					_skeletonFound = false;
+				}
+			}
+			else
+			{
+				if ( _skeletonFound )
+				{
+					_skeletonFound = false;
+				}
 			}
 		}
 
 
 		#region Security
-		public void SecurityHoverMode( UserInfo curUser )
+		public void SafetyModeCheck( UserInfo curUser )
 		{
-			if( _skeletonFound )
+			if ( _skeletonFound && ( curUser.HandPointers[0].IsTracked
+					&& curUser.HandPointers[1].IsTracked ) )
 			{
-				if( curUser != null )
+				if ( !curUser.HandPointers[0].IsActive
+					&& !curUser.HandPointers[1].IsActive )
 				{
-					if( curUser.HandPointers[0].IsTracked
-						&& curUser.HandPointers[1].IsTracked )
-					{
-						if( SecurityModeNeeded != null )
-						{
-							SecurityModeNeeded( this, 1 );
-							Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
-								"Security mode required due to \"HandPointer is no longer tracked\"" );
-						}
-
-						if( _timerToLand.IsEnabled == false )
-						{
-							_timerToLand.Start();
-							Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
-								"Timer to land is now enabled" );
-						}
-					}
-					else if( _timerToLand.IsEnabled == true )
-						_timerToLand.Stop();
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
-						"Timer to land is now disabled" );
-				}
-				else
-				{
-					if( SecurityModeNeeded != null )
+					if ( SecurityModeNeeded != null && _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
 					{
 						SecurityModeNeeded( this, 1 );
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
-							"Security mode required due to \"HandPointer is no longer tracked\"" );
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+							"Safety mode enabled due to hands no longer being tracked" );
 					}
 
-					if( _timerToLand.IsEnabled == false )
+					if ( _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
 					{
 						_timerToLand.Start();
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
-							"Timer to land is now enabled" );
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+							"Safety mode : 3 seconds remaining before automatic landing" );
 					}
+				}
+				else if ( _timerToLand.IsEnabled == true && 
+					 ( curUser.HandPointers[0].IsActive
+					&& curUser.HandPointers[1].IsActive) && _safetyLandingtriggered == false )
+				{
+					_timerToLand.Stop();
+					SecurityModeNeeded( this, 0 );
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+						"Safety mode no longer required, restoring manual control" );
+					_safetyLandingtriggered = false;
+				}
+				else if ( ( curUser.HandPointers[0].IsInteractive
+					&& curUser.HandPointers[1].IsInteractive )
+					&& _safetyLandingtriggered == true )
+				{
+					_safetyLandingtriggered = false;
+				}
+			}
+			else
+			{
+				if (_timerToLand.IsEnabled == false && SecurityModeNeeded != null )
+				{
+					SecurityModeNeeded( this, 1 );
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+						"Safety mode enabled due to hands no longer being tracked" );
+				}
+
+				if ( _timerToLand.IsEnabled == false )
+				{
+					_timerToLand.Start();
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+						"Safety mode : 3 seconds remaining before automatic landing" );
 				}
 			}
 		}
@@ -815,6 +831,8 @@ namespace RideOnMotion.Inputs.Kinect
 				SecurityModeNeeded( this, 2 );
 				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect, 
 					"Security mode will now process to land the drone" );
+				_timerToLand.Stop();
+				_safetyLandingtriggered = true;
 			}
 		}
 		#endregion
