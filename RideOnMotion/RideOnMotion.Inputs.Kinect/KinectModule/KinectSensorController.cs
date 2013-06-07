@@ -178,7 +178,7 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private Window _deviceSettingsWindow;
 
-		private DepthImagePixel[] depthBuffer;
+		private short[] depthBuffer;
 		private WriteableBitmap _writeableBitmap;
 
 		#endregion
@@ -624,15 +624,21 @@ namespace RideOnMotion.Inputs.Kinect
 		{
 			if( ( null == depthBuffer ) || ( depthBuffer.Length != frame.PixelDataLength ) )
 			{
-				depthBuffer = new DepthImagePixel[frame.PixelDataLength];
+				depthBuffer = new short[frame.PixelDataLength];
 			}
 
 			if( null == _writeableBitmap || _writeableBitmap.Format != PixelFormats.Bgra32 )
 			{
-				CreateWriteableBitmap( frame );
+				_writeableBitmap = new WriteableBitmap(
+				frame.Width,
+				frame.Height,
+				96,
+				96,
+				PixelFormats.Bgra32,
+				null );
 			}
 
-			depthBuffer = frame.GetRawPixelData();
+			frame.CopyPixelDataTo( depthBuffer );
 
 			_writeableBitmap.WritePixels(
 				new Int32Rect( 0, 0, _writeableBitmap.PixelWidth, _writeableBitmap.PixelHeight ),
@@ -643,30 +649,14 @@ namespace RideOnMotion.Inputs.Kinect
 			return _writeableBitmap;
 		}
 
-		private void CreateWriteableBitmap( DepthImageFrame frame )
-		{
-			_writeableBitmap = new WriteableBitmap(
-				frame.Width,
-				frame.Height,
-				96,
-				96,
-				PixelFormats.Bgra32,
-				null );
-		}
-
 		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
 		{
-			short[] depthPix;
 			using( DepthImageFrame imageFrame = e.OpenDepthImageFrame() )
 			{
 				if( imageFrame == null )
 				{
 					return; // Clear frame
 				}
-
-				depthPix = new short[imageFrame.PixelDataLength];
-
-				imageFrame.CopyPixelDataTo( depthPix );
 
 				_interactionStream.ProcessDepth( imageFrame.GetRawPixelData(), imageFrame.Timestamp );
 
