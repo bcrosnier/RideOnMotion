@@ -178,6 +178,11 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private Window _deviceSettingsWindow;
 
+		private WriteableBitmap _writeableBitmap;
+
+        DepthImagePixel[] _depthPixels;
+        byte[] _colorPixels;
+
 		#endregion
 
 		#region Interface implementation
@@ -617,31 +622,77 @@ namespace RideOnMotion.Inputs.Kinect
             }
         }
 
-        /// <summary>
-        /// Converts a depth image frame to a Bitmap source using a simple 16-bit Grayscale mapping.
-        /// From http://www.i-programmer.info/ebooks/practical-windows-kinect-in-c/3802-using-the-kinect-depth-sensor.html?start=1
-        /// </summary>
-        /// <param name="imageFrame">Image frame to convert</param>
-        /// <returns>Bitmap source</returns>
-        private static BitmapSource DepthToBitmapSource( DepthImageFrame imageFrame )
-        {
-            short[] pixelData = new short[imageFrame.PixelDataLength];
-            imageFrame.CopyPixelDataTo( pixelData );
+		public BitmapSource WriteToBitmap( DepthImageFrame frame )
+		{
+            // Mostly from: http://msdn.microsoft.com/en-us/library/jj131029.aspx
 
-            BitmapSource bmap = BitmapSource.Create(
-                imageFrame.Width,
-                imageFrame.Height,
-                96, 96,
-                PixelFormats.Gray16,
-                null,
-                pixelData,
-                imageFrame.Width * imageFrame.BytesPerPixel );
-            return bmap;
-        }
+            if ( ( null == _depthPixels ) || ( _depthPixels.Length != frame.PixelDataLength ) )
+			{
+                this._depthPixels = new DepthImagePixel[_kinectSensor.DepthStream.FramePixelDataLength];
+                this._colorPixels = new byte[_kinectSensor.DepthStream.FramePixelDataLength * sizeof( int )];
+			}
+
+            frame.CopyDepthImagePixelDataTo( _depthPixels );
+
+			if( null == _writeableBitmap || _writeableBitmap.Format != PixelFormats.Bgra32 )
+            {
+                this._writeableBitmap = new WriteableBitmap(
+                    _kinectSensor.DepthStream.FrameWidth,
+                    _kinectSensor.DepthStream.FrameHeight,
+                    96.0,
+                    96.0,
+                    PixelFormats.Bgr32,
+                    null
+                    );
+			}
+
+            // Get the min and max reliable depth for the current frame
+            int minDepth = frame.MinDepth;
+            int maxDepth = frame.MaxDepth;
+
+            // Convert the depth to RGB
+            int colorPixelIndex = 0;
+            for ( int i = 0; i < this._depthPixels.Length; ++i )
+            {
+                // Get the depth for this pixel
+                short depth = _depthPixels[i].Depth;
+
+                // To convert to a byte, we're discarding the most-significant
+                // rather than least-significant bits.
+                // We're preserving detail, although the intensity will "wrap."
+                // Values outside the reliable depth range are mapped to 0 (black).
+
+                // Note: Using conditionals in this loop could degrade performance.
+                // Consider using a lookup table instead when writing production code.
+                // See the KinectDepthViewer class used by the KinectExplorer sample
+                // for a lookup table example.
+                byte intensity = (byte)( depth >= minDepth && depth <= maxDepth ? depth : 0 );
+
+                // Write out blue byte
+                this._colorPixels[colorPixelIndex++] = intensity;
+
+                // Write out green byte
+                this._colorPixels[colorPixelIndex++] = intensity;
+
+                // Write out red byte                        
+                this._colorPixels[colorPixelIndex++] = intensity;
+
+                // We're outputting BGR, the last byte in the 32 bits is unused so skip it
+                // If we were outputting BGRA, we would write alpha here.
+                ++colorPixelIndex;
+            }
+
+            this._writeableBitmap.WritePixels(
+                new Int32Rect( 0, 0, this._writeableBitmap.PixelWidth, this._writeableBitmap.PixelHeight ),
+                this._colorPixels,
+                this._writeableBitmap.PixelWidth * sizeof( int ),
+            0 );
+
+			return _writeableBitmap;
+		}
 
 		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
 		{
-			short[] depthPix;
 			using( DepthImageFrame imageFrame = e.OpenDepthImageFrame() )
 			{
 				if( imageFrame == null )
@@ -649,16 +700,12 @@ namespace RideOnMotion.Inputs.Kinect
 					return; // Clear frame
 				}
 
-				depthPix = new short[imageFrame.PixelDataLength];
-
-				imageFrame.CopyPixelDataTo( depthPix );
-
 				_interactionStream.ProcessDepth( imageFrame.GetRawPixelData(), imageFrame.Timestamp );
 
 				_depthFrameIsReady = true; 
 				if( this.DepthImageEnabled )
 				{
-					_depthBitmapSource = DepthToBitmapSource( imageFrame );
+					_depthBitmapSource = WriteToBitmap( imageFrame );
 					OnInputImageSourceChanged( _depthBitmapSource );
 				}
 

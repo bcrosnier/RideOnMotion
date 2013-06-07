@@ -134,7 +134,7 @@ namespace RideOnMotion.Inputs.Kinect
         {
             get
             {
-                return _alertMessage;
+                return _alertMessage + "\nBITCH";
             }
 
             set
