@@ -36,9 +36,11 @@ namespace RideOnMotion.Inputs.Kinect
         private Visibility _alertVisibility = Visibility.Collapsed;
         private Task _alertTask;
         private bool _alertIsPersistent;
+        private int _alertFixedTime;
 
         private static readonly int ALERT_BLINK_TIME = 500; // Time between alert visibility toggles, in ms.
         private static readonly int ALERT_BLINK_COUNT = 5; // Number of times the alert goes on and off.
+        private static readonly int ALERT_FIXED_TIME = 2000; // Time to show the alert when it's fixed (not blinking).
 
         private CancellationTokenSource _alertCancellationTokenSource = new CancellationTokenSource();
 
@@ -92,8 +94,40 @@ namespace RideOnMotion.Inputs.Kinect
             this.DataContext = this;
 
 			this._controller.HandsPointReady += OnHandsPoint;
+            this._controller.CanTakeOffMotherFucker += controller_CanTakeOff;
+
+            this._controller.SecurityModeNeeded += controller_SecurityModeNeeded;
 
 			InitializeComponent();
+        }
+
+        void controller_SecurityModeNeeded( object sender, int e )
+        {
+            // 1: Hover mode enabled
+            // 2: Landing
+            // 3: Taking off
+            if ( e == 1 )
+            {
+                FireAlert( "OPERATOR\nLOST" );
+            }
+            else if ( e == 2 )
+            {
+                FireAlert( "LANDING", false, ALERT_FIXED_TIME );
+            }
+            else if ( e == 3 )
+            {
+                FireAlert( "TAKING OFF", false, ALERT_FIXED_TIME );
+            }
+            else
+            {
+                // All clear. Remove alert.
+                ClearAlert();
+            }
+        }
+
+        void controller_CanTakeOff( object sender, EventArgs e )
+        {
+            FireAlert( "CLEARED FOR\nTAKEOFF" );
         }
 
         public string AlertMessage
@@ -131,13 +165,21 @@ namespace RideOnMotion.Inputs.Kinect
                 _alertCancellationTokenSource.Cancel();
                 _alertCancellationTokenSource = new CancellationTokenSource();
             }
+            this.AlertVisibility = System.Windows.Visibility.Collapsed;
         }
 
-        public void FireAlert(string message, bool isPersistent)
+        /// <summary>
+        /// Shows an alert on the UI.
+        /// </summary>
+        /// <param name="message">Message to display</param>
+        /// <param name="isPersistent">True: Alert will stay, blink and persist until it is cleared via ClearAlert(). Ignored if fixedTime > 0.</param>
+        /// <param name="fixedTime">Time to persist, without blinking. Ignores isPersistent.</param>
+        public void FireAlert(string message, bool isPersistent, int fixedTime)
         {
             ClearAlert();
 
             _alertIsPersistent = isPersistent;
+            _alertFixedTime = fixedTime;
             this.AlertMessage = message;
 
             CancellationToken ct = _alertCancellationTokenSource.Token;
@@ -145,38 +187,63 @@ namespace RideOnMotion.Inputs.Kinect
             _alertTask = Task.Factory.StartNew( () =>
             {
                 bool persistent = _alertIsPersistent;
+                int alertFixedTime = _alertFixedTime;
                 int i = ALERT_BLINK_COUNT;
 
-                while( true )
+                if ( alertFixedTime > 0 && !ct.IsCancellationRequested )
                 {
-                    if ( ct.IsCancellationRequested )
-                    {
-                        this.AlertVisibility = System.Windows.Visibility.Hidden;
-                        break;
-                    }
                     this.AlertVisibility = System.Windows.Visibility.Visible;
-                    System.Threading.Thread.Sleep( ALERT_BLINK_TIME );
-
-                    if ( ct.IsCancellationRequested )
+                    System.Threading.Thread.Sleep( alertFixedTime );
+                    if ( !ct.IsCancellationRequested )
                     {
-                        this.AlertVisibility = System.Windows.Visibility.Hidden;
-                        break;
+                        this.AlertVisibility = System.Windows.Visibility.Collapsed;
                     }
-                    this.AlertVisibility = System.Windows.Visibility.Hidden;
-                    System.Threading.Thread.Sleep( ALERT_BLINK_TIME );
-
-                    if ( !persistent && --i == 0 )
+                }
+                else
+                {
+                    while ( true )
                     {
-                        break;
-                    }
+                        if ( ct.IsCancellationRequested )
+                        {
+                            break;
+                        }
+                        this.AlertVisibility = System.Windows.Visibility.Visible;
+                        System.Threading.Thread.Sleep( ALERT_BLINK_TIME );
 
+                        if ( ct.IsCancellationRequested )
+                        {
+                            break;
+                        }
+                        this.AlertVisibility = System.Windows.Visibility.Collapsed;
+                        System.Threading.Thread.Sleep( ALERT_BLINK_TIME );
+
+                        if ( !persistent && --i == 0 )
+                        {
+                            break;
+                        }
+
+                    }
                 }
             }, _alertCancellationTokenSource.Token );
         }
 
+        /// <summary>
+        /// Show a blinking alert on the UI.
+        /// </summary>
+        /// <param name="message">Message to display</param>
         public void FireAlert( string message )
         {
-            FireAlert( message, false );
+            FireAlert( message, false, 0 );
+        }
+
+        /// <summary>
+        /// Shows a blinking alert on the UI.
+        /// </summary>
+        /// <param name="message">Message to display</param>
+        /// <param name="isPersistent">True: Alert will stay, blink and persist until it is cleared via ClearAlert().</param>
+        public void FireAlert( string message, bool isPersistent )
+        {
+            FireAlert( message, isPersistent, 0 );
         }
 
         private void OnHandsPoint( object sender, System.Windows.Point[] e )
