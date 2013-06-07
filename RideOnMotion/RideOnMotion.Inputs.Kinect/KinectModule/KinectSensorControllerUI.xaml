@@ -63,5 +63,20 @@
         <k:KinectRegion Name="kinectRegion">
         </k:KinectRegion>-->
 
+        <TextBlock
+            Visibility="{Binding AlertVisibility}"
+            Name="alertTextBlock"
+            Background="Red"
+            Foreground="Yellow"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Margin="0,100,0,0"
+            Padding="10,0"
+            FontSize="72"
+            FontFamily="Impact"
+            FontWeight="Bold"
+            TextAlignment="Center"
+            Text="{Binding AlertMessage}">
+        </TextBlock>
     </Grid>
 </UserControl>

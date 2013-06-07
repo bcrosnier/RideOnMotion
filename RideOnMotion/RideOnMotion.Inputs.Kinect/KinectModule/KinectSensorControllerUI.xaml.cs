@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,7 +29,18 @@ namespace RideOnMotion.Inputs.Kinect
 
         private System.Windows.Point _leftHandPoint = new System.Windows.Point( -1, -1 );
         private System.Windows.Point _rightHandPoint = new System.Windows.Point( -1, -1 );
+
         private Visibility _handsVisibility = Visibility.Collapsed;
+
+        private string _alertMessage;
+        private Visibility _alertVisibility = Visibility.Collapsed;
+        private Task _alertTask;
+        private bool _alertIsPersistent;
+
+        private static readonly int ALERT_BLINK_TIME = 500; // Time between alert visibility toggles, in ms.
+        private static readonly int ALERT_BLINK_COUNT = 5; // Number of times the alert goes on and off.
+
+        private CancellationTokenSource _alertCancellationTokenSource = new CancellationTokenSource();
 
         public int LeftHandX
         {
@@ -82,6 +94,89 @@ namespace RideOnMotion.Inputs.Kinect
 			this._controller.HandsPointReady += OnHandsPoint;
 
 			InitializeComponent();
+        }
+
+        public string AlertMessage
+        {
+            get
+            {
+                return _alertMessage;
+            }
+
+            set
+            {
+                this._alertMessage = value;
+                this.OnNotifyPropertyChange( "AlertMessage" );
+            }
+        }
+
+        public Visibility AlertVisibility
+        {
+            get
+            {
+                return _alertVisibility;
+            }
+
+            set
+            {
+                this._alertVisibility = value;
+                this.OnNotifyPropertyChange( "AlertVisibility" );
+            }
+        }
+
+        public void ClearAlert()
+        {
+            if ( _alertTask != null && !_alertTask.IsCompleted )
+            {
+                _alertCancellationTokenSource.Cancel();
+                _alertCancellationTokenSource = new CancellationTokenSource();
+            }
+        }
+
+        public void FireAlert(string message, bool isPersistent)
+        {
+            ClearAlert();
+
+            _alertIsPersistent = isPersistent;
+            this.AlertMessage = message;
+
+            CancellationToken ct = _alertCancellationTokenSource.Token;
+
+            _alertTask = Task.Factory.StartNew( () =>
+            {
+                bool persistent = _alertIsPersistent;
+                int i = ALERT_BLINK_COUNT;
+
+                while( true )
+                {
+                    if ( ct.IsCancellationRequested )
+                    {
+                        this.AlertVisibility = System.Windows.Visibility.Hidden;
+                        break;
+                    }
+                    this.AlertVisibility = System.Windows.Visibility.Visible;
+                    System.Threading.Thread.Sleep( ALERT_BLINK_TIME );
+
+                    if ( ct.IsCancellationRequested )
+                    {
+                        this.AlertVisibility = System.Windows.Visibility.Hidden;
+                        break;
+                    }
+                    this.AlertVisibility = System.Windows.Visibility.Hidden;
+                    System.Threading.Thread.Sleep( ALERT_BLINK_TIME );
+
+                    if ( !persistent && --i == 0 )
+                    {
+                        break;
+                    }
+
+                }
+            }, _alertCancellationTokenSource.Token );
+        }
+
+        public void FireAlert( string message )
+        {
+            FireAlert( message, false );
         }
 
         private void OnHandsPoint( object sender, System.Windows.Point[] e )
