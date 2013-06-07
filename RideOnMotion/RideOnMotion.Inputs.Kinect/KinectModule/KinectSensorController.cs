@@ -706,6 +706,11 @@ namespace RideOnMotion.Inputs.Kinect
 
 			if( curUsers.Count > 0 )
 			{
+
+                if ( !_skeletonFound )
+                {
+                    _skeletonFound = true;
+                }
 				UserInfo curUser = curUsers[0];
 
 				_handsVisible = true;
@@ -732,6 +737,7 @@ namespace RideOnMotion.Inputs.Kinect
 				if( _skeletonFound )
 				{
 					_skeletonFound = false;
+                    SafetyModeCheck( null );
 				}
 				_handsVisible = false;
 			}
@@ -791,7 +797,7 @@ namespace RideOnMotion.Inputs.Kinect
 		#region Security
 		public void SafetyModeCheck( UserInfo curUser )
 		{
-			if( _skeletonFound && ( curUser.HandPointers[0].IsTracked
+			if( curUser != null & _skeletonFound && ( curUser.HandPointers[0].IsTracked
 					&& curUser.HandPointers[1].IsTracked ) )
 			{
 				if( !curUser.HandPointers[0].IsActive
