@@ -178,6 +178,9 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private Window _deviceSettingsWindow;
 
+		private DepthImagePixel[] depthBuffer;
+		private WriteableBitmap _writeableBitmap;
+
 		#endregion
 
 		#region Interface implementation
@@ -617,27 +620,39 @@ namespace RideOnMotion.Inputs.Kinect
             }
         }
 
-        /// <summary>
-        /// Converts a depth image frame to a Bitmap source using a simple 16-bit Grayscale mapping.
-        /// From http://www.i-programmer.info/ebooks/practical-windows-kinect-in-c/3802-using-the-kinect-depth-sensor.html?start=1
-        /// </summary>
-        /// <param name="imageFrame">Image frame to convert</param>
-        /// <returns>Bitmap source</returns>
-        private static BitmapSource DepthToBitmapSource( DepthImageFrame imageFrame )
-        {
-            short[] pixelData = new short[imageFrame.PixelDataLength];
-            imageFrame.CopyPixelDataTo( pixelData );
+		public BitmapSource WriteToBitmap( DepthImageFrame frame )
+		{
+			if( ( null == depthBuffer ) || ( depthBuffer.Length != frame.PixelDataLength ) )
+			{
+				depthBuffer = new DepthImagePixel[frame.PixelDataLength];
+			}
 
-            BitmapSource bmap = BitmapSource.Create(
-                imageFrame.Width,
-                imageFrame.Height,
-                96, 96,
-                PixelFormats.Gray16,
-                null,
-                pixelData,
-                imageFrame.Width * imageFrame.BytesPerPixel );
-            return bmap;
-        }
+			if( null == _writeableBitmap || _writeableBitmap.Format != PixelFormats.Bgra32 )
+			{
+				CreateWriteableBitmap( frame );
+			}
+
+			depthBuffer = frame.GetRawPixelData();
+
+			_writeableBitmap.WritePixels(
+				new Int32Rect( 0, 0, _writeableBitmap.PixelWidth, _writeableBitmap.PixelHeight ),
+				depthBuffer,
+				(int)( _writeableBitmap.Width * 4 ),
+				0 );
+
+			return _writeableBitmap;
+		}
+
+		private void CreateWriteableBitmap( DepthImageFrame frame )
+		{
+			_writeableBitmap = new WriteableBitmap(
+				frame.Width,
+				frame.Height,
+				96,
+				96,
+				PixelFormats.Bgra32,
+				null );
+		}
 
 		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
 		{
@@ -658,7 +673,7 @@ namespace RideOnMotion.Inputs.Kinect
 				_depthFrameIsReady = true; 
 				if( this.DepthImageEnabled )
 				{
-					_depthBitmapSource = DepthToBitmapSource( imageFrame );
+					_depthBitmapSource = WriteToBitmap( imageFrame );
 					OnInputImageSourceChanged( _depthBitmapSource );
 				}
 
