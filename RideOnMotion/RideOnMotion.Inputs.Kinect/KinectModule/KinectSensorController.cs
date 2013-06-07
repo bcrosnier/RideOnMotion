@@ -178,7 +178,6 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private Window _deviceSettingsWindow;
 
-		public bool DepthImageEnabled { get; set; }
 		#endregion
 
 		#region Interface implementation
@@ -280,7 +279,9 @@ namespace RideOnMotion.Inputs.Kinect
 
         #endregion Interface implementation
 
-        private bool DepthFrameIsReady
+		#region Properties
+
+		private bool DepthFrameIsReady
         {
             get { return _depthFrameIsReady; }
         }
@@ -338,7 +339,11 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 		}
 
-        /// <summary>
+		public bool DepthImageEnabled { get; set; }
+
+		#endregion //Properties
+
+		/// <summary>
         /// Kinect sensor input controller.
         /// Handles drone control through a Kinect sensor.
         /// </summary>
@@ -712,31 +717,17 @@ namespace RideOnMotion.Inputs.Kinect
                     Point left = WindowPointFromHandPointer( curUser.HandPointers[0] );
                     Point right = WindowPointFromHandPointer( curUser.HandPointers[1] );
 
-					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
+					OnHandsPointReady( left, right );
 
 					SafetyModeCheck( curUser );
 
 					TestTakeOffCapabitility( curUser );
-					
-                    /*// TODO - Merge pending
-							if( !_skeletonFound )
-							{
-								_skeletonFound = true;
-							}
-							if( _timerToLand.IsEnabled )
-							{
-								_timerToLand.Stop();
-							}
-							SecurityModeNeeded( this, 0 );
-                     */
 				}
 			}
 			else if( _handsVisible == true )
 			{
-				if( HandsPointReady != null )
-				{
-					HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
-				}
+				OnHandsPointReady( new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) );
+
 				_handsVisible = false;
 				if( _skeletonFound )
 				{
@@ -1016,6 +1007,14 @@ namespace RideOnMotion.Inputs.Kinect
 			if( SecurityModeNeeded != null )
 			{
 				SecurityModeNeeded( this, arg );
+			}
+		}
+
+		private void OnHandsPointReady( Point left, Point right )
+		{
+			if( HandsPointReady != null )
+			{
+				HandsPointReady( this, new System.Windows.Point[2] { left, right } );
 			}
 		}
     }
