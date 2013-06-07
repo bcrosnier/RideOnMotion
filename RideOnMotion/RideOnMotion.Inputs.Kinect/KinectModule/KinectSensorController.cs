@@ -354,6 +354,8 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         public KinectSensorController()
         {
+            this.DepthImageEnabled = true;
+
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call (USB devices polling).
 
             TriggerButtons = new ObservableCollectionEx<ICaptionArea>();
