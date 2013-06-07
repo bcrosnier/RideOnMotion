@@ -643,7 +643,7 @@ namespace RideOnMotion.Inputs.Kinect
 			_writeableBitmap.WritePixels(
 				new Int32Rect( 0, 0, _writeableBitmap.PixelWidth, _writeableBitmap.PixelHeight ),
 				depthBuffer,
-				(int)( _writeableBitmap.Width * 4 ),
+				(int)( frame.Width * frame.BytesPerPixel ),
 				0 );
 
 			return _writeableBitmap;
