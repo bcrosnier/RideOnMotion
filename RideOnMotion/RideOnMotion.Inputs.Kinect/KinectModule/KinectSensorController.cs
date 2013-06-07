@@ -178,8 +178,10 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private Window _deviceSettingsWindow;
 
-		private short[] depthBuffer;
 		private WriteableBitmap _writeableBitmap;
+
+        DepthImagePixel[] _depthPixels;
+        byte[] _colorPixels;
 
 		#endregion
 
@@ -622,29 +624,69 @@ namespace RideOnMotion.Inputs.Kinect
 
 		public BitmapSource WriteToBitmap( DepthImageFrame frame )
 		{
-			if( ( null == depthBuffer ) || ( depthBuffer.Length != frame.PixelDataLength ) )
+            // Mostly from: http://msdn.microsoft.com/en-us/library/jj131029.aspx
+
+            if ( ( null == _depthPixels ) || ( _depthPixels.Length != frame.PixelDataLength ) )
 			{
-				depthBuffer = new short[frame.PixelDataLength];
+                this._depthPixels = new DepthImagePixel[_kinectSensor.DepthStream.FramePixelDataLength];
+                this._colorPixels = new byte[_kinectSensor.DepthStream.FramePixelDataLength * sizeof( int )];
 			}
+
+            frame.CopyDepthImagePixelDataTo( _depthPixels );
 
 			if( null == _writeableBitmap || _writeableBitmap.Format != PixelFormats.Bgra32 )
-			{
-				_writeableBitmap = new WriteableBitmap(
-				frame.Width,
-				frame.Height,
-				96,
-				96,
-				PixelFormats.Bgra32,
-				null );
+            {
+                this._writeableBitmap = new WriteableBitmap(
+                    _kinectSensor.DepthStream.FrameWidth,
+                    _kinectSensor.DepthStream.FrameHeight,
+                    96.0,
+                    96.0,
+                    PixelFormats.Bgr32,
+                    null
+                    );
 			}
 
-			frame.CopyPixelDataTo( depthBuffer );
+            // Get the min and max reliable depth for the current frame
+            int minDepth = frame.MinDepth;
+            int maxDepth = frame.MaxDepth;
 
-			_writeableBitmap.WritePixels(
-				new Int32Rect( 0, 0, _writeableBitmap.PixelWidth, _writeableBitmap.PixelHeight ),
-				depthBuffer,
-				(int)( frame.Width * frame.BytesPerPixel ),
-				0 );
+            // Convert the depth to RGB
+            int colorPixelIndex = 0;
+            for ( int i = 0; i < this._depthPixels.Length; ++i )
+            {
+                // Get the depth for this pixel
+                short depth = _depthPixels[i].Depth;
+
+                // To convert to a byte, we're discarding the most-significant
+                // rather than least-significant bits.
+                // We're preserving detail, although the intensity will "wrap."
+                // Values outside the reliable depth range are mapped to 0 (black).
+
+                // Note: Using conditionals in this loop could degrade performance.
+                // Consider using a lookup table instead when writing production code.
+                // See the KinectDepthViewer class used by the KinectExplorer sample
+                // for a lookup table example.
+                byte intensity = (byte)( depth >= minDepth && depth <= maxDepth ? depth : 0 );
+
+                // Write out blue byte
+                this._colorPixels[colorPixelIndex++] = intensity;
+
+                // Write out green byte
+                this._colorPixels[colorPixelIndex++] = intensity;
+
+                // Write out red byte                        
+                this._colorPixels[colorPixelIndex++] = intensity;
+
+                // We're outputting BGR, the last byte in the 32 bits is unused so skip it
+                // If we were outputting BGRA, we would write alpha here.
+                ++colorPixelIndex;
+            }
+
+            this._writeableBitmap.WritePixels(
+                new Int32Rect( 0, 0, this._writeableBitmap.PixelWidth, this._writeableBitmap.PixelHeight ),
+                this._colorPixels,
+                this._writeableBitmap.PixelWidth * sizeof( int ),
+            0 );
 
 			return _writeableBitmap;
 		}
