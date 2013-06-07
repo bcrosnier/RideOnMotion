@@ -9,7 +9,25 @@ namespace RideOnMotion.Inputs
 	public class SendDroneCommand
 	{
 		DroneCommand _drone;
+		public double DroneOriginalOrientation;
+		public double DroneCurrentOrientation;
+		public bool RelativeDirection;
 
+		internal double DroneOrientationDifference
+		{
+			get
+			{
+				return DroneOriginalOrientation - DroneCurrentOrientation;
+			}
+		}
+
+		public DroneCommand ActiveDrone
+		{
+			set
+			{
+				this._drone = value;
+			}
+		}
 		public void Process( RideOnMotion.Inputs.InputState inputState )
 		{
 			if ( inputState.Land && _drone.CanLand )
@@ -37,15 +55,18 @@ namespace RideOnMotion.Inputs
 			float pitch = inputState.Pitch / 3.0f;
 			float yaw = inputState.Yaw / 2.0f;
 			float gaz = inputState.Gaz / 3.0f;
-				_drone.Navigate( roll, pitch, yaw, gaz );
-		}
-
-
-		public DroneCommand ActiveDrone
-		{
-			set
+			RelativeDirection = true;
+			if ( RelativeDirection )
 			{
-				this._drone = value;
+				_drone.Navigate( roll, pitch, yaw, gaz );
+			}
+			else
+			{
+				float roll2 = (( (float)Math.Cos( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * roll ) 
+					+ (( (float)Math.Sin( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * -pitch );
+				float pitch2 = ( ( (float)Math.Cos( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * pitch ) 
+					+ ( ( (float)Math.Sin( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * -roll ); ;
+				_drone.Navigate( roll2, pitch2, yaw, gaz );
 			}
 		}
 

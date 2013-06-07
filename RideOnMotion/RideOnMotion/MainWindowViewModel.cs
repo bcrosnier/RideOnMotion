@@ -86,6 +86,7 @@ namespace RideOnMotion.UI
 		InputState _lastGamepadInput;
 
 		SendDroneCommand _sendDroneCommand;
+		public bool DroneOriginalOrientationSet;
 
         #endregion Values
 
@@ -346,6 +347,7 @@ namespace RideOnMotion.UI
 			DroneOrderTimer.Tick += new EventHandler( OrderTheMotherfuckingDrone );
 			DroneOrderTimer.Start();
 			_sendDroneCommand = new SendDroneCommand();
+			_sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
 
         }
 
@@ -572,15 +574,26 @@ namespace RideOnMotion.UI
             _droneInit.NetworkConnectionStateChanged += OnNetworkConnectionStateChanged;
             _droneInit.ConnectionStateChanged += OnConnectionStateChanged;
             _droneInit.DroneDataReady += OnDroneDataReady;
+			_droneInit.DroneDataReady += OnOrientationChange;
             // Bind front drone camera
             _droneInit.DroneFrameReady += OnDroneFrameReady;
-
-            // Keyboard controller is specially handled.
-            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
 
             _droneInit.StartDrone();
             _droneInit.DroneCommand.EnterHoverMode();
         }
+
+		void OnOrientationChange( object sender, DroneDataReadyEventArgs e )
+		{
+			if ( !DroneOriginalOrientationSet )
+			{
+				_sendDroneCommand.DroneOriginalOrientation = e.Data.psi;
+				DroneOriginalOrientationSet = true;
+			}
+			else
+			{
+				_sendDroneCommand.DroneCurrentOrientation = e.Data.psi;
+			}
+		}
 
         private void DisconnectDrone( DroneInitializer init )
         {
@@ -590,9 +603,6 @@ namespace RideOnMotion.UI
             init.DroneDataReady -= OnDroneDataReady;
             // Bind front drone camera
             init.DroneFrameReady -= OnDroneFrameReady;
-
-            // Keyboard controller is specially handled.
-            _keyboardController.ActiveDrone = init.DroneCommand;
 
             init.EndDrone();
         }
@@ -754,7 +764,8 @@ namespace RideOnMotion.UI
         }
         #endregion Utilities
 
-    }
+
+	}
 
 
 }

@@ -164,7 +164,7 @@ namespace RideOnMotion
 
 		public void PlayLED()
 		{
-			PlayLedAnimationCommand PlayLedCommand = new PlayLedAnimationCommand( LedAnimation.RedAndGreenBlink, 10, 3 );
+			PlayLedAnimationCommand PlayLedCommand = new PlayLedAnimationCommand( LedAnimation.GreenBlink, 10, 3 );
 
 			if( !_droneControl.IsCommandPossible( PlayLedCommand ) )
 				return;

@@ -9,7 +9,6 @@ namespace RideOnMotion.Inputs.Keyboard
 {
     public class KeyboardController // : IDroneInputController // Fired until interface is fixed and/or valid.
     {
-		SendDroneCommand _sendDroneCommand;
 		bool[] _heldDown;
 		Key _lastKey;
 		float roll = 0;
@@ -30,16 +29,8 @@ namespace RideOnMotion.Inputs.Keyboard
         public KeyboardController( )
 		{
 			_heldDown = new bool[256];
-			_sendDroneCommand = new SendDroneCommand();
         }
 
-        public DroneCommand ActiveDrone
-        {
-            set
-            {
-                this._sendDroneCommand.ActiveDrone = value;
-            }
-        }
 
         /// <summary>
         /// Event triggered on key press.
