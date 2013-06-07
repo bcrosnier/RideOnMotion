@@ -14,6 +14,7 @@ using System.ComponentModel;
 using Microsoft.Kinect.Toolkit.Interaction;
 using System.Windows.Threading;
 using System.Collections.Generic;
+using Microsoft.Kinect.Toolkit.Controls;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -178,8 +179,7 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private Window _deviceSettingsWindow;
 
-		private short[] depthBuffer;
-		private WriteableBitmap _writeableBitmap;
+		public DepthImageProcessor _depthImageProcessor;
 
 		#endregion
 
@@ -378,8 +378,15 @@ namespace RideOnMotion.Inputs.Kinect
 
             this.InputUIControl = new KinectSensorControllerUI( this );
 
+			_depthImageProcessor = new DepthImageProcessor();
+			_depthImageProcessor.ProcessedDepthImageReady += ProccessDepthImageReady;
 
         }
+
+		private void ProccessDepthImageReady( object sender, DepthImageProcessedEventArgs e )
+		{
+			OnInputImageSourceChanged( e.OutputBitmap );
+		}
 
         /// <summary>
         /// Fired on InputStatusChanged to enable/disable the menus.
@@ -620,35 +627,6 @@ namespace RideOnMotion.Inputs.Kinect
             }
         }
 
-		public BitmapSource WriteToBitmap( DepthImageFrame frame )
-		{
-			if( ( null == depthBuffer ) || ( depthBuffer.Length != frame.PixelDataLength ) )
-			{
-				depthBuffer = new short[frame.PixelDataLength];
-			}
-
-			if( null == _writeableBitmap || _writeableBitmap.Format != PixelFormats.Bgra32 )
-			{
-				_writeableBitmap = new WriteableBitmap(
-				frame.Width,
-				frame.Height,
-				96,
-				96,
-				PixelFormats.Bgra32,
-				null );
-			}
-
-			frame.CopyPixelDataTo( depthBuffer );
-
-			_writeableBitmap.WritePixels(
-				new Int32Rect( 0, 0, _writeableBitmap.PixelWidth, _writeableBitmap.PixelHeight ),
-				depthBuffer,
-				(int)( frame.Width * frame.BytesPerPixel ),
-				0 );
-
-			return _writeableBitmap;
-		}
-
 		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
 		{
 			using( DepthImageFrame imageFrame = e.OpenDepthImageFrame() )
@@ -663,8 +641,7 @@ namespace RideOnMotion.Inputs.Kinect
 				_depthFrameIsReady = true; 
 				if( this.DepthImageEnabled )
 				{
-					_depthBitmapSource = WriteToBitmap( imageFrame );
-					OnInputImageSourceChanged( _depthBitmapSource );
+					_depthImageProcessor.WriteToBitmap( imageFrame );
 				}
 
 				imageFrame.Dispose();

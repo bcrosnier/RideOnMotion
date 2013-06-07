@@ -17,7 +17,7 @@ namespace Microsoft.Kinect.Toolkit.Controls
     /// <summary>
     /// Used to process/render a depth bitmap efficiently.
     /// </summary>
-    internal class DepthImageProcessor : DependencyObject, IDisposable, IDepthImageColorizerParameters
+    public class DepthImageProcessor : DependencyObject, IDisposable, IDepthImageColorizerParameters
     {
         public static readonly DependencyProperty KinectSensorProperty = DependencyProperty.Register(
             "KinectSensor",
@@ -276,7 +276,7 @@ namespace Microsoft.Kinect.Toolkit.Controls
         }
     }
 
-    internal class DepthImageProcessedEventArgs : EventArgs
+    public class DepthImageProcessedEventArgs : EventArgs
     {
         public WriteableBitmap OutputBitmap { get; set; }
     }
