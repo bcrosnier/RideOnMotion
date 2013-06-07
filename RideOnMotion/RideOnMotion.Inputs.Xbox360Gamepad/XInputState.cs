@@ -31,5 +31,10 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
              return ((PacketNumber == source.PacketNumber)
                  && (Gamepad.Equals(source.Gamepad)));
          }
+
+		 public override int GetHashCode()
+		 {
+			 return base.GetHashCode();
+		 }
     }
 }

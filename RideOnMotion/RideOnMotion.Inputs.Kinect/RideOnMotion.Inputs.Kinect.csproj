@@ -68,7 +68,6 @@
     </Page>
     <Compile Include="KinectModule\ImplementationTracker\CaptionArea.cs" />
     <Compile Include="KinectModule\ImplementationTracker\LeftHandPositionTracker.cs" />
-    <Compile Include="KinectModule\ImplementationTracker\Point.cs" />
     <Compile Include="KinectModule\ImplementationTracker\RightHandPositionTracker.cs" />
     <Compile Include="KinectModule\InputState.cs" />
     <Compile Include="KinectModule\KinectDeviceSettings.xaml.cs">

@@ -274,7 +274,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 
         public void UpdateState()
         {
-            XInputCapabilities X = new XInputCapabilities();
             int result = XInput.XInputGetState(_playerIndex, ref gamepadStateCurrent);
             IsConnected = (result == 0);
             

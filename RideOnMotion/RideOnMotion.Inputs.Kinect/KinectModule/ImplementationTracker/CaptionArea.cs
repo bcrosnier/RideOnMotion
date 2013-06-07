@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Windows;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -59,7 +60,7 @@ namespace RideOnMotion.Inputs.Kinect
         {
             get
             {
-                return this._topLeftPoint.X;
+                return (float)this._topLeftPoint.X;
             }
             set
             {
@@ -75,7 +76,7 @@ namespace RideOnMotion.Inputs.Kinect
         {
             get
             {
-                return this._topLeftPoint.Y;
+                return (float)this._topLeftPoint.Y;
             }
             set
             {
