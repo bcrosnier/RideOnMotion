@@ -88,7 +88,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
             XInput.XInputGetBatteryInformation(_playerIndex, (byte)BatteryDeviceType.BATTERY_DEVTYPE_HEADSET, ref headset);
 
             BatteryInformationHeadset = headset;
-			Franck.prout();
             BatteryInformationGamepad = gamepad;
         }
 
@@ -275,7 +274,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 
         public void UpdateState()
         {
-            XInputCapabilities X = new XInputCapabilities();
             int result = XInput.XInputGetState(_playerIndex, ref gamepadStateCurrent);
             IsConnected = (result == 0);
             

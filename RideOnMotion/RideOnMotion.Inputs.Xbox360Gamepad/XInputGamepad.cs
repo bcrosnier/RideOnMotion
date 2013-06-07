@@ -75,5 +75,10 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
             && (bRightTrigger == source.bRightTrigger)
             && (wButtons == source.wButtons)); 
         }
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
     }
 }

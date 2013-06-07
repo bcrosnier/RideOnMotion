@@ -12,17 +12,10 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 
 		XboxController _selectedController;
 
-		readonly float fastNavigationValue = 0.5f;
-		readonly float fastNavigationValue2 = 0.2f;
-		readonly float normalNavigationValue = 0.25f;
-		readonly float normalNavigationValue2 = 0.1f;
-		readonly float slowNavigationValue = 0.1f;
-		readonly float slowNavigationValue2 = 0.05f;
-		readonly float MaximumNavigationValue = 1f;
+		readonly float NavigationValue = 0.33f;
+		readonly float NavigationValue2 = 0.25f;
 		readonly int TriggerDeadZone = 4096;
 		readonly int TriggerReactionscale = 2048;
-		readonly int TriggerMax = ushort.MaxValue - 4096;
-		readonly int TriggerMin = ushort.MinValue + 4096;
 		readonly float NumberOfScale = 14f;
 		float lastRoll = 0;
 		float lastPitch = 0;
@@ -111,29 +104,26 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				_drone.PlayLED();
 			}
 
-			//slow
-			if ( _selectedController.LeftTrigger > 50 && _selectedController.RightTrigger < 50 )
-			{
-				gazAndYawValues = slowNavigationValue;
-				rollAndPitchValues = slowNavigationValue2;
-			}
-			//fast
-			else if ( _selectedController.LeftTrigger < 50 && _selectedController.RightTrigger > 50 )
-			{
-				gazAndYawValues = fastNavigationValue;
-				rollAndPitchValues = fastNavigationValue2;
-			}
-			else if ( _selectedController.LeftTrigger > 50 && _selectedController.RightTrigger > 50 )
-			{
-				gazAndYawValues = MaximumNavigationValue;
-				rollAndPitchValues = MaximumNavigationValue;
-			}
-			else
-			{
-				gazAndYawValues = normalNavigationValue;
-				rollAndPitchValues = normalNavigationValue2;
-			}
+			gazAndYawValues = NavigationValue;
+			rollAndPitchValues = NavigationValue2;
 
+			if ( _selectedController.LeftTrigger > 0 || _selectedController.RightTrigger > 0 )
+			{
+				float gazScale = 0;
+				if ( _selectedController.LeftTrigger > 0 && _selectedController.RightTrigger > 0 )
+				{
+					gazScale = 0;
+				}
+				else if ( _selectedController.RightTrigger > 0 )
+				{
+					gazScale = ( _selectedController.RightTrigger ) / 255f;
+				}
+				else if ( _selectedController.LeftTrigger > 0 )
+				{
+					gazScale = ( _selectedController.LeftTrigger ) / -255f;
+				}
+				gaz = gazAndYawValues * gazScale;
+			}
 
 			if ( _selectedController.LeftThumbStick.X > TriggerDeadZone || _selectedController.LeftThumbStick.X < -TriggerDeadZone
 				|| _selectedController.LeftThumbStick.Y > TriggerDeadZone || _selectedController.LeftThumbStick.Y < -TriggerDeadZone )
@@ -162,8 +152,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				}
 				pitch = -(rollAndPitchValues * ( pitchScale / NumberOfScale ));
 			}
-			if ( _selectedController.RightThumbStick.X > TriggerDeadZone || _selectedController.RightThumbStick.X < - TriggerDeadZone
-				|| _selectedController.RightThumbStick.Y > TriggerDeadZone || _selectedController.RightThumbStick.Y < -TriggerDeadZone )
+			if ( _selectedController.RightThumbStick.X > TriggerDeadZone || _selectedController.RightThumbStick.X < - TriggerDeadZone )
 			{
 				int yawScale = 14;
 				if ( _selectedController.RightThumbStick.X > 0 )
@@ -175,17 +164,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 					yawScale = ( ( _selectedController.RightThumbStick.X + TriggerDeadZone ) - TriggerReactionscale + 1 ) / TriggerReactionscale;
 				}
 				yaw = gazAndYawValues * ( yawScale / NumberOfScale );
-
-				int gazScale = 14;
-				if ( _selectedController.RightThumbStick.Y > 0 )
-				{
-					gazScale = ( ( _selectedController.RightThumbStick.Y - TriggerDeadZone ) + TriggerReactionscale - 1 ) / TriggerReactionscale;
-				}
-				else
-				{
-					gazScale = ( ( _selectedController.RightThumbStick.Y + TriggerDeadZone ) - TriggerReactionscale + 1 ) / TriggerReactionscale;
-				}
-				gaz = gazAndYawValues * ( gazScale / NumberOfScale );
 			}
 
 			if(roll !=lastRoll || pitch != lastPitch ||  yaw != lastyaw || gaz != lastgaz)
@@ -197,7 +175,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				lastgaz = gaz;
 			}
 
-			//RideOnMotion.Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.User, yaw + " " + gaz + " "+ roll + " "+ pitch );
+			RideOnMotion.Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.User, yaw + " " + gaz + " "+ roll + " "+ pitch );
 		}
 		public void Stop()
 		{
