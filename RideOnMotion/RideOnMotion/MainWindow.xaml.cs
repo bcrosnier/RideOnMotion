@@ -31,7 +31,7 @@ namespace RideOnMotion.UI
 		{
             InitializeComponent();
 
-			this.mainWindowViewModel = new MainWindowViewModel( new WindowInteropHelper( this ).Handle );
+			this.mainWindowViewModel = new MainWindowViewModel();
             this.inputController = new KinectSensorController();
             this.DataContext = this.mainWindowViewModel;
 

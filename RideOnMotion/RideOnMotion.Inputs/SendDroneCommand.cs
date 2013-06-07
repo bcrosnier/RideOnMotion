@@ -10,7 +10,7 @@ namespace RideOnMotion.Inputs
 	{
 		DroneCommand _drone;
 
-		public void process( RideOnMotion.Inputs.InputState inputState )
+		public void Process( RideOnMotion.Inputs.InputState inputState )
 		{
 			if ( inputState.Land && _drone.CanLand )
 				_drone.Land();
@@ -46,6 +46,94 @@ namespace RideOnMotion.Inputs
 			set
 			{
 				this._drone = value;
+			}
+		}
+
+		public void MixInputAndProcess(InputState Keyboard,InputState Gamepad)
+		{
+			if ( Keyboard.Equals( Gamepad ) )
+			{
+				Process( Keyboard );
+			}
+			else
+			{
+				InputState MixedInput = MixInput( Keyboard, Gamepad );
+
+			}
+		}
+
+		public static InputState MixInput( InputState Keyboard, InputState Gamepad )
+		{
+			if ( Keyboard == null && Gamepad == null )
+			{
+				return null;
+			}
+			else
+			{
+				if ( Keyboard == null )
+				{
+					Keyboard = new InputState();
+				}
+				if ( Gamepad == null )
+				{
+					Gamepad = new InputState();
+				}
+				InputState MixedInput = new InputState();
+				if ( Keyboard.CameraSwap || Gamepad.CameraSwap )
+					MixedInput.CameraSwap = true;
+				if ( Keyboard.Emergency || Gamepad.Emergency )
+					MixedInput.Emergency = true;
+				if ( Keyboard.FlatTrim || Gamepad.FlatTrim )
+					MixedInput.FlatTrim = true;
+				if ( Keyboard.Hover || Gamepad.Hover )
+					MixedInput.Hover = true;
+				if ( Keyboard.Land || Gamepad.Land )
+					MixedInput.Land = true;
+				if ( Keyboard.SpecialAction || Gamepad.SpecialAction )
+					MixedInput.SpecialAction = true;
+				if ( Keyboard.TakeOff || Gamepad.TakeOff )
+					MixedInput.TakeOff = true;
+
+				if ( Keyboard.Gaz != 0 && Gamepad.Gaz != 0 )
+				{
+					MixedInput.Gaz = Gamepad.Gaz;
+				}
+				else
+				{
+					MixedInput.Gaz += Keyboard.Gaz;
+					MixedInput.Gaz += Gamepad.Gaz;
+				}
+
+				if ( Keyboard.Pitch != 0 && Gamepad.Pitch != 0 )
+				{
+					MixedInput.Pitch = Gamepad.Pitch;
+				}
+				else
+				{
+					MixedInput.Pitch += Keyboard.Pitch;
+					MixedInput.Pitch += Gamepad.Pitch;
+				}
+
+				if ( Keyboard.Roll != 0 && Gamepad.Roll != 0 )
+				{
+					MixedInput.Roll = Gamepad.Roll;
+				}
+				else
+				{
+					MixedInput.Roll += Keyboard.Roll;
+					MixedInput.Roll += Gamepad.Roll;
+				}
+
+				if ( Keyboard.Yaw != 0 && Gamepad.Yaw != 0 )
+				{
+					MixedInput.Yaw = Gamepad.Yaw;
+				}
+				else
+				{
+					MixedInput.Yaw += Keyboard.Yaw;
+					MixedInput.Yaw += Gamepad.Yaw;
+				}
+				return MixedInput;
 			}
 		}
 	}

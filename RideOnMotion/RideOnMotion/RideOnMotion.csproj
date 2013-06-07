@@ -139,6 +139,10 @@
       <Project>{146bcdf6-0354-4401-bbdd-57a52d2598a6}</Project>
       <Name>RideOnMotion.Inputs.Xbox360Gamepad</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RideOnMotion.Inputs\RideOnMotion.Inputs.csproj">
+      <Project>{c214cbf4-359d-40fd-8f0c-102e04d4742c}</Project>
+      <Name>RideOnMotion.Inputs</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RideOnMotion.Utilities\RideOnMotion.Utilities.csproj">
       <Project>{7db44258-5127-4395-b0d6-619c899bf2a1}</Project>
       <Name>RideOnMotion.Utilities</Name>

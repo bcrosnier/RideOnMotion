@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using RideOnMotion.Inputs;
 
 namespace RideOnMotion.UI
 {
@@ -58,7 +59,6 @@ namespace RideOnMotion.UI
         private MenuItem _inputMenu;
 
         private Window _droneSettingsWindow;
-		private IntPtr _handle;
 
         private String _droneNetworkStatusText;
         private bool _droneConnectionStatus;
@@ -81,6 +81,11 @@ namespace RideOnMotion.UI
         internal event EventHandler<MenuItem> InputMenuChanged;
 
         private delegate void AddLogStringDelegate( String s );
+
+		InputState _lastKeyboardInput;
+		InputState _lastGamepadInput;
+
+		SendDroneCommand _sendDroneCommand;
 
         #endregion Values
 
@@ -285,6 +290,7 @@ namespace RideOnMotion.UI
 			}
 		}
 
+		DispatcherTimer DroneOrderTimer = new DispatcherTimer();
         #endregion GettersSetters
 
         #region INotifyPropertyChanged utilities
@@ -311,18 +317,15 @@ namespace RideOnMotion.UI
         /// <summary>
         /// Initializes the ViewModel with the given IDroneInputController.
         /// </summary>
-        public MainWindowViewModel(IntPtr handle)
+        public MainWindowViewModel()
         {
             CreateDroneCommands();
-			_handle = handle;
 
             InputTypes = new List<Type>();
 			InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
 
             _logStrings = new ObservableCollection<string>();
 
-			//_inputManager = new ARDrone.Input.InputManager( _handle );
-			//_inputManager.NewInputState += new NewInputStateHandler( OnNewInputState );
 			loadInputType( InputTypes[0] );
 
 			//mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
@@ -332,14 +335,41 @@ namespace RideOnMotion.UI
 
             initializeBindings();
 
+			_lastKeyboardInput = new InputState();
+			_lastGamepadInput = new InputState();
             _keyboardController = new KeyboardController();
             ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
 			_Xbox360Gamepad = new Xbox360GamepadController();
 			_Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
 			_Xbox360Gamepad.Start();
-
+			DroneOrderTimer.Interval = new TimeSpan( 0, 0, 0,0,30 );
+			DroneOrderTimer.Tick += new EventHandler( OrderTheMotherfuckingDrone );
+			DroneOrderTimer.Start();
+			_sendDroneCommand = new SendDroneCommand();
 
         }
+
+		private void OrderTheMotherfuckingDrone( object sender, EventArgs e )
+		{
+			InputState newKeyboardInput = _keyboardController.GetCurrentControlInput(_lastKeyboardInput);
+			InputState newGamepadInput = _Xbox360Gamepad.GetCurrentControlInput( _lastGamepadInput );
+			if ( newGamepadInput != null || newKeyboardInput != null)
+			{
+				if ( newKeyboardInput != null )
+				{
+					_lastKeyboardInput = newKeyboardInput;
+				}
+				if ( newGamepadInput != null )
+				{
+					_lastGamepadInput = newGamepadInput;
+				}
+				InputState MixedInput = SendDroneCommand.MixInput( _lastKeyboardInput, _lastGamepadInput );
+				if ( MixedInput != null )
+				{
+					_sendDroneCommand.Process( MixedInput );
+				}
+			}
+		}
 
         void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
         {

@@ -12,17 +12,33 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 
 		XboxController _selectedController;
 
-		readonly float NavigationValue = 0.33f;
-		readonly float NavigationValue2 = 0.25f;
+		readonly float NavigationValue = 1f;
+		readonly float NavigationValue2 = 1f;
 		readonly int TriggerDeadZone = 4096;
 		readonly int TriggerReactionscale = 2048;
 		readonly float NumberOfScale = 14f;
-		float lastRoll = 0;
-		float lastPitch = 0;
-		float lastyaw = 0;
-		float lastgaz = 0;
-		bool Hover = false;
-		bool BackPressed = false;
+
+		float roll = 0;
+		float pitch = 0;
+		float yaw = 0;
+		float gaz = 0;
+
+		bool cameraSwap = false;
+		bool takeOff = false;
+		bool land = false;
+		bool hover = false;
+		bool emergency = false;
+
+		bool flatTrim = false;
+		bool specialActionButton = false;
+
+		float rollAndPitchValues;
+		float gazAndYawValues;
+
+
+		public Xbox360GamepadController()
+		{
+		}
 
         public DroneCommand ActiveDrone
         {
@@ -40,68 +56,67 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 
 		private void _selectedController_StateChanged( object sender, XboxControllerStateChangedEventArgs e )
 		{
-			SendCommand();
+			MapInput();
 		}
 
-		internal void SendCommand()
+		public InputState GetCurrentControlInput(InputState _lastInputState)
 		{
-			//mist be bound to rollAndPitchValues
-			float roll = 0;
-			float pitch = 0;
+			if ( roll != _lastInputState.Roll || pitch != _lastInputState.Pitch || yaw != _lastInputState.Yaw || gaz != _lastInputState.Gaz || cameraSwap != _lastInputState.CameraSwap || takeOff != _lastInputState.TakeOff ||
+				land != _lastInputState.Land || hover != _lastInputState.Hover || emergency != _lastInputState.Emergency || flatTrim != _lastInputState.FlatTrim || specialActionButton != _lastInputState.SpecialAction )
+			{
+				InputState newInputState = new InputState( roll, pitch, yaw, gaz, cameraSwap, takeOff, land, hover, emergency, flatTrim, specialActionButton );
+				return newInputState;
+			}
+			else
+			{
+				return null;
+			}
+		}
+			
+		internal void MapInput()
+		{
+			roll = 0;
+			pitch = 0;
+			yaw = 0;
+			gaz = 0;
 
-			//must be bound to gazAndYawValues
-			float yaw = 0;
-			float gaz = 0;
+			cameraSwap = false;
+			takeOff = false;
+			land = false;
+			hover = false;
+			emergency = false;
 
-			float rollAndPitchValues;
-			float gazAndYawValues;
+			flatTrim = false;
+			specialActionButton = false;
 
+
+			if ( _selectedController.IsBackPressed )
+			{
+				cameraSwap = true;
+			}
+			if ( _selectedController.IsRightShoulderPressed )
+			{
+				takeOff = true;
+			}
 			if ( _selectedController.IsLeftShoulderPressed )
 			{
-				_drone.Land();
-				return;
+				land = true;
 			}
-			if ( _selectedController.IsRightShoulderPressed)
+			if ( _selectedController.IsRightStickPressed )
 			{
-				_drone.Takeoff();
-				return;
+				hover = true;
+			}
+			if ( _selectedController.IsBPressed )
+			{
+				emergency = true;
 			}
 			if ( _selectedController.IsStartPressed )
 			{
-				_drone.FlatTrim();
-				return;
+				flatTrim = true;
 			}
-			if ( !_selectedController.IsBackPressed )
-			{
-				BackPressed = false;
-			}
-			if ( _selectedController.IsBackPressed && !BackPressed)
-			{
-				_drone.ChangeCamera();
-				BackPressed = true;
-				return;
-			}
-			if ( _selectedController.IsLeftStickPressed )
-			{
-				if ( Hover )
-				{
-					_drone.LeaveHoverMode();
-					Hover = false;
-				}
-			}
-
-			if ( _selectedController.IsRightStickPressed )
-			{
-				if (!Hover)
-				{
-					_drone.EnterHoverMode();
-					Hover = true;
-				}
-			}
-
 			if ( _selectedController.IsXPressed )
 			{
-				_drone.PlayLED();
+				specialActionButton = true;
 			}
 
 			gazAndYawValues = NavigationValue;
@@ -165,17 +180,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				}
 				yaw = gazAndYawValues * ( yawScale / NumberOfScale );
 			}
-
-			if(roll !=lastRoll || pitch != lastPitch ||  yaw != lastyaw || gaz != lastgaz)
-			{
-				_drone.Navigate( roll, pitch, yaw, gaz );
-				lastRoll = roll;
-				lastPitch = pitch;
-				lastyaw = yaw;
-				lastgaz = gaz;
-			}
-
-			RideOnMotion.Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.User, yaw + " " + gaz + " "+ roll + " "+ pitch );
 		}
 		public void Stop()
 		{
