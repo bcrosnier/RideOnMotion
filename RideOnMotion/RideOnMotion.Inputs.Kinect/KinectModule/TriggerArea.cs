@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -141,9 +142,10 @@ namespace RideOnMotion.Inputs.Kinect
         {
             //DepthImagePoint depthPoint = new DepthImagePoint() { X = depthX, Y = depthY };
             //SkeletonPoint skelPoint = _pointConverter( depthPoint );
+			// BIIIIIATCH !!!!
             return new CaptionArea(
                     name,
-                    new Inputs.Kinect.Point(
+                    new Point(
                         depthX,
                         depthY
                     ),

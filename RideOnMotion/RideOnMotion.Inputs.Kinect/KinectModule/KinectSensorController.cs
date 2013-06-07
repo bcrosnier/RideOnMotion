@@ -108,6 +108,8 @@ namespace RideOnMotion.Inputs.Kinect
 
 		private bool _canTakeOff = false;
 
+		private UserInfo[] _userInfo;
+
         /// <summary>
         /// Collection of all ICaptionAreas for the left and right hands.
         /// </summary>
@@ -391,8 +393,9 @@ namespace RideOnMotion.Inputs.Kinect
             }
 
             _totalSkeleton = new Skeleton[6];
+			_userInfo = new UserInfo[6];
 
-            if ( this._enableSmoothing == true )
+            if ( this._enableSmoothing )
             {
                 System.Diagnostics.Debug.Assert( this._enableSmoothing == true && this._smoothingParam != null );
                 _kinectSensor.SkeletonStream.Enable( _smoothingParam );
@@ -674,47 +677,29 @@ namespace RideOnMotion.Inputs.Kinect
 		{
 			InteractionFrame iFrame = e.OpenInteractionFrame();
 			if( iFrame == null ) return;
-
-
-			UserInfo[] usrInfo = new UserInfo[6];
 						
-			iFrame.CopyInteractionDataTo( usrInfo );
+			iFrame.CopyInteractionDataTo( _userInfo );
 
-			List<UserInfo> curUsers = usrInfo.Where( x => x.SkeletonTrackingId > 0 ).ToList<UserInfo>();
+			List<UserInfo> curUsers = _userInfo.Where( x => x.SkeletonTrackingId > 0 ).ToList<UserInfo>();
 
 			if( curUsers.Count > 0 )
 			{
 				UserInfo curUser = curUsers[0];
-				SecurityHoverMode( usrInfo ); // TODO - Merge pending
+
+				SecurityHoverMode( curUser );
+
 				_handsVisible = true;
+
 				_positionTrackerController.NotifyPositionTrackers( curUser );
+
 				if( HandsPointReady != null )
                 {
                     System.Windows.Point left = WindowPointFromHandPointer( curUser.HandPointers[0] );
                     System.Windows.Point right = WindowPointFromHandPointer( curUser.HandPointers[1] );
 
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
-					if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
-						|| curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
-					{
-						if( !_canTakeOff && ( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
-						&& curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip ) )
-						{
-							_canTakeOff = true;
-							CanTakeOffMotherFucker( this, null );
-						}
-						else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
-						{
-							SecurityModeNeeded( this, 2 );
-						}
-						else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
-						{
-							SecurityModeNeeded( this, 3 );
-							_canTakeOff = false;
-						}
-					}
 
-
+					TestTakeOffCapabitility( curUser );
 					
                     /*// TODO - Merge pending
 							if( !_skeletonFound )
@@ -739,93 +724,69 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 		}
 
-		public void SecurityHoverMode( UserInfo[] usrInfo )
+		private void TestTakeOffCapabitility(UserInfo userInfo)
 		{
-			if( _skeletonFound )
+			if( userInfo.HandPointers[0].HandEventType == InteractionHandEventType.Grip
+						|| userInfo.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 			{
-				if( usrInfo != null )
+				if( !_canTakeOff && ( userInfo.HandPointers[0].HandEventType == InteractionHandEventType.Grip
+				&& userInfo.HandPointers[1].HandEventType == InteractionHandEventType.Grip ) )
 				{
-					if( usrInfo[0].HandPointers[0].IsTracked
-						&& usrInfo[0].HandPointers[1].IsTracked )
-					{
-						if( SecurityModeNeeded != null )
-						{
-							SecurityModeNeeded( this, 1 );
-						}
-
-						if( _timerToLand.IsEnabled == false )
-						{
-							_timerToLand.Start();
-						}
-					}
-					else if( _timerToLand.IsEnabled == true )
-						_timerToLand.Stop();
+					_canTakeOff = true;
+					CanTakeOffMotherFucker( this, null );
 				}
-				else
+				else if( userInfo.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 				{
-					if( SecurityModeNeeded != null )
-					{
-						SecurityModeNeeded( this, 1 );
-					}
+					SecurityModeNeeded( this, 2 );
+				}
+				else if( _canTakeOff && userInfo.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+				{
+					SecurityModeNeeded( this, 3 );
+					_canTakeOff = false;
+				}
+			}
+		}
 
-					if( _timerToLand.IsEnabled == false )
+		public void SecurityHoverMode( UserInfo usrInfo )
+		{
+			if( usrInfo != null )
+			{
+				if( usrInfo.HandPointers[0].IsTracked
+					&& usrInfo.HandPointers[1].IsTracked )
+				{
+					OnSecurityModeNeeded( 1 );
+
+					if( !_timerToLand.IsEnabled )
 					{
 						_timerToLand.Start();
 					}
+				}
+				else if( _timerToLand.IsEnabled )
+				{
+					_timerToLand.Stop();
+				}
+			}
+			else
+			{
+				OnSecurityModeNeeded( 1 );
+
+				if( !_timerToLand.IsEnabled )
+				{
+					_timerToLand.Start();
 				}
 			}
 		}
 
 		private void timerToLand_Tick( object sender, EventArgs e )
 		{
-			if ( SecurityModeNeeded != null )
-			{
-				SecurityModeNeeded( this, 2 );
-			}
+				OnSecurityModeNeeded( 2 );
 		}
-
-        /// <summary>
-        /// Converts a SkeletonPoint to a DepthImagePoint, taking only the X and Y values.
-        /// </summary>
-        /// <param name="skeletonPoint">SkeletonPoint to convert</param>
-        /// <returns>Point in 2D space of its DepthImagePoint equivalent</returns>
-        private System.Windows.Point SkelPointTo2DDepthPoint( SkeletonPoint skeletonPoint )
-        {
-            DepthImagePoint depthPoint = SkelPointToDepthImagePoint( skeletonPoint );
-            return new System.Windows.Point( depthPoint.X, depthPoint.Y );
-        }
-
-        /// <summary>
-        /// Converts a DepthImagePoint to a SkeletonPoint.
-        /// </summary>
-        /// <param name="p">DepthImagePoint to convert</param>
-        /// <returns>SkeletonPoint equivalent</returns>
-        private SkeletonPoint DepthImagePointToSkelPoint( DepthImagePoint p )
-        {
-            SkeletonPoint skelPoint = this.Sensor.CoordinateMapper.MapDepthPointToSkeletonPoint(
-                DEPTH_IMAGE_FORMAT,
-                p );
-            return skelPoint;
-        }
-
-        /// <summary>
-        /// Converts a SkeletonPoint to a DepthImagePoint.
-        /// </summary>
-        /// <param name="p">SkeletonPoint to convert</param>
-        /// <returns>DepthImagePoint equivalent</returns>
-        private DepthImagePoint SkelPointToDepthImagePoint( SkeletonPoint p )
-        {
-            DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
-                 p, DEPTH_IMAGE_FORMAT );
-            return depthPoint;
-        }
         
         /// <summary>
         /// Fired every time any sensor on the system changes its status.
         /// </summary>
         private void sensors_StatusChanged( object sender, StatusChangedEventArgs e )
         {
-
             Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.Kinect, "Status changed to : " + e.Status.ToString() );
             if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
                 && e.Sensor == _kinectSensor )
@@ -893,7 +854,6 @@ namespace RideOnMotion.Inputs.Kinect
                     this.InputMenu.IsEnabled = false;
                 }
             }
-
         }
 
         /// <summary>
@@ -928,7 +888,6 @@ namespace RideOnMotion.Inputs.Kinect
             else
             {
                 // Prepare and open window
-
                 this._deviceSettingsWindow = new KinectDeviceSettings( this );
                 _deviceSettingsWindow.Closed += deviceSettingsWindow_Closed;
                 _deviceSettingsWindow.Show();
@@ -963,6 +922,14 @@ namespace RideOnMotion.Inputs.Kinect
 			if( InputStatusChanged != null )
 			{
 				InputStatusChanged( this, this.InputStatus );
+			}
+		}
+
+		private void OnSecurityModeNeeded( int arg )
+		{
+			if( SecurityModeNeeded != null )
+			{
+				SecurityModeNeeded( this, arg );
 			}
 		}
     }
