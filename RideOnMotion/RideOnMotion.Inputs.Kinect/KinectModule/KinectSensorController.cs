@@ -21,8 +21,9 @@ namespace RideOnMotion.Inputs.Kinect
     /// Main controller class for drone input through a Kinect sensor device.
     /// </summary>
     public class KinectSensorController : IDroneInputController
-    {
-        /// <summary>
+	{
+		#region declarations
+		/// <summary>
         /// A user-friendly input name!
         /// </summary>
         public static readonly string INPUT_NAME = "Kinect";
@@ -155,19 +156,33 @@ namespace RideOnMotion.Inputs.Kinect
 		internal int _triggerButtonsActive;
 
 		/// <summary>
+		/// Used to know if the safety has already forced the drone to land
+		/// </summary>
+		internal bool _safetyLandingtriggered = false;
+
+		/// <summary>
 		/// Contain the inputState
 		/// </summary>
 		private InputState _inputState;
 
 		private InteractionStream _interactionStream;
 
+		/// <summary>
+		/// Manage the grip and grip release
+		/// </summary>
+		private bool _leftGrip = false;
+		private bool _rightGrip = false;
+
         /// <summary>
         /// Active settings Window. Closed on Stop(), can be null.
         /// </summary>
         private Window _deviceSettingsWindow;
 
-        #region Interface implementation
-        // Events
+		public bool DepthImageEnabled { get; set; }
+		#endregion
+
+		#region Interface implementation
+		// Events
         public event EventHandler<BitmapSource> InputImageSourceChanged;
         public event EventHandler<DroneInputStatus> InputStatusChanged;
 		public event EventHandler<bool[]> InputsStateChanged;
@@ -635,10 +650,12 @@ namespace RideOnMotion.Inputs.Kinect
 
 				_interactionStream.ProcessDepth( imageFrame.GetRawPixelData(), imageFrame.Timestamp );
 
-				_depthFrameIsReady = true;
-				_depthBitmapSource = DepthToBitmapSource( imageFrame );
-
-				OnInputImageSourceChanged( _depthBitmapSource );
+				_depthFrameIsReady = true; 
+				if( this.DepthImageEnabled )
+				{
+					_depthBitmapSource = DepthToBitmapSource( imageFrame );
+					OnInputImageSourceChanged( _depthBitmapSource );
+				}
 
 				imageFrame.Dispose();
 			}
@@ -653,7 +670,7 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 		}
 
-        public static System.Windows.Point WindowPointFromHandPointer( InteractionHandPointer p )
+        public static Point WindowPointFromHandPointer( InteractionHandPointer p )
         {
             double offset = 0.325;
             double min = 0;
@@ -686,18 +703,18 @@ namespace RideOnMotion.Inputs.Kinect
 			{
 				UserInfo curUser = curUsers[0];
 
-				SecurityHoverMode( curUser );
-
 				_handsVisible = true;
 
 				_positionTrackerController.NotifyPositionTrackers( curUser );
 
 				if( HandsPointReady != null )
                 {
-                    System.Windows.Point left = WindowPointFromHandPointer( curUser.HandPointers[0] );
-                    System.Windows.Point right = WindowPointFromHandPointer( curUser.HandPointers[1] );
+                    Point left = WindowPointFromHandPointer( curUser.HandPointers[0] );
+                    Point right = WindowPointFromHandPointer( curUser.HandPointers[1] );
 
 					HandsPointReady( this, new System.Windows.Point[2] { left, right } );
+
+					SafetyModeCheck( curUser );
 
 					TestTakeOffCapabitility( curUser );
 					
@@ -721,25 +738,58 @@ namespace RideOnMotion.Inputs.Kinect
 					HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
 				}
 				_handsVisible = false;
+				if( _skeletonFound )
+				{
+					_skeletonFound = false;
+				}
+				_handsVisible = false;
+			}
+			else
+			{
+				if( _skeletonFound )
+				{
+					_skeletonFound = false;
+				}
 			}
 		}
 
-		private void TestTakeOffCapabitility(UserInfo userInfo)
+		private void TestTakeOffCapabitility( UserInfo curUser )
 		{
-			if( userInfo.HandPointers[0].HandEventType == InteractionHandEventType.Grip
-						|| userInfo.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+			// HandEvent are a single occurence, so we must store the current state
+			if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 			{
-				if( !_canTakeOff && ( userInfo.HandPointers[0].HandEventType == InteractionHandEventType.Grip
-				&& userInfo.HandPointers[1].HandEventType == InteractionHandEventType.Grip ) )
+				_leftGrip = true;
+			}
+			else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.GripRelease )
+			{
+				_leftGrip = false;
+			}
+			if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+			{
+				_rightGrip = true;
+			}
+			else if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.GripRelease )
+			{
+				_rightGrip = false;
+			}
+
+
+			if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
+				|| curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+			{
+				if( !_canTakeOff && ( _leftGrip && _rightGrip ) )
 				{
 					_canTakeOff = true;
-					CanTakeOffMotherFucker( this, null );
+					if( CanTakeOffMotherFucker != null )
+					{
+						CanTakeOffMotherFucker( this, null );
+					}
 				}
-				else if( userInfo.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+				else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeNeeded( this, 2 );
 				}
-				else if( _canTakeOff && userInfo.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+				else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeNeeded( this, 3 );
 					_canTakeOff = false;
@@ -747,40 +797,76 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 		}
 
-		public void SecurityHoverMode( UserInfo usrInfo )
+		#region Security
+		public void SafetyModeCheck( UserInfo curUser )
 		{
-			if( usrInfo != null )
+			if( _skeletonFound && ( curUser.HandPointers[0].IsTracked
+					&& curUser.HandPointers[1].IsTracked ) )
 			{
-				if( usrInfo.HandPointers[0].IsTracked
-					&& usrInfo.HandPointers[1].IsTracked )
+				if( !curUser.HandPointers[0].IsActive
+					&& !curUser.HandPointers[1].IsActive )
 				{
-					OnSecurityModeNeeded( 1 );
+					if( SecurityModeNeeded != null && _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
+					{
+						SecurityModeNeeded( this, 1 );
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+							"Safety mode enabled due to hands no longer being tracked" );
+					}
 
-					if( !_timerToLand.IsEnabled )
+					if( _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
 					{
 						_timerToLand.Start();
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+							"Safety mode : 3 seconds remaining before automatic landing" );
 					}
 				}
-				else if( _timerToLand.IsEnabled )
+				else if( _timerToLand.IsEnabled == true &&
+					 ( curUser.HandPointers[0].IsActive
+					&& curUser.HandPointers[1].IsActive ) && _safetyLandingtriggered == false )
 				{
 					_timerToLand.Stop();
+					SecurityModeNeeded( this, 0 );
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+						"Safety mode no longer required, restoring manual control" );
+					_safetyLandingtriggered = false;
+				}
+				else if( ( curUser.HandPointers[0].IsInteractive
+					&& curUser.HandPointers[1].IsInteractive )
+					&& _safetyLandingtriggered == true )
+				{
+					_safetyLandingtriggered = false;
 				}
 			}
 			else
 			{
-				OnSecurityModeNeeded( 1 );
+				if( _timerToLand.IsEnabled == false && SecurityModeNeeded != null )
+				{
+					SecurityModeNeeded( this, 1 );
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+						"Safety mode enabled due to hands no longer being tracked" );
+				}
 
-				if( !_timerToLand.IsEnabled )
+				if( _timerToLand.IsEnabled == false )
 				{
 					_timerToLand.Start();
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+						"Safety mode : 3 seconds remaining before automatic landing" );
 				}
 			}
 		}
 
 		private void timerToLand_Tick( object sender, EventArgs e )
 		{
-				OnSecurityModeNeeded( 2 );
+			if( SecurityModeNeeded != null )
+			{
+				SecurityModeNeeded( this, 2 );
+				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+					"Security mode will now process to land the drone" );
+				_timerToLand.Stop();
+				_safetyLandingtriggered = true;
+			}
 		}
+		#endregion
         
         /// <summary>
         /// Fired every time any sensor on the system changes its status.
