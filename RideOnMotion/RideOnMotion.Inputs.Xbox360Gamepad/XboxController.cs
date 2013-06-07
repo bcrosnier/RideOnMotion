@@ -88,7 +88,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
             XInput.XInputGetBatteryInformation(_playerIndex, (byte)BatteryDeviceType.BATTERY_DEVTYPE_HEADSET, ref headset);
 
             BatteryInformationHeadset = headset;
-			Franck.prout();
             BatteryInformationGamepad = gamepad;
         }
 

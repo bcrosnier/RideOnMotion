@@ -25,12 +25,12 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// A user-friendly input name!
         /// </summary>
-        private static readonly string INPUT_NAME = "Kinect";
+        public static readonly string INPUT_NAME = "Kinect";
 
         /// <summary>
         /// Default format used for the depth image stream.
         /// </summary>
-        private static readonly DepthImageFormat DEPTH_IMAGE_FORMAT = DepthImageFormat.Resolution640x480Fps30;
+        public static readonly DepthImageFormat DEPTH_IMAGE_FORMAT = DepthImageFormat.Resolution640x480Fps30;
 
         /// <summary>
         /// Width of the depth frame. Must match DEPTH_IMAGE_FORMAT.
@@ -45,12 +45,12 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// Default trigger zone width (side size)
         /// </summary>
-        private static readonly int TRIGGER_BUTTON_WIDTH = 300;
+        public static readonly int TRIGGER_BUTTON_WIDTH = 300;
 
         /// <summary>
         /// Default trigger zone height (button thickness)
         /// </summary>
-        private static readonly int TRIGGER_BUTTON_HEIGHT = 100;
+        public static readonly int TRIGGER_BUTTON_HEIGHT = 100;
 
         /// <summary>
         /// The Kinect sensor used by the controller. Can be null.
@@ -75,12 +75,12 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// TriggerArea for the left hand.
         /// </summary>
-        private TriggerArea LeftTriggerArea { get; set; }
+		private TriggerArea _leftTriggerArea;
 
         /// <summary>
         /// TriggerArea for the right hand.
         /// </summary>
-        private TriggerArea RightTriggerArea { get; set; }
+		private TriggerArea _rightTriggerArea;
 
         /// <summary>
         /// Whether a depth frame is ready to use.
@@ -434,8 +434,8 @@ namespace RideOnMotion.Inputs.Kinect
         {
             _positionTrackerController = new PositionTrackerController();
 
-            IPositionTracker<UserInfo> leftTracker = new LeftHandPositionTracker( LeftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
-            IPositionTracker<UserInfo> rightTracker = new RightHandPositionTracker( RightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker<UserInfo> leftTracker = new LeftHandPositionTracker( _leftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker<UserInfo> rightTracker = new RightHandPositionTracker( _rightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
 
             this.PositionTrackerController.AttachPositionTracker( leftTracker );
             this.PositionTrackerController.AttachPositionTracker( rightTracker );
@@ -452,12 +452,12 @@ namespace RideOnMotion.Inputs.Kinect
             int zoneHeight = DEPTH_FRAME_HEIGHT;
 
             // Create caption areas
-            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, true);
-            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, false);
+            _leftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, true);
+            _rightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, false);
 
             // Create a collection from both zones
-                LeftTriggerArea.TriggerCaptionsCollection.Values.Union(
-                        RightTriggerArea.TriggerCaptionsCollection.Values
+                _leftTriggerArea.TriggerCaptionsCollection.Values.Union(
+                        _rightTriggerArea.TriggerCaptionsCollection.Values
                 ).ToList().ForEach((element) => TriggerButtons.Add(element));
 			( (INotifyPropertyChanged)TriggerButtons ).PropertyChanged += ( x, y ) => ChangeCurrentInputState(x,y);
         }
