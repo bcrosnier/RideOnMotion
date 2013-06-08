@@ -600,7 +600,8 @@ namespace RideOnMotion.UI
 
             init.NetworkConnectionStateChanged -= OnNetworkConnectionStateChanged;
             init.ConnectionStateChanged -= OnConnectionStateChanged;
-            init.DroneDataReady -= OnDroneDataReady;
+			init.DroneDataReady -= OnDroneDataReady;
+			init.DroneDataReady -= OnOrientationChange;
             // Bind front drone camera
             init.DroneFrameReady -= OnDroneFrameReady;
 
