@@ -74,11 +74,15 @@ namespace RideOnMotion.Inputs
 		{
 			if ( Keyboard.Equals( Gamepad ) )
 			{
-				Process( Keyboard );
+				Process( Gamepad );
 			}
 			else
 			{
 				InputState MixedInput = MixInput( Keyboard, Gamepad );
+				if ( MixedInput != null )
+				{
+					Process( MixedInput );
+				}
 
 			}
 		}
