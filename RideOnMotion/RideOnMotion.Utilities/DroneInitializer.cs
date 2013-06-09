@@ -72,7 +72,7 @@ namespace RideOnMotion
             InitializeHudInterface();
 
             _timerStatusUpdate = new DispatcherTimer();
-            _timerStatusUpdate.Interval = new TimeSpan( 0, 0, 1 );
+			_timerStatusUpdate.Interval = new TimeSpan( 0, 0, 0, 0, 50 );
             _timerStatusUpdate.Tick += new EventHandler( timerStatusUpdate_Tick );
         }
 
