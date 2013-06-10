@@ -49,5 +49,33 @@ namespace RideOnMotion.Inputs
 
 			return value;
 		}
+
+		// override object.Equals
+		public override bool Equals( object obj )
+		{
+
+			if ( ( obj == null ) || ( !( obj is InputState ) ) )
+				return false;
+			InputState source = (InputState)obj;
+
+			return ( ( Roll == source.Roll )
+				&& ( Pitch == source.Pitch )
+				&& ( Yaw == source.Yaw )
+				&& ( Gaz == source.Gaz )
+				&& ( CameraSwap == source.CameraSwap )
+				&& ( TakeOff == source.TakeOff )
+				&& ( Land == source.Land )
+				&& ( Hover == source.Hover )
+				&& ( Emergency == source.Emergency )
+				&& ( FlatTrim == source.FlatTrim )
+				&& ( SpecialAction == source.SpecialAction ) 
+				);
+		}
+
+		// override object.GetHashCode
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 }

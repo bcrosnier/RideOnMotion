@@ -9,25 +9,28 @@ namespace RideOnMotion.Inputs.Keyboard
 {
     public class KeyboardController // : IDroneInputController // Fired until interface is fixed and/or valid.
     {
-		SendDroneCommand _sendDroneCommand;
 		bool[] _heldDown;
 		Key _lastKey;
-		InputState _lastInputState;
+		float roll = 0;
+		float pitch = 0;
+		float yaw = 0;
+		float gaz = 0;
 
-        public KeyboardController()
+		bool cameraSwap = false;
+		bool takeOff = false;
+		bool land = false;
+		bool hover = false;
+		bool emergency = false;
+
+		bool flatTrim = false;
+		bool specialActionButton = false;
+		InputState _lastInputState = new InputState();
+
+        public KeyboardController( )
 		{
 			_heldDown = new bool[256];
-			_sendDroneCommand = new SendDroneCommand();
-			_lastInputState = new InputState();
         }
 
-        public DroneCommand ActiveDrone
-        {
-            set
-            {
-                this._sendDroneCommand.ActiveDrone = value;
-            }
-        }
 
         /// <summary>
         /// Event triggered on key press.
@@ -44,7 +47,7 @@ namespace RideOnMotion.Inputs.Keyboard
 			_heldDown[(int)e.Key] = true;
 
 			_lastKey = currentKey;
-			ProcessAction();
+			MapInput();
         }
 
         /// <summary>
@@ -59,35 +62,26 @@ namespace RideOnMotion.Inputs.Keyboard
 		public void ProcessKeyUp( KeyEventArgs e )
 		{
 			_heldDown[(int)e.Key] = false;
-			ProcessAction();
+			MapInput();
 		}
 
-		public void ProcessAction()
+		internal void MapInput()
 		{
-			InputState currentInput = GetCurrentControlInput();
-			if ( currentInput != null )
-			{
-				_sendDroneCommand.process( currentInput );
-			}
-		}
+			roll = 0;
+			pitch = 0;
+			yaw = 0;
+			gaz = 0;
 
-		public InputState GetCurrentControlInput()
-		{
-			float roll = 0;
-			float pitch = 0;
-			float yaw = 0;
-			float gaz = 0;
+			cameraSwap = false;
+			takeOff = false;
+			land = false;
+			hover = false;
+			emergency = false;
 
-			bool cameraSwap = false;
-			bool takeOff = false;
-			bool land = false;
-			bool hover = false;
-			bool emergency = false;
+			flatTrim = false;
+			specialActionButton = false;
 
-			bool flatTrim = false;
-			bool specialActionButton = false;
-
-			if ( _heldDown[(int)Key.Q] && !_heldDown[(int)Key.D])
+			if ( _heldDown[(int)Key.Q] && !_heldDown[(int)Key.D] )
 			{
 				roll = -1;
 			}
@@ -152,13 +146,22 @@ namespace RideOnMotion.Inputs.Keyboard
 				specialActionButton = true;
 			}
 			
+			//InputState currentInput = GetCurrentControlInput();
+			//if ( currentInput != null )
+			//{
+			//	_sendDroneCommand.process( currentInput );
+			//}
+		}
+
+		public InputState GetCurrentControlInput( InputState _lastInputState )
+		{
+
 			// TODO test
 
 			if ( roll != _lastInputState.Roll || pitch != _lastInputState.Pitch || yaw != _lastInputState.Yaw || gaz != _lastInputState.Gaz || cameraSwap != _lastInputState.CameraSwap || takeOff != _lastInputState.TakeOff ||
 				land != _lastInputState.Land || hover != _lastInputState.Hover || emergency != _lastInputState.Emergency || flatTrim != _lastInputState.FlatTrim || specialActionButton  != _lastInputState.SpecialAction)
 			{
 				InputState newInputState = new InputState( roll, pitch, yaw, gaz, cameraSwap, takeOff, land, hover, emergency, flatTrim, specialActionButton );
-				_lastInputState = newInputState;
 				return newInputState;
 			}
 			else

@@ -51,6 +51,7 @@
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\FlightMoveCommand.cs" />
     <Compile Include="Commands\HoverModeCommand.cs" />
+    <Compile Include="Commands\PairingCommand.cs" />
     <Compile Include="Commands\PlayLedAnimationCommand.cs" />
     <Compile Include="Commands\SetConfigurationCommand.cs" />
     <Compile Include="Commands\SetControlModeCommand.cs" />

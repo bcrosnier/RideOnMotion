@@ -26,7 +26,7 @@ namespace RideOnMotion.UI
 		{
             InitializeComponent();
 
-			this.mainWindowViewModel = new MainWindowViewModel( new WindowInteropHelper( this ).Handle );
+			this.mainWindowViewModel = new MainWindowViewModel();
             this.DataContext = this.mainWindowViewModel;
 
             // Bind input menu and fire once
