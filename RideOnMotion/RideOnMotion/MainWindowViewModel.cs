@@ -345,8 +345,6 @@ namespace RideOnMotion.UI
 			DroneOrderTimer.Interval = new TimeSpan( 0, 0, 0,0,30 );
 			DroneOrderTimer.Tick += new EventHandler( OrderTheMotherfuckingDrone );
 			DroneOrderTimer.Start();
-			_sendDroneCommand = new SendDroneCommand();
-			_sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
 
         }
 
@@ -584,6 +582,10 @@ namespace RideOnMotion.UI
 
             _droneInit.DroneCommand.IsDronePaired = paired;
             _droneInit.StartDrone();
+
+
+			_sendDroneCommand = new SendDroneCommand();
+			_sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
         }
 
 		void OnOrientationChange( object sender, DroneDataReadyEventArgs e )
