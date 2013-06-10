@@ -132,9 +132,12 @@ namespace RideOnMotion.Inputs.Kinect
 		/// 1 -> Hover mode activation
 		/// 2 -> Land the drone
 		/// </summary>
-		public event EventHandler<int> SecurityModeNeeded;
-
-		public event EventHandler CanTakeOffMotherFucker;
+		public event EventHandler<int> SecurityModeChanged;
+        
+        /// <summary>
+        /// A person was detected and motioned to control the drone. Drone can now take off.
+        /// </summary>
+		public event EventHandler ControlAcquired;
 
         /// <summary>
         /// Converts a DepthImagePoint to a SkeletonPoint, using this controller's depth tracking data.
@@ -826,18 +829,18 @@ namespace RideOnMotion.Inputs.Kinect
 				if( !_canTakeOff && ( _leftGrip && _rightGrip ) )
 				{
 					_canTakeOff = true;
-					if( CanTakeOffMotherFucker != null )
+					if( ControlAcquired != null )
 					{
-						CanTakeOffMotherFucker( this, null );
+						ControlAcquired( this, null );
 					}
 				}
 				else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 				{
-					SecurityModeNeeded( this, 2 );
+					SecurityModeChanged( this, 2 );
 				}
 				else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 				{
-					SecurityModeNeeded( this, 3 );
+					SecurityModeChanged( this, 3 );
 					_canTakeOff = false;
 				}
 			}
@@ -852,9 +855,9 @@ namespace RideOnMotion.Inputs.Kinect
 				if( !curUser.HandPointers[0].IsActive
 					&& !curUser.HandPointers[1].IsActive )
 				{
-					if( SecurityModeNeeded != null && _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
+					if( SecurityModeChanged != null && _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
 					{
-						SecurityModeNeeded( this, 1 );
+						SecurityModeChanged( this, 1 );
 						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
 							"Safety mode enabled due to hands no longer being tracked" );
 					}
@@ -871,7 +874,7 @@ namespace RideOnMotion.Inputs.Kinect
 					&& curUser.HandPointers[1].IsActive ) && _safetyLandingtriggered == false )
 				{
 					_timerToLand.Stop();
-					SecurityModeNeeded( this, 0 );
+					SecurityModeChanged( this, 0 );
 					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
 						"Safety mode no longer required, restoring manual control" );
 					_safetyLandingtriggered = false;
@@ -885,9 +888,9 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 			else
 			{
-				if( _timerToLand.IsEnabled == false && SecurityModeNeeded != null )
+				if( _timerToLand.IsEnabled == false && SecurityModeChanged != null )
 				{
-					SecurityModeNeeded( this, 1 );
+					SecurityModeChanged( this, 1 );
 					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
 						"Safety mode enabled due to hands no longer being tracked" );
 				}
@@ -903,9 +906,9 @@ namespace RideOnMotion.Inputs.Kinect
 
 		private void timerToLand_Tick( object sender, EventArgs e )
 		{
-			if( SecurityModeNeeded != null )
+			if( SecurityModeChanged != null )
 			{
-				SecurityModeNeeded( this, 2 );
+				SecurityModeChanged( this, 2 );
 				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
 					"Security mode will now process to land the drone" );
 				_timerToLand.Stop();
@@ -1059,9 +1062,9 @@ namespace RideOnMotion.Inputs.Kinect
 
 		private void OnSecurityModeNeeded( int arg )
 		{
-			if( SecurityModeNeeded != null )
+			if( SecurityModeChanged != null )
 			{
-				SecurityModeNeeded( this, arg );
+				SecurityModeChanged( this, arg );
 			}
 		}
 

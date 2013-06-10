@@ -265,7 +265,7 @@ namespace RideOnMotion.Inputs.Kinect
 			bool settingChanged = false;
             if ( _controller.Sensor.Status != Microsoft.Kinect.KinectStatus.Connected )
             {
-                return; // Fuck you
+                return; // Do nothing if Kinect isn't ready
             }
 
             // Near mode

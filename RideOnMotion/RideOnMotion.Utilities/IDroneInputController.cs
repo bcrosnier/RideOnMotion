@@ -100,7 +100,7 @@ namespace RideOnMotion
 		/// <summary>
 		/// Fired when security mode is needed
 		/// </summary>
-		event EventHandler<int> SecurityModeNeeded;
+		event EventHandler<int> SecurityModeChanged;
 
 		/// <summary>
 		/// A switch to know if the controller is being used right now

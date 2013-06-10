@@ -94,9 +94,9 @@ namespace RideOnMotion.Inputs.Kinect
             this.DataContext = this;
 
 			this._controller.HandsPointReady += OnHandsPoint;
-            this._controller.CanTakeOffMotherFucker += controller_CanTakeOff;
+            this._controller.ControlAcquired += controller_CanTakeOff;
 
-            this._controller.SecurityModeNeeded += controller_SecurityModeNeeded;
+            this._controller.SecurityModeChanged += controller_SecurityModeNeeded;
 
 			InitializeComponent();
         }
@@ -134,7 +134,7 @@ namespace RideOnMotion.Inputs.Kinect
         {
             get
             {
-                return _alertMessage + "\nBITCH";
+                return _alertMessage;
             }
 
             set
