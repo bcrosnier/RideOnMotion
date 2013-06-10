@@ -46,10 +46,14 @@ namespace RideOnMotion
 		}
 
 		public bool IsDronePaired
-		{
-			get
+        {
+            get
+            {
+                return _isDronePaired;
+            }
+			set
 			{
-				return _isDronePaired;
+                _isDronePaired = value;
 			}
 		}
 

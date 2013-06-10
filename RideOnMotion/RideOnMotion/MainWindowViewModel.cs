@@ -569,6 +569,11 @@ namespace RideOnMotion.UI
 
         private void ConnectDrone( ARDrone.Control.DroneConfig config )
         {
+            bool paired = false;
+            if ( _droneInit != null )
+            {
+                paired = _droneInit.DroneCommand.IsDronePaired;
+            }
             _droneInit = new DroneInitializer( config );
 
             _droneInit.NetworkConnectionStateChanged += OnNetworkConnectionStateChanged;
@@ -578,6 +583,7 @@ namespace RideOnMotion.UI
             // Bind front drone camera
             _droneInit.DroneFrameReady += OnDroneFrameReady;
 
+            _droneInit.DroneCommand.IsDronePaired = paired;
             _droneInit.StartDrone();
             _droneInit.DroneCommand.EnterHoverMode();
         }
