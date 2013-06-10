@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Windows;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -22,8 +23,6 @@ namespace RideOnMotion.Inputs.Kinect
 		bool _isActive;
 
 		public event PropertyChangedEventHandler PropertyChanged;
-
-        KinectSensorController.SkelPointToDepthPoint _converter;
 
         public float Height
         {
@@ -61,7 +60,7 @@ namespace RideOnMotion.Inputs.Kinect
         {
             get
             {
-                return this._topLeftPoint.X;
+                return (float)this._topLeftPoint.X;
             }
             set
             {
@@ -77,7 +76,7 @@ namespace RideOnMotion.Inputs.Kinect
         {
             get
             {
-                return this._topLeftPoint.Y;
+                return (float)this._topLeftPoint.Y;
             }
             set
             {
@@ -140,7 +139,7 @@ namespace RideOnMotion.Inputs.Kinect
             }
         }
 
-        public CaptionArea(String Name, Point topLeftPoint, float width, float height, KinectSensorController.SkelPointToDepthPoint converter , int Id)
+        public CaptionArea(String Name, Point topLeftPoint, float width, float height, int Id)
 		{
 			_associateFunctions = new List<Action>();
 
@@ -149,8 +148,6 @@ namespace RideOnMotion.Inputs.Kinect
             _width = width;
             _height = height;
 			_id = Id;
-
-            this._converter = converter;
 
 			IsActive = false;
 		}
@@ -167,25 +164,12 @@ namespace RideOnMotion.Inputs.Kinect
             _associateFunctions.Remove(action);
         }
 
-        public void CheckPosition(Joint joint)
+        public void CheckPosition(float x, float y)
         {
-            DepthImagePoint depthPoint;
-
-            if ( _converter == null )
-            {
-                // This shouldn't happen !
-                depthPoint = new DepthImagePoint() { X = (int)joint.Position.X, Y = (int)joint.Position.Y, Depth = (int)joint.Position.Z };
-            }
-            else
-            {
-                depthPoint = _converter( joint.Position );
-            }
-
-            if ( depthPoint.X > _topLeftPoint.X &&
-                depthPoint.X < _topLeftPoint.X + _width &&
-                depthPoint.Y > _topLeftPoint.Y &&
-                depthPoint.Y < _topLeftPoint.Y + _height &&
-                (joint.TrackingState == JointTrackingState.Inferred || joint.TrackingState == JointTrackingState.Tracked) )
+            if ( x > _topLeftPoint.X &&
+                x < _topLeftPoint.X + _width &&
+                y > _topLeftPoint.Y &&
+                y < _topLeftPoint.Y + _height )
             {
 				if ( IsActive == false )
                 {
@@ -194,7 +178,7 @@ namespace RideOnMotion.Inputs.Kinect
                         action();
                     }
 
-					Logger.Instance.NewEntry( LogLevel.Trace, CKTraitTags.ARDrone, joint.JointType.ToString() + " activated " + this.Name );
+					//Logger.Instance.NewEntry( LogLevel.Trace, CKTraitTags.ARDrone, joint.JointType.ToString() + " activated " + this.Name );
 				}
 
 				IsActive = true;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Kinect;
+using Microsoft.Kinect.Toolkit.Interaction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,62 +10,39 @@ namespace RideOnMotion.Inputs.Kinect
 {
 	public class PositionTrackerController
 	{
-		IList<IPositionTracker> _positionTrackers;
+		IList<IPositionTracker<UserInfo>> _positionTrackers;
 
-		public event EventHandler<AreaActivedEventArgs> AreaActived;
+		public event EventHandler<AreaActivatedEventArgs> AreaActivated;
 
 		public PositionTrackerController()
 		{
-			_positionTrackers = new List<IPositionTracker>();
-            /*
-			List<ICaptionArea> listOfCaptionAreas = new List<ICaptionArea>()
-			{
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) }
-			};
-			
-			_positionTrackers.Add( new LeftHandPositionTracker( listOfCaptionAreas ) );
-
-			listOfCaptionAreas = new List<ICaptionArea>()
-			{
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) },
-				{ new CaptionArea( new Point( 0, 0 ), 0, 0, null ) }
-			};
-
-			_positionTrackers.Add( new RightHandPositionTracker( listOfCaptionAreas ) );
-             */
+			_positionTrackers = new List<IPositionTracker<UserInfo>>();
+           
 		}
 
-		public void AttachPositionTracker( IPositionTracker positionTracker )
+		public void AttachPositionTracker( IPositionTracker<UserInfo> positionTracker )
 		{
 			if( positionTracker == null ) throw new ArgumentNullException( "positionTracker cannot be null" );
 			if( !_positionTrackers.Contains( positionTracker ) ) _positionTrackers.Add( positionTracker );
 		}
 
-		public void DetachPositionTracker( IPositionTracker positionTracker )
+		public void DetachPositionTracker( IPositionTracker<UserInfo> positionTracker )
 		{
 			if( positionTracker == null ) throw new ArgumentNullException( "positionTracker cannot be null" );
 			if( _positionTrackers.Contains( positionTracker ) ) _positionTrackers.Remove( positionTracker );
 		}
 
-		public void NotifyPositionTrackers( Skeleton skeleton )
+		public void NotifyPositionTrackers( UserInfo userInfo )
 		{
-			if( skeleton != null && skeleton.TrackingState == SkeletonTrackingState.Tracked )
-			{
-				foreach( IPositionTracker positionTracker in _positionTrackers ) positionTracker.HookingSkeleton( skeleton );
-			}
+			foreach( IPositionTracker<UserInfo> positionTracker in _positionTrackers ) positionTracker.Hooking( userInfo );
 		}
 
-		protected void OnAreaActived( ICaptionArea captionArea )
+		protected void OnAreaActivated( ICaptionArea captionArea )
 		{
-			EventHandler<AreaActivedEventArgs> handler = AreaActived;
+			EventHandler<AreaActivatedEventArgs> handler = AreaActivated;
 			if( handler != null )
 			{
-				handler( this, new AreaActivedEventArgs( captionArea ) );
+				handler( this, new AreaActivatedEventArgs( captionArea ) );
 			}
 		}
 
@@ -76,11 +54,11 @@ namespace RideOnMotion.Inputs.Kinect
 
 		private void captionArea_PropertyChanged( object sender, System.ComponentModel.PropertyChangedEventArgs e )
 		{
-			OnAreaActived( (ICaptionArea)sender );
+			OnAreaActivated( (ICaptionArea)sender );
 		}
 	}
 
-	public class AreaActivedEventArgs : EventArgs
+	public class AreaActivatedEventArgs : EventArgs
 	{
 		public ICaptionArea CaptionArea
 		{
@@ -88,7 +66,7 @@ namespace RideOnMotion.Inputs.Kinect
 			private set;
 		}
 
-		public AreaActivedEventArgs( ICaptionArea captionArea )
+		public AreaActivatedEventArgs( ICaptionArea captionArea )
 		{
 			CaptionArea = captionArea;
 		}

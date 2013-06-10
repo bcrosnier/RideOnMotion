@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace RideOnMotion.Inputs.Kinect
 {
-	public interface IPositionTracker
+	public interface IPositionTracker<T>
 	{
 		IReadOnlyList<ICaptionArea> CaptionAreas { get; }
 
-		void HookingSkeleton( Skeleton skeleton );
+		void Hooking( T something );
 
 		void AttachCaptionArea( ICaptionArea captionArea );
 		void DetachCaptionArea( ICaptionArea captionArea );

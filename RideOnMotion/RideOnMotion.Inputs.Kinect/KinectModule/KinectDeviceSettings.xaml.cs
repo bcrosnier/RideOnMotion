@@ -63,6 +63,7 @@ namespace RideOnMotion.Inputs.Kinect
         private bool _nearModeIsEnabled;
         private bool _seatingModeIsEnabled;
         private bool _skeletonSmoothingIsEnabled;
+        private bool _depthImageIsDisabled;
 
         public KinectDeviceSettingsViewModel( Inputs.Kinect.KinectSensorController controller )
         {
@@ -110,6 +111,15 @@ namespace RideOnMotion.Inputs.Kinect
             else
             {
                 this.SkeletonSmoothingIsEnabled = false;
+            }
+
+            if ( this._controller.DepthImageEnabled )
+            {
+                this.DepthImageIsDisabled = false;
+            }
+            else
+            {
+                this.DepthImageIsDisabled = true;
             }
 
         }
@@ -233,12 +243,29 @@ namespace RideOnMotion.Inputs.Kinect
             }
         }
 
+        public bool DepthImageIsDisabled
+        {
+            get
+            {
+                return this._depthImageIsDisabled;
+            }
+
+            set
+            {
+                if ( this._depthImageIsDisabled != value )
+                {
+                    this._depthImageIsDisabled = value;
+                    this.OnNotifyPropertyChange( "DepthImageIsDisabled" );
+                }
+            }
+        }
+
         public void applySettings() {
 
 			bool settingChanged = false;
             if ( _controller.Sensor.Status != Microsoft.Kinect.KinectStatus.Connected )
             {
-                return; // Fuck you
+                return; // Do nothing if Kinect isn't ready
             }
 
             // Near mode
@@ -284,6 +311,21 @@ namespace RideOnMotion.Inputs.Kinect
 				settingChanged = true;
             }
 
+            // Disable depth rendering
+            // Seating mode
+            if ( this.DepthImageIsDisabled
+                && _controller.DepthImageEnabled )
+            {
+                _controller.DepthImageEnabled = false;
+                settingChanged = true;
+            }
+            else if ( !this.DepthImageIsDisabled
+                && !_controller.DepthImageEnabled )
+            {
+                _controller.DepthImageEnabled = true;
+                settingChanged = true;
+            }
+
 			if ( settingChanged )
 			{
 				_controller.resetSensor();
@@ -302,8 +344,8 @@ namespace RideOnMotion.Inputs.Kinect
 					catch ( InvalidOperationException e )
 					{
                         // Log ElevationAngle error here
-                        Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Kinect, "Too much movement for the Kinect, please wait 20 sec:" );
-                        Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Kinect, e.Message );
+                        Logger.Instance.NewEntry( CKLogLevel.Error, CKTraitTags.Kinect, "Too much movement for the Kinect, please wait 20 sec:" );
+                        Logger.Instance.NewEntry( CKLogLevel.Error, CKTraitTags.Kinect, e.Message );
 					}
 				} );
 			}

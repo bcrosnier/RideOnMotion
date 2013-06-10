@@ -9,6 +9,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.Collections;
+using RideOnMotion.Utilities;
+using System.ComponentModel;
+using Microsoft.Kinect.Toolkit.Interaction;
+using System.Windows.Threading;
+using System.Collections.Generic;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -16,36 +21,37 @@ namespace RideOnMotion.Inputs.Kinect
     /// Main controller class for drone input through a Kinect sensor device.
     /// </summary>
     public class KinectSensorController : IDroneInputController
-    {
-        /// <summary>
+	{
+		#region declarations
+		/// <summary>
         /// A user-friendly input name!
         /// </summary>
-        private static readonly string INPUT_NAME = "Kinect";
+        public static readonly string INPUT_NAME = "Kinect";
 
         /// <summary>
         /// Default format used for the depth image stream.
         /// </summary>
-        private static readonly DepthImageFormat DEPTH_IMAGE_FORMAT = DepthImageFormat.Resolution640x480Fps30;
+        public static readonly DepthImageFormat DEPTH_IMAGE_FORMAT = DepthImageFormat.Resolution640x480Fps30;
 
         /// <summary>
         /// Width of the depth frame. Must match DEPTH_IMAGE_FORMAT.
         /// </summary>
-        private static readonly int DEPTH_FRAME_WIDTH = 640;
+        public static readonly int DEPTH_FRAME_WIDTH = 640;
 
         /// <summary>
         /// Height of the depth frame. Must match DEPTH_IMAGE_FORMAT.
         /// </summary>
-        private static readonly int DEPTH_FRAME_HEIGHT = 480;
+		public static readonly int DEPTH_FRAME_HEIGHT = 480;
 
         /// <summary>
         /// Default trigger zone width (side size)
         /// </summary>
-        private static readonly int TRIGGER_BUTTON_WIDTH = 300;
+        public static readonly int TRIGGER_BUTTON_WIDTH = 300;
 
         /// <summary>
         /// Default trigger zone height (button thickness)
         /// </summary>
-        private static readonly int TRIGGER_BUTTON_HEIGHT = 100;
+        public static readonly int TRIGGER_BUTTON_HEIGHT = 100;
 
         /// <summary>
         /// The Kinect sensor used by the controller. Can be null.
@@ -70,12 +76,12 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// TriggerArea for the left hand.
         /// </summary>
-        private TriggerArea LeftTriggerArea { get; set; }
+		private TriggerArea _leftTriggerArea;
 
         /// <summary>
         /// TriggerArea for the right hand.
         /// </summary>
-        private TriggerArea RightTriggerArea { get; set; }
+		private TriggerArea _rightTriggerArea;
 
         /// <summary>
         /// Whether a depth frame is ready to use.
@@ -97,10 +103,18 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private Skeleton[] _totalSkeleton;
 
+		private DispatcherTimer _timerToLand;
+
+		private bool _skeletonFound = false;
+
+		private bool _canTakeOff = false;
+
+		private UserInfo[] _userInfo;
+
         /// <summary>
         /// Collection of all ICaptionAreas for the left and right hands.
         /// </summary>
-        internal ObservableCollection<ICaptionArea> TriggerButtons { get; private set; }
+        internal ObservableCollectionEx<ICaptionArea> TriggerButtons { get; private set; }
 
         /// <summary>
         /// Fired when the active Kinect sensor changes.
@@ -111,6 +125,19 @@ namespace RideOnMotion.Inputs.Kinect
         /// Fired when new points are available for the hands.
         /// </summary>
         public event EventHandler<System.Windows.Point[]> HandsPointReady;
+
+		/// <summary>
+		/// Fired when security recquire hover mode.
+		/// 0 -> No problem
+		/// 1 -> Hover mode activation
+		/// 2 -> Land the drone
+		/// </summary>
+		public event EventHandler<int> SecurityModeChanged;
+        
+        /// <summary>
+        /// A person was detected and motioned to control the drone. Drone can now take off.
+        /// </summary>
+		public event EventHandler ControlAcquired;
 
         /// <summary>
         /// Converts a DepthImagePoint to a SkeletonPoint, using this controller's depth tracking data.
@@ -131,10 +158,41 @@ namespace RideOnMotion.Inputs.Kinect
 		/// </summary>
 		internal int _triggerButtonsActive;
 
-        #region Interface implementation
-        // Events
+		/// <summary>
+		/// Used to know if the safety has already forced the drone to land
+		/// </summary>
+		internal bool _safetyLandingtriggered = false;
+
+		/// <summary>
+		/// Contain the inputState
+		/// </summary>
+		private InputState _inputState;
+
+		private InteractionStream _interactionStream;
+
+		/// <summary>
+		/// Manage the grip and grip release
+		/// </summary>
+		private bool _leftGrip = false;
+		private bool _rightGrip = false;
+
+        /// <summary>
+        /// Active settings Window. Closed on Stop(), can be null.
+        /// </summary>
+        private Window _deviceSettingsWindow;
+
+		private WriteableBitmap _writeableBitmap;
+
+        DepthImagePixel[] _depthPixels;
+        byte[] _colorPixels;
+
+		#endregion
+
+		#region Interface implementation
+		// Events
         public event EventHandler<BitmapSource> InputImageSourceChanged;
         public event EventHandler<DroneInputStatus> InputStatusChanged;
+		public event EventHandler<bool[]> InputsStateChanged;
 		public event EventHandler<bool> ControllerActivity;
 
         // Properties
@@ -229,7 +287,9 @@ namespace RideOnMotion.Inputs.Kinect
 
         #endregion Interface implementation
 
-        private bool DepthFrameIsReady
+		#region Properties
+
+		private bool DepthFrameIsReady
         {
             get { return _depthFrameIsReady; }
         }
@@ -257,7 +317,7 @@ namespace RideOnMotion.Inputs.Kinect
         private bool HasSensor
         {
             // If _kinectSensor exists, return true, else return false
-            get { return ( _kinectSensor != null && _kinectSensor.Status != KinectStatus.Disconnected ) ? true : false; }
+			get { return _kinectSensor != null && _kinectSensor.Status != KinectStatus.Disconnected; }
         }
 
         /// <summary>
@@ -276,15 +336,32 @@ namespace RideOnMotion.Inputs.Kinect
 			get { return this._enableSmoothing; }
 		}
 
-        /// <summary>
+		/// <summary>
+		/// Return the current input state 
+		/// </summary>
+		public bool[] InputState
+		{
+			get
+			{
+				return _inputState.CurrentInputState;
+			}
+		}
+
+		public bool DepthImageEnabled { get; set; }
+
+		#endregion //Properties
+
+		/// <summary>
         /// Kinect sensor input controller.
         /// Handles drone control through a Kinect sensor.
         /// </summary>
         public KinectSensorController()
         {
+            this.DepthImageEnabled = true;
+
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call (USB devices polling).
 
-            TriggerButtons = new ObservableCollection<ICaptionArea>();
+            TriggerButtons = new ObservableCollectionEx<ICaptionArea>();
             initTriggerZones( TRIGGER_BUTTON_WIDTH, TRIGGER_BUTTON_HEIGHT );
 
             this.InputMenu = PrepareInputMenuItem();
@@ -295,11 +372,19 @@ namespace RideOnMotion.Inputs.Kinect
                 KinectSensor kinectSensor = KinectSensor.KinectSensors.Where( item => item.Status == KinectStatus.Connected ).FirstOrDefault();
                 SetSkeletonSmoothingEnabled( false );
                 initializeKinectSensor( kinectSensor );
+
+				initializeSecurityTimer();
+				InteractionClient interactionClient = new InteractionClient();
+				_interactionStream = new InteractionStream( kinectSensor, interactionClient );
+				_interactionStream.InteractionFrameReady += new EventHandler<InteractionFrameReadyEventArgs>( InteractiontStream_InteractionFrameReady );
             }
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
 
+			this._inputState = new InputState();
+
             this.InputUIControl = new KinectSensorControllerUI( this );
+
 
         }
 
@@ -325,21 +410,22 @@ namespace RideOnMotion.Inputs.Kinect
                 return;
             }
 
-            _kinectSensor = sensor;
+              _kinectSensor = sensor;
 
+			if( !_kinectSensor.SkeletonStream.IsEnabled && !_kinectSensor.DepthStream.IsEnabled )
+			{
+				_kinectSensor.AllFramesReady += sensor_AllFramesReady;
+			}
 
-            if ( !_kinectSensor.SkeletonStream.IsEnabled )
-            {
-                _kinectSensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
-            }
-            else
-            {
-                _kinectSensor.SkeletonStream.Disable();
+            if ( _kinectSensor.SkeletonStream.IsEnabled )
+			{
+				_kinectSensor.SkeletonStream.Disable();
             }
 
             _totalSkeleton = new Skeleton[6];
+			_userInfo = new UserInfo[6];
 
-            if ( this._enableSmoothing == true )
+            if ( this._enableSmoothing )
             {
                 System.Diagnostics.Debug.Assert( this._enableSmoothing == true && this._smoothingParam != null );
                 _kinectSensor.SkeletonStream.Enable( _smoothingParam );
@@ -350,14 +436,11 @@ namespace RideOnMotion.Inputs.Kinect
             }
 
 
-            if ( !_kinectSensor.DepthStream.IsEnabled )
-            {
-                _kinectSensor.DepthFrameReady += sensor_DepthFrameReady;
+            if ( _kinectSensor.DepthStream.IsEnabled )
+			{
+				_kinectSensor.DepthStream.Disable();
             }
-            else
-            {
-                _kinectSensor.DepthStream.Disable();
-            }
+
             _handsVisible = false;
 
             _kinectSensor.DepthStream.Enable( DEPTH_IMAGE_FORMAT );
@@ -367,6 +450,13 @@ namespace RideOnMotion.Inputs.Kinect
             // Call Start(); from outside.
         }
 
+		private void initializeSecurityTimer()
+		{
+			_timerToLand = new DispatcherTimer();
+			_timerToLand.Interval = new TimeSpan( 0, 0, 3 );
+			_timerToLand.Tick += new EventHandler( timerToLand_Tick );
+		}
+
         /// <summary>
         /// Initializes the position tracker and its related trigger zones for the hands.
         /// </summary>
@@ -374,8 +464,8 @@ namespace RideOnMotion.Inputs.Kinect
         {
             _positionTrackerController = new PositionTrackerController();
 
-            IPositionTracker leftTracker = new LeftHandPositionTracker( LeftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
-            IPositionTracker rightTracker = new RightHandPositionTracker( RightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker<UserInfo> leftTracker = new LeftHandPositionTracker( _leftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker<UserInfo> rightTracker = new RightHandPositionTracker( _rightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
 
             this.PositionTrackerController.AttachPositionTracker( leftTracker );
             this.PositionTrackerController.AttachPositionTracker( rightTracker );
@@ -392,16 +482,31 @@ namespace RideOnMotion.Inputs.Kinect
             int zoneHeight = DEPTH_FRAME_HEIGHT;
 
             // Create caption areas
-            LeftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint, true);
-            RightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, this.SkelPointToDepthImagePoint, false);
+            _leftTriggerArea = new TriggerArea( zoneWidth, zoneHeight, 0, 0, buttonWidth, buttonHeight, true);
+            _rightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, false);
 
             // Create a collection from both zones
-            TriggerButtons = new ObservableCollection<ICaptionArea>(
-                LeftTriggerArea.TriggerCaptionsCollection.Values.Union(
-                        RightTriggerArea.TriggerCaptionsCollection.Values
-                ).ToList()
-            );
+                _leftTriggerArea.TriggerCaptionsCollection.Values.Union(
+                        _rightTriggerArea.TriggerCaptionsCollection.Values
+                ).ToList().ForEach((element) => TriggerButtons.Add(element));
+			( (INotifyPropertyChanged)TriggerButtons ).PropertyChanged += ( x, y ) => ChangeCurrentInputState(x,y);
         }
+
+		internal void ChangeCurrentInputState( object x, PropertyChangedEventArgs y )
+		{
+			bool[] inputs = new bool[8];
+			for ( int i = 0; i < 8; i++)
+			{
+				inputs[i] = ( (ObservableCollectionEx<ICaptionArea>)x )[i].IsActive;
+			}
+			if ( _inputState.CheckInput( inputs ) )
+			{
+				if ( InputsStateChanged != null )
+				{
+					InputsStateChanged( this, InputState );
+				}
+			}
+		}
 
         /// <summary>
         /// Remove bindings on sensor disconnection
@@ -417,13 +522,10 @@ namespace RideOnMotion.Inputs.Kinect
 
             // Throw last BitmapSource to blank picture
             _depthBitmapSource = null;
-            if ( InputImageSourceChanged != null )
-            {
-                InputImageSourceChanged( this, null );
-            }
 
-            _kinectSensor.DepthFrameReady -= sensor_DepthFrameReady;
-            _kinectSensor.SkeletonFrameReady -= sensor_SkeletonFrameReady;
+            OnInputImageSourceChanged( null );
+
+			_kinectSensor.AllFramesReady -= sensor_AllFramesReady;
 
             if ( _kinectSensor.DepthStream != null )
             {
@@ -459,23 +561,20 @@ namespace RideOnMotion.Inputs.Kinect
             {
                 try
                 {
-                    Sensor.Start(); // Blocking call. May throw IOException on already used, or worse...!
+					_kinectSensor.Start(); // Blocking call. May throw IOException on already used, or worse...!
 
-                    if ( SensorChanged != null )
-                    {
-                        SensorChanged( this, Sensor );
-                    }
+					OnSensorChanged( _kinectSensor );
 
                 }
                 catch ( System.IO.IOException e )
                 {
-                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Kinect is already in use by another process. Error:" );
-                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, e.Message );
+                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Kinect is already in use by another process. Error:" );
+                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, e.Message );
                 }
                 catch ( Exception e )
                 {
-                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, "Unexpected Kinect API error:" );
-                    Logger.Instance.NewEntry( CK.Core.LogLevel.Fatal, CKTraitTags.Kinect, e.Message );
+                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Unexpected Kinect API error:" );
+                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, e.Message );
                 }
             }
 
@@ -490,6 +589,11 @@ namespace RideOnMotion.Inputs.Kinect
             if ( SensorIsRunning )
             {
                 _kinectSensor.Stop();
+            }
+
+            if ( this._deviceSettingsWindow != null )
+            {
+                this._deviceSettingsWindow.Close();
             }
         }
 
@@ -523,144 +627,302 @@ namespace RideOnMotion.Inputs.Kinect
             }
         }
 
-        /// <summary>
-        /// Converts a depth image frame to a Bitmap source using a simple 16-bit Grayscale mapping.
-        /// From http://www.i-programmer.info/ebooks/practical-windows-kinect-in-c/3802-using-the-kinect-depth-sensor.html?start=1
-        /// </summary>
-        /// <param name="imageFrame">Image frame to convert</param>
-        /// <returns>Bitmap source</returns>
-        private static BitmapSource DepthToBitmapSource( DepthImageFrame imageFrame )
-        {
-            short[] pixelData = new short[imageFrame.PixelDataLength];
-            imageFrame.CopyPixelDataTo( pixelData );
+		public BitmapSource WriteToBitmap( DepthImageFrame frame )
+		{
+            // Mostly from: http://msdn.microsoft.com/en-us/library/jj131029.aspx
 
-            BitmapSource bmap = BitmapSource.Create(
-                imageFrame.Width,
-                imageFrame.Height,
-                96, 96,
-                PixelFormats.Gray16,
-                null,
-                pixelData,
-                imageFrame.Width * imageFrame.BytesPerPixel );
-            return bmap;
-        }
-        
-        /// <summary>
-        /// Method fired when a new skeleton frame is ready.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void sensor_SkeletonFrameReady( object sender, SkeletonFrameReadyEventArgs e )
-        {
-            using ( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
+            if ( ( null == _depthPixels ) || ( _depthPixels.Length != frame.PixelDataLength ) )
+			{
+                this._depthPixels = new DepthImagePixel[_kinectSensor.DepthStream.FramePixelDataLength];
+                this._colorPixels = new byte[_kinectSensor.DepthStream.FramePixelDataLength * sizeof( int )];
+			}
+
+            frame.CopyDepthImagePixelDataTo( _depthPixels );
+
+			if( null == _writeableBitmap || _writeableBitmap.Format != PixelFormats.Bgra32 )
             {
-                if ( skeletonFrame != null )
+                this._writeableBitmap = new WriteableBitmap(
+                    _kinectSensor.DepthStream.FrameWidth,
+                    _kinectSensor.DepthStream.FrameHeight,
+                    96.0,
+                    96.0,
+                    PixelFormats.Bgr32,
+                    null
+                    );
+			}
+
+            // Get the min and max reliable depth for the current frame
+            int minDepth = frame.MinDepth;
+            int maxDepth = frame.MaxDepth;
+
+            // Convert the depth to RGB
+            int colorPixelIndex = 0;
+            for ( int i = 0; i < this._depthPixels.Length; ++i )
+            {
+                // Get the depth for this pixel
+                short depth = _depthPixels[i].Depth;
+
+                // To convert to a byte, we're discarding the most-significant
+                // rather than least-significant bits.
+                // We're preserving detail, although the intensity will "wrap."
+                // Values outside the reliable depth range are mapped to 0 (black).
+
+                // Note: Using conditionals in this loop could degrade performance.
+                // Consider using a lookup table instead when writing production code.
+                // See the KinectDepthViewer class used by the KinectExplorer sample
+                // for a lookup table example.
+                byte intensity = (byte)( depth >= minDepth && depth <= maxDepth ? depth : 0 );
+
+                // Write out blue byte
+                this._colorPixels[colorPixelIndex++] = intensity;
+
+                // Write out green byte
+                this._colorPixels[colorPixelIndex++] = intensity;
+
+                // Write out red byte                        
+                this._colorPixels[colorPixelIndex++] = intensity;
+
+                // We're outputting BGR, the last byte in the 32 bits is unused so skip it
+                // If we were outputting BGRA, we would write alpha here.
+                ++colorPixelIndex;
+            }
+
+            this._writeableBitmap.WritePixels(
+                new Int32Rect( 0, 0, this._writeableBitmap.PixelWidth, this._writeableBitmap.PixelHeight ),
+                this._colorPixels,
+                this._writeableBitmap.PixelWidth * sizeof( int ),
+            0 );
+
+			return _writeableBitmap;
+		}
+
+		private void sensor_AllFramesReady( object sender, AllFramesReadyEventArgs e )
+		{
+			using( DepthImageFrame imageFrame = e.OpenDepthImageFrame() )
+			{
+				if( imageFrame == null )
+				{
+					return; // Clear frame
+				}
+
+				_interactionStream.ProcessDepth( imageFrame.GetRawPixelData(), imageFrame.Timestamp );
+
+				_depthFrameIsReady = true; 
+				if( this.DepthImageEnabled )
+				{
+					_depthBitmapSource = WriteToBitmap( imageFrame );
+					OnInputImageSourceChanged( _depthBitmapSource );
+				}
+
+				imageFrame.Dispose();
+			}
+
+			using( SkeletonFrame skeletonFrame = e.OpenSkeletonFrame() )
+			{
+				if( skeletonFrame != null )
+				{
+					skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
+					_interactionStream.ProcessSkeleton( _totalSkeleton, _kinectSensor.AccelerometerGetCurrentReading(), skeletonFrame.Timestamp );
+				}
+			}
+		}
+
+        public static Point WindowPointFromHandPointer( InteractionHandPointer p )
+        {
+            double offset = 0.325;
+            double min = 0;
+            double max = 1.5;
+
+            double pointX = p.X + offset;
+            double pointY = p.Y + offset;
+
+            if ( pointX < min ) pointX = min;
+            else if ( pointX > max ) pointX = max;
+            if ( pointY < min ) pointY = min;
+            else if ( pointY > max ) pointY = max;
+
+            float x = (float)( pointX / 1.5 * KinectSensorController.DEPTH_FRAME_WIDTH );
+            float y = (float)( pointY / 1.5 * KinectSensorController.DEPTH_FRAME_HEIGHT );
+
+            return new System.Windows.Point( x, y );
+        }
+
+		private void InteractiontStream_InteractionFrameReady( object sender, InteractionFrameReadyEventArgs e )
+		{
+			InteractionFrame iFrame = e.OpenInteractionFrame();
+			if( iFrame == null ) return;
+						
+			iFrame.CopyInteractionDataTo( _userInfo );
+
+			List<UserInfo> curUsers = _userInfo.Where( x => x.SkeletonTrackingId > 0 ).ToList<UserInfo>();
+
+			if( curUsers.Count > 0 )
+			{
+
+                if ( !_skeletonFound )
                 {
-                    // copy the frame data in to the collection
-                    skeletonFrame.CopySkeletonDataTo( _totalSkeleton );
-
-                    var trackedSkeletons = ( from trackskeleton in _totalSkeleton
-                                             where trackskeleton.TrackingState == SkeletonTrackingState.Tracked
-                                             select trackskeleton );
-
-                    int skeletonCount = trackedSkeletons.Count();
-
-                    Skeleton firstSkeleton = trackedSkeletons.FirstOrDefault();
-                    if ( firstSkeleton != null )
-                    {
-                        _handsVisible = true;
-                        _positionTrackerController.NotifyPositionTrackers( firstSkeleton );
-
-                        if ( HandsPointReady != null )
-                        {
-                            HandsPointReady( this,
-                                new System.Windows.Point[2] {
-                                    SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandLeft].Position ),
-                                    SkelPointTo2DDepthPoint( firstSkeleton.Joints[JointType.HandRight].Position )
-                                }
-                             );
-                        }
-                    }
-                    else if ( _handsVisible == true )
-                    {
-                        if ( HandsPointReady != null )
-                        {
-                            HandsPointReady( this, new System.Windows.Point[2] { new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) } );
-                        }
-                        _handsVisible = false;
-                    }
+                    _skeletonFound = true;
                 }
-            }
-        }
+				UserInfo curUser = curUsers[0];
 
-        /// <summary>
-        /// Converts a SkeletonPoint to a DepthImagePoint, taking only the X and Y values.
-        /// </summary>
-        /// <param name="skeletonPoint">SkeletonPoint to convert</param>
-        /// <returns>Point in 2D space of its DepthImagePoint equivalent</returns>
-        private System.Windows.Point SkelPointTo2DDepthPoint( SkeletonPoint skeletonPoint )
-        {
-            DepthImagePoint depthPoint = SkelPointToDepthImagePoint( skeletonPoint );
-            return new System.Windows.Point( depthPoint.X, depthPoint.Y );
-        }
+				_handsVisible = true;
 
-        /// <summary>
-        /// Converts a DepthImagePoint to a SkeletonPoint.
-        /// </summary>
-        /// <param name="p">DepthImagePoint to convert</param>
-        /// <returns>SkeletonPoint equivalent</returns>
-        private SkeletonPoint DepthImagePointToSkelPoint( DepthImagePoint p )
-        {
-            SkeletonPoint skelPoint = this.Sensor.CoordinateMapper.MapDepthPointToSkeletonPoint(
-                DEPTH_IMAGE_FORMAT,
-                p );
-            return skelPoint;
-        }
+				_positionTrackerController.NotifyPositionTrackers( curUser );
 
-        /// <summary>
-        /// Converts a SkeletonPoint to a DepthImagePoint.
-        /// </summary>
-        /// <param name="p">SkeletonPoint to convert</param>
-        /// <returns>DepthImagePoint equivalent</returns>
-        private DepthImagePoint SkelPointToDepthImagePoint( SkeletonPoint p )
-        {
-            DepthImagePoint depthPoint = this.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
-                 p, DEPTH_IMAGE_FORMAT );
-            return depthPoint;
-        }
+				if( HandsPointReady != null )
+                {
+                    Point left = WindowPointFromHandPointer( curUser.HandPointers[0] );
+                    Point right = WindowPointFromHandPointer( curUser.HandPointers[1] );
 
-        /// <summary>
-        /// Fired on every depth frame.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void sensor_DepthFrameReady( object sender, DepthImageFrameReadyEventArgs e )
-        {
-            DepthImageFrame imageFrame = e.OpenDepthImageFrame();
-            if ( imageFrame == null )
-            {
-                return; // Clear frame
-            }
+					OnHandsPointReady( left, right );
 
-            _depthFrameIsReady = true;
-            _depthBitmapSource = DepthToBitmapSource( imageFrame );
+					SafetyModeCheck( curUser );
 
-            if ( InputImageSourceChanged != null )
-            {
-                InputImageSourceChanged( this, _depthBitmapSource );
-            }
-            imageFrame.Dispose();
-        }
+					TestTakeOffCapabitility( curUser );
+				}
+			}
+			else if( _handsVisible == true )
+			{
+				OnHandsPointReady( new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) );
+
+				_handsVisible = false;
+				if( _skeletonFound )
+				{
+					_skeletonFound = false;
+                    SafetyModeCheck( null );
+				}
+				_handsVisible = false;
+			}
+			else
+			{
+				if( _skeletonFound )
+				{
+					_skeletonFound = false;
+				}
+			}
+		}
+
+		private void TestTakeOffCapabitility( UserInfo curUser )
+		{
+			// HandEvent are a single occurence, so we must store the current state
+			if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+			{
+				_leftGrip = true;
+			}
+			else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.GripRelease )
+			{
+				_leftGrip = false;
+			}
+			if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+			{
+				_rightGrip = true;
+			}
+			else if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.GripRelease )
+			{
+				_rightGrip = false;
+			}
+
+
+			if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
+				|| curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+			{
+				if( !_canTakeOff && ( _leftGrip && _rightGrip ) )
+				{
+					_canTakeOff = true;
+					if( ControlAcquired != null )
+					{
+						ControlAcquired( this, null );
+					}
+				}
+				else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+				{
+					SecurityModeChanged( this, 2 );
+				}
+				else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
+				{
+					SecurityModeChanged( this, 3 );
+					_canTakeOff = false;
+				}
+			}
+		}
+
+		#region Security
+		public void SafetyModeCheck( UserInfo curUser )
+		{
+			if( curUser != null & _skeletonFound && ( curUser.HandPointers[0].IsTracked
+					&& curUser.HandPointers[1].IsTracked ) )
+			{
+				if( !curUser.HandPointers[0].IsActive
+					&& !curUser.HandPointers[1].IsActive )
+				{
+					if( SecurityModeChanged != null && _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
+					{
+						SecurityModeChanged( this, 1 );
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+							"Safety mode enabled due to hands no longer being tracked" );
+					}
+
+					if( _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
+					{
+						_timerToLand.Start();
+						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+							"Safety mode : 3 seconds remaining before automatic landing" );
+					}
+				}
+				else if( _timerToLand.IsEnabled == true &&
+					 ( curUser.HandPointers[0].IsActive
+					&& curUser.HandPointers[1].IsActive ) && _safetyLandingtriggered == false )
+				{
+					_timerToLand.Stop();
+					SecurityModeChanged( this, 0 );
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+						"Safety mode no longer required, restoring manual control" );
+					_safetyLandingtriggered = false;
+				}
+				else if( ( curUser.HandPointers[0].IsInteractive
+					&& curUser.HandPointers[1].IsInteractive )
+					&& _safetyLandingtriggered == true )
+				{
+					_safetyLandingtriggered = false;
+				}
+			}
+			else
+			{
+				if( _timerToLand.IsEnabled == false && SecurityModeChanged != null )
+				{
+					SecurityModeChanged( this, 1 );
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+						"Safety mode enabled due to hands no longer being tracked" );
+				}
+
+				if( _timerToLand.IsEnabled == false )
+				{
+					_timerToLand.Start();
+					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+						"Safety mode : 3 seconds remaining before automatic landing" );
+				}
+			}
+		}
+
+		private void timerToLand_Tick( object sender, EventArgs e )
+		{
+			if( SecurityModeChanged != null )
+			{
+				SecurityModeChanged( this, 2 );
+				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
+					"Security mode will now process to land the drone" );
+				_timerToLand.Stop();
+				_safetyLandingtriggered = true;
+			}
+		}
+		#endregion
         
         /// <summary>
         /// Fired every time any sensor on the system changes its status.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void sensors_StatusChanged( object sender, StatusChangedEventArgs e )
         {
-
-            Logger.Instance.NewEntry( CK.Core.LogLevel.Trace, CKTraitTags.Kinect, "Status changed to : " + e.Status.ToString() );
+            Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.Kinect, "Status changed to : " + e.Status.ToString() );
             if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
                 && e.Sensor == _kinectSensor )
             {
@@ -681,16 +943,10 @@ namespace RideOnMotion.Inputs.Kinect
             }
 
             // Throw event
-            if ( SensorChanged != null )
-            {
-                SensorChanged( this, e.Sensor );
-            }
+			OnSensorChanged( e.Sensor );
 
             // Throw interface event
-            if ( InputStatusChanged != null )
-            {
-                InputStatusChanged( this, this.InputStatus );
-            }
+            OnInputStatusChanged( InputStatus );
         }
 
         /// <summary>
@@ -733,7 +989,6 @@ namespace RideOnMotion.Inputs.Kinect
                     this.InputMenu.IsEnabled = false;
                 }
             }
-
         }
 
         /// <summary>
@@ -757,15 +1012,82 @@ namespace RideOnMotion.Inputs.Kinect
         /// <param name="e"></param>
         void settingsMenuItem_Click( object sender, RoutedEventArgs e )
         {
-            if ( this.InputStatus != DroneInputStatus.Ready )
+            if ( this._deviceSettingsWindow != null )
+            {
+                this._deviceSettingsWindow.Activate();
+            }
+            else if ( this.InputStatus != DroneInputStatus.Ready )
             {
                 return; // Command should be disabled anyway
             }
-
-            Window deviceSettingsWindow = new KinectDeviceSettings( this );
-            deviceSettingsWindow.Show();
+            else
+            {
+                // Prepare and open window
+                this._deviceSettingsWindow = new KinectDeviceSettings( this );
+                _deviceSettingsWindow.Closed += deviceSettingsWindow_Closed;
+                _deviceSettingsWindow.Show();
+            }
 
             e.Handled = true;
         }
+
+        void deviceSettingsWindow_Closed( object sender, EventArgs e )
+        {
+            _deviceSettingsWindow = null;
+        }
+
+		private void OnInputImageSourceChanged( BitmapSource bitmapSource )
+		{
+			if( InputImageSourceChanged != null )
+			{
+				InputImageSourceChanged( this, bitmapSource );
+			}
+		}
+
+		private void OnSensorChanged( KinectSensor sensor)
+		{
+			if( SensorChanged != null )
+			{
+				SensorChanged( this, Sensor );
+			}
+		}
+
+		private void OnInputStatusChanged( DroneInputStatus droneInputStatus )
+		{
+			if( InputStatusChanged != null )
+			{
+				InputStatusChanged( this, this.InputStatus );
+			}
+		}
+
+		private void OnSecurityModeNeeded( int arg )
+		{
+			if( SecurityModeChanged != null )
+			{
+				SecurityModeChanged( this, arg );
+			}
+		}
+
+		private void OnHandsPointReady( Point left, Point right )
+		{
+			if( HandsPointReady != null )
+			{
+				HandsPointReady( this, new System.Windows.Point[2] { left, right } );
+			}
+		}
     }
+
+	public class InteractionClient : IInteractionClient
+	{
+		public InteractionClient()
+		{
+		}
+
+		public InteractionInfo GetInteractionInfoAtLocation( int skeletonTrackingId, InteractionHandType handType, double x, double y )
+		{
+			InteractionInfo interactionInfo = new InteractionInfo();
+
+			return interactionInfo;
+		}
+	}
 }

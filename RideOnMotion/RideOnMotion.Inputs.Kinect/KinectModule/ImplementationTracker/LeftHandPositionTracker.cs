@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CK.Core;
+using Microsoft.Kinect.Toolkit.Interaction;
 
 namespace RideOnMotion.Inputs.Kinect
 {
-	public class LeftHandPositionTracker : IPositionTracker
+	public class LeftHandPositionTracker : IPositionTracker<UserInfo>
 	{
 		readonly IList<ICaptionArea> _captionAreas;
 
@@ -28,9 +29,13 @@ namespace RideOnMotion.Inputs.Kinect
 			_captionAreas = listOfCaptionAreas;
 		}
 
-		public void HookingSkeleton( Microsoft.Kinect.Skeleton skeleton )
+		public void Hooking(UserInfo userInfo)
 		{
-			ValidateCaptionArea( skeleton.Joints[JointType.HandLeft] );
+            System.Windows.Point hPoint = KinectSensorController.WindowPointFromHandPointer(userInfo.HandPointers[0]);
+			float x = (float)( hPoint.X );
+            float y = (float)( hPoint.Y );
+
+			foreach( ICaptionArea captionArea in _captionAreas ) captionArea.CheckPosition( x, y );
 		}
 
 		public void AttachCaptionArea( ICaptionArea captionArea )
@@ -43,11 +48,6 @@ namespace RideOnMotion.Inputs.Kinect
 		{
 			if( captionArea == null ) throw new ArgumentNullException( "captionArea cannot be null" );
 			if( _captionAreas.Contains( captionArea ) ) _captionAreas.Remove( captionArea );
-		}
-
-		private void ValidateCaptionArea( Microsoft.Kinect.Joint skeletonJoint )
-		{
-			foreach( ICaptionArea captionArea in _captionAreas ) captionArea.CheckPosition( skeletonJoint );
 		}
 	}
 }

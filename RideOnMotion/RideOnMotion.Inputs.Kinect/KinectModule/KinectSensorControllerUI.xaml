@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:k="http://schemas.microsoft.com/kinect/2013"
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="640">
     <Grid>
@@ -49,11 +50,33 @@
                 </Style>
             </ItemsControl.ItemContainerStyle>
         </ItemsControl>
-        <Canvas Width="640" Height="480">
+        <Canvas Width="640" Height="480" ClipToBounds="True">
             <Ellipse Visibility="{Binding HandsVisibility}" Canvas.Left="{Binding LeftHandX}" Canvas.Top="{Binding LeftHandY}"
                                  Fill="Red" Height="15" Name="leftHand" Width="15" />
             <Ellipse Visibility="{Binding HandsVisibility}" Canvas.Left="{Binding RightHandX}" Canvas.Top="{Binding RightHandY}"
                                  Fill="Green" Height="15" Name="rightHand" Width="15" />
             </Canvas>
+
+
+        <!--<k:KinectSensorChooserUI HorizontalAlignment="Center" VerticalAlignment="Top" Name="sensorChooserUi" />
+        <k:KinectUserViewer VerticalAlignment="Top" HorizontalAlignment="Center" k:KinectRegion.KinectRegion="{Binding ElementName=kinectRegion}" Height="100" UserColoringMode="Manual" />
+        <k:KinectRegion Name="kinectRegion">
+        </k:KinectRegion>-->
+
+        <TextBlock
+            Visibility="{Binding AlertVisibility}"
+            Name="alertTextBlock"
+            Background="Red"
+            Foreground="Yellow"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Margin="0,10,0,0"
+            Padding="10,0"
+            FontSize="72"
+            FontFamily="Impact"
+            FontWeight="Bold"
+            TextAlignment="Center"
+            Text="{Binding AlertMessage}">
+        </TextBlock>
     </Grid>
 </UserControl>

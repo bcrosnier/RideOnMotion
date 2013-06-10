@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -18,7 +19,7 @@ namespace RideOnMotion.Inputs.Kinect
 		int Id { get; }
 
 		IReadOnlyList<Point> Points { get; }
-		void CheckPosition( Joint joint );
+		void CheckPosition( float x, float y );
 		IReadOnlyList<Action> AssociateFunctions { get; }
 		bool IsActive { get; }
 	}

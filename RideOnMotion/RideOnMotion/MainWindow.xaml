@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:RideOnMotion.UI" x:Name="MainWindow1" x:Class="RideOnMotion.UI.MainWindow"
         Title="RideOn[Motion]" Height="600" Width="800"
-        Loaded="MainWindow_Loaded" MinWidth="800" MinHeight="600"
+        MinWidth="800" MinHeight="600"
         Closing="MainWindow_Closing">
 
     <Window.CommandBindings>
@@ -19,7 +19,7 @@
             <TextBlock x:Name="KinectStatusText" Text="{Binding InputStatusInfo}"></TextBlock>
             <Separator />
             <Image Height="16" VerticalAlignment="Center" Source="Images/HelicopterIcon.png" />
-            <TextBlock x:Name="DroneStatusText">No drone</TextBlock>
+            <TextBlock x:Name="DroneStatusText" Text="{Binding DroneStatus}"></TextBlock>
         </StatusBar>
 
         <Menu DockPanel.Dock="Top" x:Name="MenuBar" IsMainMenu="True">
@@ -28,6 +28,10 @@
             </Menu.Background>
             <MenuItem Header="File">
                 <MenuItem Header="Quit" Click="MenuItem_Quit_Click" />
+            </MenuItem>
+            <MenuItem Header="Drone">
+                <MenuItem Header="Settings" Command="{Binding OpenDroneSettingsCommand}" />
+                <MenuItem Header="Reconnect" Command="{Binding ReconnectDroneCommand}" />
             </MenuItem>
         </Menu>
 
@@ -45,13 +49,14 @@
             </Grid.ColumnDefinitions>
             <StackPanel x:Name="DepthViewerPanel" MinHeight="150" Grid.Row="0" Grid.Column="0" Background="Black">
                 <Viewbox>
-                    <Image Name="DepthImage" Width="640" Height="480" Source="{Binding InputBitmapSource}"/>
+                    <Image Name="DepthImage" Width="640" Height="480" Source="{Binding InputImageSource}"/>
                 </Viewbox>
             </StackPanel>
 
             <GroupBox Header="Status information" Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
                 <StackPanel>
                     <TextBlock x:Name="InputStatusInfo" Text="{Binding InputStatusInfo}"/>
+                    <TextBlock x:Name="DroneStatusInfo" Text="{Binding DroneStatusInfo}"/>
                 </StackPanel>
             </GroupBox>
 
@@ -60,15 +65,19 @@
             <!-- Main panel - Background -->
             <StackPanel Background="Black" x:Name="MainPanel" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
             </StackPanel>
-            
+
+            <!-- Main panel - Drone image -->
+            <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Image Name="DroneImage" Source="{Binding DroneImageSource}" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            </Viewbox>
+
             <!-- Main panel - Input control -->
             <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <ContentPresenter Content="{Binding InputControl}"/>
+                <ContentPresenter Content="{Binding InputControl}" Visibility="{Binding InputControlVisibility}"/>
             </Viewbox>
 
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >
-                <TextBox x:Name="LogString" Text="{Binding LogString}" VerticalAlignment="Stretch"
-                         ScrollViewer.VerticalScrollBarVisibility="Visible" TextChanged="LogString_TextChanged"/>
+                <ListBox x:Name="LogListBox" ItemsSource="{Binding LogData}"></ListBox>
             </DockPanel>
 
             <GridSplitter Grid.Row="2" Grid.Column="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" ResizeDirection="Rows" />

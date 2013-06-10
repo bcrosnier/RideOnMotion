@@ -38,7 +38,7 @@
   <ItemGroup>
     <Reference Include="Accessibility" />
     <Reference Include="CK.Core">
-      <HintPath>..\packages\CK.Core.2.8.7-develop\lib\net45\CK.Core.dll</HintPath>
+      <HintPath>..\packages\CK.Core.2.8.10\lib\net45\CK.Core.dll</HintPath>
     </Reference>
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ReachFramework" />
@@ -66,6 +66,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="DroneSettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -73,6 +77,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DroneSettingsWindow.xaml.cs">
+      <DependentUpon>DroneSettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -112,9 +119,25 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ARDrone_API\ARDroneControlLibrary\ARDroneControlLibrary.csproj">
+      <Project>{92277dfc-0d55-4998-8acf-b01f3a7fb508}</Project>
+      <Name>ARDroneControlLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ARDrone_API\ARDroneInput\ARDroneInput.csproj">
+      <Project>{104c0b70-4d35-4090-942a-9223222d0e6c}</Project>
+      <Name>ARDroneInput</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RideOnMotion.Inputs.Keyboard\RideOnMotion.Inputs.Keyboard.csproj">
+      <Project>{1939fa1b-04f0-429b-a575-ee75114b365c}</Project>
+      <Name>RideOnMotion.Inputs.Keyboard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RideOnMotion.Inputs.Kinect\RideOnMotion.Inputs.Kinect.csproj">
       <Project>{f351a907-f922-4986-ad6b-cb04d9307040}</Project>
       <Name>RideOnMotion.Inputs.Kinect</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RideOnMotion.Inputs.Xbox360Gamepad\RideOnMotion.Inputs.Xbox360Gamepad.csproj">
+      <Project>{146bcdf6-0354-4401-bbdd-57a52d2598a6}</Project>
+      <Name>RideOnMotion.Inputs.Xbox360Gamepad</Name>
     </ProjectReference>
     <ProjectReference Include="..\RideOnMotion.Utilities\RideOnMotion.Utilities.csproj">
       <Project>{7db44258-5127-4395-b0d6-619c899bf2a1}</Project>

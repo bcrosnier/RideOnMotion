@@ -38,6 +38,7 @@ x64/
 *.vspscc
 *.vssscc
 .builds
+pingme.txt
 
 # Visual C++ cache files
 ipch/
