@@ -169,6 +169,7 @@ namespace RideOnMotion.Inputs.Kinect
 		private InputState _inputState;
 
 		private InteractionStream _interactionStream;
+        private InteractionClient _interactionClient;
 
 		/// <summary>
 		/// Manage the grip and grip release
@@ -358,6 +359,7 @@ namespace RideOnMotion.Inputs.Kinect
         public KinectSensorController()
         {
             this.DepthImageEnabled = true;
+            SetSkeletonSmoothingEnabled( false );
 
             int deviceCount = KinectSensor.KinectSensors.Count; // Blocking call (USB devices polling).
 
@@ -367,16 +369,12 @@ namespace RideOnMotion.Inputs.Kinect
             this.InputMenu = PrepareInputMenuItem();
             this.InputStatusChanged += OnInputStatusChanged;
 
+            _interactionClient = new InteractionClient();
+
             if ( deviceCount > 0 )
             {
                 KinectSensor kinectSensor = KinectSensor.KinectSensors.Where( item => item.Status == KinectStatus.Connected ).FirstOrDefault();
-                SetSkeletonSmoothingEnabled( false );
                 initializeKinectSensor( kinectSensor );
-
-				initializeSecurityTimer();
-				InteractionClient interactionClient = new InteractionClient();
-				_interactionStream = new InteractionStream( kinectSensor, interactionClient );
-				_interactionStream.InteractionFrameReady += new EventHandler<InteractionFrameReadyEventArgs>( InteractiontStream_InteractionFrameReady );
             }
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
@@ -446,12 +444,22 @@ namespace RideOnMotion.Inputs.Kinect
             _kinectSensor.DepthStream.Enable( DEPTH_IMAGE_FORMAT );
 			_kinectSensor.SkeletonStream.EnableTrackingInNearRange = true;
 
+            _interactionStream = new InteractionStream( _kinectSensor, _interactionClient );
+            _interactionStream.InteractionFrameReady += new EventHandler<InteractionFrameReadyEventArgs>( InteractiontStream_InteractionFrameReady );
+
+            initializeSecurityTimer();
+
             initializePositionTrackerController();
             // Call Start(); from outside.
         }
 
 		private void initializeSecurityTimer()
 		{
+            if ( _timerToLand != null )
+            {
+                _timerToLand.Stop();
+            }
+            
 			_timerToLand = new DispatcherTimer();
 			_timerToLand.Interval = new TimeSpan( 0, 0, 3 );
 			_timerToLand.Tick += new EventHandler( timerToLand_Tick );
@@ -922,7 +930,11 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private void sensors_StatusChanged( object sender, StatusChangedEventArgs e )
         {
-            Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.Kinect, "Status changed to : " + e.Status.ToString() );
+            if ( e.Sensor != null )
+            {
+                Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.Kinect, "Status: " + e.Status.ToString() );
+            }
+
             if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
                 && e.Sensor == _kinectSensor )
             {

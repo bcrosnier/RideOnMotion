@@ -15,11 +15,6 @@ namespace RideOnMotion.UI
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		/// <summary>
-		/// Active Kinect sensor controller.
-        /// </summary>
-        private IDroneInputController inputController;
-
         /// <summary>
         /// Model view for this window.
         /// </summary>
@@ -32,7 +27,6 @@ namespace RideOnMotion.UI
             InitializeComponent();
 
 			this.mainWindowViewModel = new MainWindowViewModel( new WindowInteropHelper( this ).Handle );
-            this.inputController = new KinectSensorController();
             this.DataContext = this.mainWindowViewModel;
 
             // Bind input menu and fire once
@@ -90,18 +84,6 @@ namespace RideOnMotion.UI
 		{
 			this.mainWindowViewModel.Stop();
 		}
-        private void prepareInput()
-        {
-            if ( this.inputController.InputStatus == DroneInputStatus.Disconnected )
-            {
-                MessageBox.Show( "No input device detected.\nPlease ensure it is plugged in and correctly installed.", "No input detected" );
-            }
-            else
-            {
-                // Start Kinect
-                this.inputController.Start(); // Blocking.
-            }
-        }
 
         /// <summary>
         /// File -> Quit action
