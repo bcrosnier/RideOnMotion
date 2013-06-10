@@ -8,8 +8,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 {
 	public class Xbox360GamepadController
 	{
-        DroneCommand _drone;
-
 		XboxController _selectedController;
 
 		readonly float NavigationValue = 1f;
@@ -40,13 +38,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		{
 		}
 
-        public DroneCommand ActiveDrone
-        {
-            set
-            {
-                this._drone = value;
-            }
-        }
 		public void Start()
 		{
 			_selectedController = XboxController.RetrieveController( 0 );
