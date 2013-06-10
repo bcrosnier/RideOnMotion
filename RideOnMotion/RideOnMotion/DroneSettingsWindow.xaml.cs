@@ -49,6 +49,7 @@ namespace RideOnMotion.UI
 
             _viewModel = new DroneSettingsWindowViewModel( newConfig );
 
+			_viewModel.DroneIsPaired = droneIsPaired;
             this.DataContext = _viewModel;
 
             InitializeComponent();
