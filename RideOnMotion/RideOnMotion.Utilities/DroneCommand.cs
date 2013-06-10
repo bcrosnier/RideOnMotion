@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RideOnMotion.Utilities;
 
 namespace RideOnMotion
 {
@@ -185,7 +186,13 @@ namespace RideOnMotion
 
 		public void Pair( )
 		{
-			PairingCommand pairingCommand = new PairingCommand( DronePairingMode.Pair, "");
+			String mac = MacAddress.GetWifiMacAddress();
+			if ( mac == null )
+			{
+				return;
+			}
+
+			PairingCommand pairingCommand = new PairingCommand( DronePairingMode.Pair, mac);
 
 			if ( !_droneControl.IsCommandPossible( pairingCommand ) )
 				return;
