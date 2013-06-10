@@ -32,7 +32,22 @@ namespace RideOnMotion.UI
                 throw new ArgumentNullException( "Config cannot be null" );
             }
 
-            _viewModel = new DroneSettingsWindowViewModel( config );
+            // Clone config. Active one cannot be modified when used.
+            DroneConfig newConfig = new DroneConfig()
+            {
+                DroneIpAddress = config.DroneIpAddress,
+                StandardOwnIpAddress = config.StandardOwnIpAddress,
+                DroneNetworkIdentifierStart = config.DroneNetworkIdentifierStart,
+                NavigationPort = config.NavigationPort,
+                VideoPort = config.VideoPort,
+                CommandPort = config.CommandPort,
+                ControlInfoPort = config.ControlInfoPort,
+                UseSpecificFirmwareVersion = config.UseSpecificFirmwareVersion,
+                FirmwareVersion = config.FirmwareVersion,
+                TimeoutValue = config.TimeoutValue
+            };
+
+            _viewModel = new DroneSettingsWindowViewModel( newConfig );
 
             this.DataContext = _viewModel;
 
@@ -179,6 +194,7 @@ namespace RideOnMotion.UI
             Settings.Default.DroneSSID = this.DroneSSID;
 
             Settings.Default.Save();
+            RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Saved settings." );
         }
     }
 
