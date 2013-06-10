@@ -55,7 +55,7 @@ namespace RideOnMotion.Inputs
 			float pitch = inputState.Pitch / 3.0f;
 			float yaw = inputState.Yaw / 2.0f;
 			float gaz = inputState.Gaz / 3.0f;
-			RelativeDirection = true;
+			RelativeDirection = false;
 			if ( RelativeDirection )
 			{
 				_drone.Navigate( roll, pitch, yaw, gaz );
@@ -65,9 +65,12 @@ namespace RideOnMotion.Inputs
 				float roll2 = (( (float)Math.Cos( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * roll ) 
 					+ (( (float)Math.Sin( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * -pitch );
 				float pitch2 = ( ( (float)Math.Cos( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * pitch ) 
-					+ ( ( (float)Math.Sin( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * -roll ); ;
+					+ ( ( (float)Math.Sin( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * roll ); ;
+				// for debugging purpose
+				//Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Navigate with : roll2 : " + roll2 + " , pitch2 : " + pitch2);
 				_drone.Navigate( roll2, pitch2, yaw, gaz );
 			}
+			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, inputState.ToString());
 		}
 
 		public void MixInputAndProcess(InputState Keyboard,InputState Gamepad)
