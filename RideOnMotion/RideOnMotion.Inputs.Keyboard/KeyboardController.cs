@@ -65,7 +65,7 @@ namespace RideOnMotion.Inputs.Keyboard
 			MapInput();
 		}
 
-		public void MapInput()
+		internal void MapInput()
 		{
 			roll = 0;
 			pitch = 0;
