@@ -13,6 +13,7 @@ namespace RideOnMotion
 	public class DroneCommand
 	{
 		private DroneControl _droneControl;
+		bool _isDronePaired = false;
 
 		public bool CanTakeoff
 		{
@@ -40,6 +41,14 @@ namespace RideOnMotion
 			get
 			{
 				return _droneControl.CanLeaveHoverMode;
+			}
+		}
+
+		public bool IsDronePaired
+		{
+			get
+			{
+				return _isDronePaired;
 			}
 		}
 
@@ -172,6 +181,27 @@ namespace RideOnMotion
 			_droneControl.SendCommand( PlayLedCommand );
 
 			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : PlayLED" );
+		}
+
+		public void Pair( )
+		{
+			PairingCommand pairingCommand = new PairingCommand( DronePairingMode.Pair, "");
+
+			if ( !_droneControl.IsCommandPossible( pairingCommand ) )
+				return;
+
+			_droneControl.SendCommand( pairingCommand );
+			_isDronePaired = true;
+		}
+		public void Unpair()
+		{
+			PairingCommand pairingCommand = new PairingCommand( DronePairingMode.Unpair, "00:00:00:00:00:00" );
+
+			if ( !_droneControl.IsCommandPossible( pairingCommand ) )
+				return;
+
+			_droneControl.SendCommand( pairingCommand );
+			_isDronePaired = false;
 		}
 	}
 }
