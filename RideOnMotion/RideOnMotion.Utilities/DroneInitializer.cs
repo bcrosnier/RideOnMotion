@@ -17,10 +17,6 @@ namespace RideOnMotion
 {
 	public class DroneInitializer
     {
-        private static readonly string DEFAULT_DRONE_SSID = "ardrone_006431";
-        private static readonly string DEFAULT_DRONE_IPADDRESS = "192.168.1.1";
-        private static readonly string DEFAULT_DRONE_CLIENT_ADDRESS = "192.168.1.2";
-
 		private DispatcherTimer _timerVideoUpdate;
 		private DispatcherTimer _timerStatusUpdate;
 

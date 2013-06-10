@@ -630,11 +630,34 @@ namespace RideOnMotion.UI
             }
             else
             {
-                EventHandler<ARDrone.Control.DroneConfig> newDroneConfigDelegate = (sender, e) => {
-                    this._currentDroneConfig = e;
+                /* TODO */
+                //bool isPaired = this._droneInit.DroneCommand.IsDronePaired;
+                bool isPaired = false;
+
+                EventHandler<DroneSettingsEventArgs> newDroneConfigDelegate = (sender, e) => {
+                    this._currentDroneConfig = e.DroneConfig;
+
+                    /* TODO */
+                    if ( isPaired != e.IsPaired )
+                    {
+                        if ( e.IsPaired )
+                        {
+                            RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Pairing drone." );
+                            //this._droneInit.DroneCommand.Pair();
+                        }
+                        else
+                        {
+                            RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Unpairing drone." );
+                            //this._droneInit.DroneCommand.Unpair();
+                        }
+                    }
+
                     ReconnectDrone();
+
                 };
-                DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig );
+
+                DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig, isPaired );
+
                 window.DroneConfigAvailable += newDroneConfigDelegate;
 
                 _droneSettingsWindow = window;

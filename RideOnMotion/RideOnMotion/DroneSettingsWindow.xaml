@@ -13,25 +13,6 @@
         </StackPanel>
 
         <StackPanel Margin="3">
-            <GroupBox Header="Maximum drone speeds" Padding="3">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0">Translation</Label>
-                    <Label Grid.Column="0" Grid.Row="1">Rotation</Label>
-                    <Label Grid.Column="0" Grid.Row="2">Elevation</Label>
-                    <TextBox Grid.Column="1" Grid.Row="0" Text="-" IsEnabled="False"/>
-                    <TextBox Grid.Column="1" Grid.Row="1" Text="-" IsEnabled="False"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" Text="-" IsEnabled="False"/>
-                </Grid>
-            </GroupBox>
             <GroupBox Header="Connection information" Padding="3">
             	<Grid>
                     <Grid.RowDefinitions>
@@ -47,9 +28,11 @@
                     <Label Grid.Column="0" Grid.Row="0">Drone IP address</Label>
                     <Label Grid.Column="0" Grid.Row="1">Client IP address</Label>
                     <Label Grid.Column="0" Grid.Row="2">Drone SSID</Label>
+                    <Label Grid.Column="0" Grid.Row="3">Pair to computer</Label>
                     <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding DroneIPAddress}"/>
                     <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding ClientIPAddress}"/>
                     <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding DroneSSID}"/>
+                    <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding DroneIsPaired}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 				</Grid>
             </GroupBox>
         </StackPanel>

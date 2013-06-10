@@ -23,9 +23,9 @@ namespace RideOnMotion.UI
     public partial class DroneSettingsWindow : Window
     {
         private DroneSettingsWindowViewModel _viewModel;
-        public event EventHandler<DroneConfig> DroneConfigAvailable;
+        public event EventHandler<DroneSettingsEventArgs> DroneConfigAvailable;
 
-        public DroneSettingsWindow(DroneConfig config)
+        public DroneSettingsWindow(DroneConfig config, bool droneIsPaired)
         {
             if ( config == null )
             {
@@ -42,7 +42,7 @@ namespace RideOnMotion.UI
         private void ButtonOK_Click( object sender, RoutedEventArgs e )
         {
             _viewModel.SaveSettings();
-            RaiseDroneConfigAvailable( _viewModel.DroneConfig );
+            RaiseDroneConfigAvailable();
             this.Close();
         }
 
@@ -54,14 +54,14 @@ namespace RideOnMotion.UI
         private void ButtonApply_Click( object sender, RoutedEventArgs e )
         {
             _viewModel.SaveSettings();
-            RaiseDroneConfigAvailable( _viewModel.DroneConfig );
+            RaiseDroneConfigAvailable();
         }
 
-        private void RaiseDroneConfigAvailable(DroneConfig config)
+        private void RaiseDroneConfigAvailable()
         {
             if ( DroneConfigAvailable != null )
             {
-                DroneConfigAvailable( this, config );
+                DroneConfigAvailable( this, new DroneSettingsEventArgs(_viewModel.DroneConfig, _viewModel.DroneIsPaired) );
             }
         }
     }
@@ -102,6 +102,8 @@ namespace RideOnMotion.UI
         #region Members
 
         private DroneConfig _droneConfig;
+        private bool _droneIsPaired;
+
         #endregion Members
 
         #region Properties
@@ -121,6 +123,17 @@ namespace RideOnMotion.UI
         public DroneConfig DroneConfig
         {
             get { return this._droneConfig; }
+        }
+
+
+        public bool DroneIsPaired
+        {
+            get { return this._droneIsPaired; }
+            set
+            {
+                _droneIsPaired = value;
+                RaisePropertyChanged();
+            }
         }
 
         public string ClientIPAddress
@@ -166,6 +179,26 @@ namespace RideOnMotion.UI
             Settings.Default.DroneSSID = this.DroneSSID;
 
             Settings.Default.Save();
+        }
+    }
+
+    public class DroneSettingsEventArgs : EventArgs
+    {
+        public DroneConfig DroneConfig
+        {
+            get;
+            private set;
+        }
+        public bool IsPaired
+        {
+            get;
+            private set;
+        }
+
+        public DroneSettingsEventArgs( DroneConfig newConfig, bool isPaired )
+        {
+            this.DroneConfig = newConfig;
+            this.IsPaired = isPaired;
         }
     }
 }
