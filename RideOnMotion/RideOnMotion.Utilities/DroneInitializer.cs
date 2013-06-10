@@ -68,7 +68,7 @@ namespace RideOnMotion
             InitializeHudInterface();
 
             _timerStatusUpdate = new DispatcherTimer();
-			_timerStatusUpdate.Interval = new TimeSpan( 0, 0, 0, 0, 50 );
+			_timerStatusUpdate.Interval = new TimeSpan( 0, 0, 0, 0, 30 );
             _timerStatusUpdate.Tick += new EventHandler( timerStatusUpdate_Tick );
         }
 
@@ -83,7 +83,7 @@ namespace RideOnMotion
 		private void InitializeVideoUpdate()
 		{
 			_timerVideoUpdate = new DispatcherTimer();
-			_timerVideoUpdate.Interval = new TimeSpan( 0, 0, 0, 0, 50 );
+			_timerVideoUpdate.Interval = new TimeSpan( 0, 0, 0, 0, 40 );
 			_timerVideoUpdate.Tick += new EventHandler( timerVideoUpdate_Tick );
 
 			_lastFrameRateCaptureTime = DateTime.Now;
