@@ -81,83 +81,74 @@ namespace RideOnMotion.Inputs.Keyboard
 			flatTrim = false;
 			specialActionButton = false;
 
-			if ( _heldDown[(int)Key.Q] && !_heldDown[(int)Key.D] )
+			if ( _heldDown[Properties.Settings.Default.RollLeft] && !_heldDown[Properties.Settings.Default.RollRight] )
 			{
 				roll = -1;
 			}
-			else if ( _heldDown[(int)Key.D] && !_heldDown[(int)Key.Q] )
+			else if ( _heldDown[Properties.Settings.Default.RollRight] && !_heldDown[Properties.Settings.Default.RollLeft] )
 			{
 				roll = 1;
 			}
 
-			if ( _heldDown[(int)Key.Z] && !_heldDown[(int)Key.S] )
+			if ( _heldDown[Properties.Settings.Default.PitchUp] && !_heldDown[Properties.Settings.Default.PitchDown] )
 			{
 				pitch = -1;
 			}
-			else if ( _heldDown[(int)Key.S] && !_heldDown[(int)Key.Z] )
+			else if ( _heldDown[Properties.Settings.Default.PitchDown] && !_heldDown[Properties.Settings.Default.PitchUp] )
 			{
 				pitch = 1;
 			}
 
-			if ( _heldDown[(int)Key.Down] && !_heldDown[(int)Key.Up] )
+			if ( _heldDown[Properties.Settings.Default.GazDown] && !_heldDown[Properties.Settings.Default.GazUp] )
 			{
 				gaz = -1;
 			}
-			else if ( _heldDown[(int)Key.Up] && !_heldDown[(int)Key.Down] )
+			else if ( _heldDown[Properties.Settings.Default.GazUp] && !_heldDown[Properties.Settings.Default.GazDown] )
 			{
 				gaz = 1;
 			}
 
-			if ( _heldDown[(int)Key.Left] && !_heldDown[(int)Key.Right] )
+			if ( _heldDown[Properties.Settings.Default.YawLeft] && !_heldDown[Properties.Settings.Default.YawRight] )
 			{
 				yaw = -1;
 			}
-			else if ( _heldDown[(int)Key.Right] && !_heldDown[(int)Key.Left] )
+			else if ( _heldDown[Properties.Settings.Default.YawRight] && !_heldDown[Properties.Settings.Default.YawLeft] )
 			{
 				yaw = 1;
 			}
 
-			if ( _heldDown[(int)Key.C] )
+			if ( _heldDown[Properties.Settings.Default.CameraSwap] )
 			{
 				cameraSwap = true;
 			}
-			if ( _heldDown[(int)Key.Return] )
+			if ( _heldDown[Properties.Settings.Default.TakeOff] )
 			{
 				takeOff = true;
 			}
-			if ( _heldDown[(int)Key.Space] )
+			if ( _heldDown[Properties.Settings.Default.Land] )
 			{
 				land = true;
 			}
-			if ( _heldDown[(int)Key.LeftCtrl] || _heldDown[(int)Key.RightCtrl] )
+			if ( _heldDown[Properties.Settings.Default.Hover] )
 			{
 				hover = true;
 			}
-			if ( _heldDown[(int)Key.End] )
+			if ( _heldDown[Properties.Settings.Default.Emergency] )
 			{
 				emergency = true;
 			}
-			if ( _heldDown[(int)Key.F] )
+			if ( _heldDown[Properties.Settings.Default.FlatTrim] )
 			{
 				flatTrim = true;
 			}
-			if ( _heldDown[(int)Key.L] )
+			if ( _heldDown[Properties.Settings.Default.SpecialAction] )
 			{
 				specialActionButton = true;
 			}
-			
-			//InputState currentInput = GetCurrentControlInput();
-			//if ( currentInput != null )
-			//{
-			//	_sendDroneCommand.process( currentInput );
-			//}
 		}
 
 		public InputState GetCurrentControlInput( InputState _lastInputState )
 		{
-
-			// TODO test
-
 			if ( roll != _lastInputState.Roll || pitch != _lastInputState.Pitch || yaw != _lastInputState.Yaw || gaz != _lastInputState.Gaz || cameraSwap != _lastInputState.CameraSwap || takeOff != _lastInputState.TakeOff ||
 				land != _lastInputState.Land || hover != _lastInputState.Hover || emergency != _lastInputState.Emergency || flatTrim != _lastInputState.FlatTrim || specialActionButton  != _lastInputState.SpecialAction)
 			{
