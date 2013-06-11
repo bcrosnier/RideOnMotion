@@ -41,11 +41,11 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		public void Start()
 		{
 			_selectedController = XboxController.RetrieveController( 0 );
-			_selectedController.StateChanged += _selectedController_StateChanged;
+			_selectedController.StateChanged += SelectedController_StateChanged;
 			XboxController.StartPolling();
 		}
 
-		private void _selectedController_StateChanged( object sender, XboxControllerStateChangedEventArgs e )
+		private void SelectedController_StateChanged( object sender, XboxControllerStateChangedEventArgs e )
 		{
 			MapInput();
 		}
