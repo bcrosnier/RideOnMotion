@@ -60,20 +60,26 @@ namespace RideOnMotion.Inputs
 			float gaz = inputState.Gaz / 3.0f;
             inputState.Gaz = gaz;
 			RelativeDirection = true;
+			float roll2;
+			float pitch2;
 			if ( RelativeDirection )
 			{
-				_drone.Navigate( roll, pitch, yaw, gaz );
+				roll2 = roll;
+				pitch2 = pitch;
 			}
 			else
 			{
-				float roll2 = (( (float)Math.Cos( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * roll ) 
+				roll2 = (( (float)Math.Cos( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * roll ) 
 					+ (( (float)Math.Sin( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * -pitch );
-				float pitch2 = ( ( (float)Math.Cos( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * pitch ) 
-					+ ( ( (float)Math.Sin( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * roll ); ;
+				pitch2 = ( ( (float)Math.Cos( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * pitch ) 
+					+ ( ( (float)Math.Sin( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * roll );
+
+				inputState.Roll = roll2;
+				inputState.Pitch = pitch2;
 				// for debugging purpose
 				//Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Navigate with : roll2 : " + roll2 + " , pitch2 : " + pitch2);
-				_drone.Navigate( roll2, pitch2, yaw, gaz );
 			}
+			_drone.Navigate( roll2, pitch2, yaw, gaz );
 			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, inputState.ToString());
 		}
 

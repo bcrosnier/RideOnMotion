@@ -559,7 +559,7 @@ namespace RideOnMotion.UI
 
 		void OnOrientationChange( object sender, DroneDataReadyEventArgs e )
 		{
-			if ( !DroneOriginalOrientationSet )
+			if ( !DroneOriginalOrientationSet && e.Data.psi != 0)
 			{
 				_sendDroneCommand.DroneOriginalOrientation = e.Data.psi;
 				DroneOriginalOrientationSet = true;
