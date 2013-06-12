@@ -8,7 +8,7 @@ namespace RideOnMotion.Inputs.Kinect
 {
 	public class InputState
 	{
-		private static int _controlNumber = 8;
+		private static int _controlNumber = 2;
 		private bool[] _currentInputState = new bool[_controlNumber];
 
 		public bool[] CurrentInputState
@@ -31,12 +31,12 @@ namespace RideOnMotion.Inputs.Kinect
 		/// <returns>true if the operation changed something</returns>
 		public bool CheckInput( bool[] inputs )
 		{
-			if ( inputs.Length == 8 )
+			if ( inputs.Length == 2 )
 			{
 				bool inputChanged = false;
 				if ( !Enumerable.SequenceEqual( inputs, CurrentInputState ) )
 				{
-					for ( int i = 0; i < 8; i++ )
+					for ( int i = 0; i < 2; i++ )
 					{
 						ChangeInputState( i, inputs[i] );
 					}

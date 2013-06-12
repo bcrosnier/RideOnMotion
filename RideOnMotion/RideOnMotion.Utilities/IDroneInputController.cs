@@ -88,11 +88,6 @@ namespace RideOnMotion
         event EventHandler<DroneInputStatus> InputStatusChanged;
 
 		/// <summary>
-		/// Fired when the state of the input changed
-		/// </summary>
-		event EventHandler<bool[]> InputsStateChanged;
-
-		/// <summary>
 		/// Fired when there is activity on the controller
 		/// </summary>
 		event EventHandler<bool> ControllerActivity;

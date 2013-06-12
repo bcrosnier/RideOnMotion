@@ -14,7 +14,7 @@ namespace RideOnMotion.Inputs.Kinect
     /// </summary>
     internal class TriggerArea
     {
-        public enum Buttons { Up = 0, Down = 1, Left = 2, Right = 3 };
+        public enum Buttons { Center = 0 };
 
         public int AreaWidth { get; private set; }
         public int AreaHeight { get; private set; }
@@ -23,10 +23,7 @@ namespace RideOnMotion.Inputs.Kinect
         public int ButtonWidth { get; private set; }
         public int ButtonHeight { get; private set; }
 
-        public ICaptionArea LeftButton { get { return this.TriggerCaptionsCollection[Buttons.Left]; } }
-        public ICaptionArea RightButton { get { return this.TriggerCaptionsCollection[Buttons.Right]; } }
-        public ICaptionArea UpButton { get { return this.TriggerCaptionsCollection[Buttons.Up]; } }
-        public ICaptionArea DownButton { get { return this.TriggerCaptionsCollection[Buttons.Down]; } }
+        public ICaptionArea CenterButton { get { return this.TriggerCaptionsCollection[Buttons.Center]; } }
 
         public Dictionary<Buttons, ICaptionArea> TriggerCaptionsCollection { get; private set; }
 
@@ -67,73 +64,29 @@ namespace RideOnMotion.Inputs.Kinect
 		/// <param name="position">Specify if the buttons are on the left (true) or on the right (false)</param>
         public void generateButtonCaptions( bool position)
         {
-			int up = 0;
-			int down = 0;
-			int left = 0;
-			int right = 0;
+            int center = 0;
 
 			if ( position )
 			{
-				up = 1;
-				down = 2;
-				left = 4;
-				right = 8;
+				center = 1;
 			}
 			else if ( !position )
 			{
-				up = 16;
-				down = 32;
-				left = 64;
-				right = 128;
+				center = 2;
 			}
             int horizontalMargin = ( AreaWidth - ButtonWidth ) / 2;
             int verticalMargin = ( AreaHeight - ButtonWidth ) / 2;
 
-            ICaptionArea upCaption = createCaptionArea(
-                "Up button",
+            ICaptionArea centerCaption = createCaptionArea(
+                "Center button",
                 OffsetX + horizontalMargin,
                 OffsetY + verticalMargin,
                 ButtonWidth,
                 ButtonHeight,
-				up
+				center
             );
 
-            ICaptionArea leftCaption = createCaptionArea(
-                "Left button",
-                OffsetX + horizontalMargin,
-                OffsetY + verticalMargin,
-                ButtonHeight,
-                ButtonWidth,
-				left
-            );
-
-            ICaptionArea downCaption = createCaptionArea(
-                "Down button",
-                OffsetX + horizontalMargin,
-                OffsetY + verticalMargin + ButtonWidth - ButtonHeight,
-                ButtonWidth,
-                ButtonHeight,
-				down
-            );
-
-            ICaptionArea rightCaption = createCaptionArea(
-                "Right button",
-                OffsetX + horizontalMargin + ButtonWidth - ButtonHeight,
-                OffsetY + verticalMargin,
-                ButtonHeight,
-                ButtonWidth,
-				right
-            );
-
-			//((CaptionArea)upCaption).AddFunction( Quack );
-			//((CaptionArea)downCaption).AddFunction( Quack );
-			//((CaptionArea)leftCaption).AddFunction( Quack );
-			//((CaptionArea)rightCaption).AddFunction( Quack );
-
-            TriggerCaptionsCollection.Add( Buttons.Up, upCaption );
-            TriggerCaptionsCollection.Add( Buttons.Down, downCaption );
-            TriggerCaptionsCollection.Add( Buttons.Left, leftCaption );
-            TriggerCaptionsCollection.Add( Buttons.Right, rightCaption );
+            TriggerCaptionsCollection.Add( Buttons.Center, centerCaption );
 
             // Fire stuff to update rectangles here. --BC
         }

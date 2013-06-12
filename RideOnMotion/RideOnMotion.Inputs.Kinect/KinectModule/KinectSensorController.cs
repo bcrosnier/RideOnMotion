@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.Collections;
+using RideOnMotion.Inputs;
 using RideOnMotion.Utilities;
 using System.ComponentModel;
 using Microsoft.Kinect.Toolkit.Interaction;
@@ -23,6 +24,20 @@ namespace RideOnMotion.Inputs.Kinect
     public class KinectSensorController : IDroneInputController
 	{
 		#region declarations
+        float roll = 0;
+        float pitch = 0;
+        float yaw = 0;
+        float gaz = 0;
+        bool cameraSwap = false;
+        bool takeOff = false;
+        bool land = false;
+        bool hover = false;
+        bool emergency = false;
+        bool flatTrim = false;
+        bool specialActionButton = false;
+        RideOnMotion.Inputs.InputState _lastInputState = new RideOnMotion.Inputs.InputState();
+        Point _leftHand = new Point (-1, -1);
+        Point _rightHand = new Point (-1, -1);
 		/// <summary>
         /// A user-friendly input name!
         /// </summary>
@@ -131,6 +146,7 @@ namespace RideOnMotion.Inputs.Kinect
 		/// 0 -> No problem
 		/// 1 -> Hover mode activation
 		/// 2 -> Land the drone
+        /// 3 -> Take off
 		/// </summary>
 		public event EventHandler<int> SecurityModeChanged;
         
@@ -176,6 +192,8 @@ namespace RideOnMotion.Inputs.Kinect
 		/// </summary>
 		private bool _leftGrip = false;
 		private bool _rightGrip = false;
+        private bool _operatorLost = false;
+        private bool _lastOperatorLost = false;
 
         /// <summary>
         /// Active settings Window. Closed on Stop(), can be null.
@@ -193,7 +211,6 @@ namespace RideOnMotion.Inputs.Kinect
 		// Events
         public event EventHandler<BitmapSource> InputImageSourceChanged;
         public event EventHandler<DroneInputStatus> InputStatusChanged;
-		public event EventHandler<bool[]> InputsStateChanged;
 		public event EventHandler<bool> ControllerActivity;
 
         // Properties
@@ -502,17 +519,14 @@ namespace RideOnMotion.Inputs.Kinect
 
 		internal void ChangeCurrentInputState( object x, PropertyChangedEventArgs y )
 		{
-			bool[] inputs = new bool[8];
-			for ( int i = 0; i < 8; i++)
+			bool[] inputs = new bool[2];
+			for ( int i = 0; i < 2; i++)
 			{
 				inputs[i] = ( (ObservableCollectionEx<ICaptionArea>)x )[i].IsActive;
 			}
 			if ( _inputState.CheckInput( inputs ) )
 			{
-				if ( InputsStateChanged != null )
-				{
-					InputsStateChanged( this, InputState );
-				}
+                MapInput();
 			}
 		}
 
@@ -781,6 +795,9 @@ namespace RideOnMotion.Inputs.Kinect
                 {
                     Point left = WindowPointFromHandPointer( curUser.HandPointers[0] );
                     Point right = WindowPointFromHandPointer( curUser.HandPointers[1] );
+                    _leftHand = left;
+                    _rightHand = right;
+                    MapInput();
 
 					OnHandsPointReady( left, right );
 
@@ -792,6 +809,9 @@ namespace RideOnMotion.Inputs.Kinect
 			else if( _handsVisible == true )
 			{
 				OnHandsPointReady( new System.Windows.Point( -1, -1 ), new System.Windows.Point( -1, -1 ) );
+                _leftHand = new System.Windows.Point(-1, -1);
+                _rightHand = new System.Windows.Point(-1, -1);
+                MapInput();
 
 				_handsVisible = false;
 				if( _skeletonFound )
@@ -799,7 +819,6 @@ namespace RideOnMotion.Inputs.Kinect
 					_skeletonFound = false;
                     SafetyModeCheck( null );
 				}
-				_handsVisible = false;
 			}
 			else
 			{
@@ -845,11 +864,13 @@ namespace RideOnMotion.Inputs.Kinect
 				else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeChanged( this, 2 );
+                    MapInput();
 				}
 				else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeChanged( this, 3 );
 					_canTakeOff = false;
+                    MapInput();
 				}
 			}
 		}
@@ -866,6 +887,8 @@ namespace RideOnMotion.Inputs.Kinect
 					if( SecurityModeChanged != null && _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
 					{
 						SecurityModeChanged( this, 1 );
+                        _operatorLost = true;
+                        MapInput();
 						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
 							"Safety mode enabled due to hands no longer being tracked" );
 					}
@@ -883,6 +906,8 @@ namespace RideOnMotion.Inputs.Kinect
 				{
 					_timerToLand.Stop();
 					SecurityModeChanged( this, 0 );
+                    _operatorLost = false;
+                    MapInput();
 					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
 						"Safety mode no longer required, restoring manual control" );
 					_safetyLandingtriggered = false;
@@ -899,6 +924,8 @@ namespace RideOnMotion.Inputs.Kinect
 				if( _timerToLand.IsEnabled == false && SecurityModeChanged != null )
 				{
 					SecurityModeChanged( this, 1 );
+                    _operatorLost = true;
+                    MapInput();
 					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
 						"Safety mode enabled due to hands no longer being tracked" );
 				}
@@ -917,6 +944,7 @@ namespace RideOnMotion.Inputs.Kinect
 			if( SecurityModeChanged != null )
 			{
 				SecurityModeChanged( this, 2 );
+                MapInput();
 				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
 					"Security mode will now process to land the drone" );
 				_timerToLand.Stop();
@@ -1072,14 +1100,6 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 		}
 
-		private void OnSecurityModeNeeded( int arg )
-		{
-			if( SecurityModeChanged != null )
-			{
-				SecurityModeChanged( this, arg );
-			}
-		}
-
 		private void OnHandsPointReady( Point left, Point right )
 		{
 			if( HandsPointReady != null )
@@ -1087,6 +1107,86 @@ namespace RideOnMotion.Inputs.Kinect
 				HandsPointReady( this, new System.Windows.Point[2] { left, right } );
 			}
 		}
+
+        public RideOnMotion.Inputs.InputState GetCurrentControlInput(RideOnMotion.Inputs.InputState _lastInputState)
+        {
+
+            // TODO test
+
+            if (roll != _lastInputState.Roll || pitch != _lastInputState.Pitch || yaw != _lastInputState.Yaw || gaz != _lastInputState.Gaz || cameraSwap != _lastInputState.CameraSwap || takeOff != _lastInputState.TakeOff ||
+                land != _lastInputState.Land || hover != _lastInputState.Hover || emergency != _lastInputState.Emergency || flatTrim != _lastInputState.FlatTrim || specialActionButton != _lastInputState.SpecialAction)
+            {
+                RideOnMotion.Inputs.InputState newInputState = new RideOnMotion.Inputs.InputState(roll, pitch, yaw, gaz, cameraSwap, takeOff, land, hover, emergency, flatTrim, specialActionButton);
+                return newInputState;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        internal void MapInput()
+        {
+            roll = 0;
+            pitch = 0;
+            yaw = 0;
+            gaz = 0;
+
+            cameraSwap = false;
+            takeOff = false;
+            land = false;
+            hover = false;
+            emergency = false;
+
+            flatTrim = false;
+            specialActionButton = false;
+
+            if (_handsVisible)
+            {
+                if (!InputState[0])
+                {
+                    if (_leftHand.X <= DEPTH_FRAME_WIDTH / 2 && _leftHand.X != -1)
+                    {
+                        roll = (float)((_leftHand.X / (DEPTH_FRAME_WIDTH / 4)) - 1);
+                    }
+                    else
+                    {
+                        roll = 1f;
+                    }
+                    pitch = (float)((_leftHand.Y / (DEPTH_FRAME_HEIGHT / 2)) - 1);
+                }
+                if (!InputState[1])
+                {
+                    if (_rightHand.X >= DEPTH_FRAME_WIDTH / 2 && _rightHand.X != -1)
+                    {
+                        yaw = (float)(((_rightHand.X - (DEPTH_FRAME_WIDTH / 2)) / (DEPTH_FRAME_WIDTH / 4)) - 1);
+                    }
+                    else
+                    {
+                        yaw = -1f;
+                    }
+                    gaz = (float)-((_rightHand.Y / (DEPTH_FRAME_HEIGHT / 2)) - 1);
+                }
+            }
+            if (_operatorLost && !_lastOperatorLost)
+            {
+                hover = true;
+                _lastOperatorLost = true;
+            }
+            else if (!_operatorLost && _lastOperatorLost)
+            {
+                hover = true;
+                _lastOperatorLost = false;
+            }
+            if (_leftGrip && !_rightGrip)
+            {
+                land = true;
+            }
+            if (_rightGrip && !_leftGrip)
+            {
+                takeOff = true;
+            }
+        }
     }
 
 	public class InteractionClient : IInteractionClient
