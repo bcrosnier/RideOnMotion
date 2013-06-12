@@ -38,6 +38,8 @@ namespace RideOnMotion.Inputs.Kinect
         RideOnMotion.Inputs.InputState _lastInputState = new RideOnMotion.Inputs.InputState();
         Point _leftHand = new Point (-1, -1);
         Point _rightHand = new Point (-1, -1);
+        DispatcherTimer ReleaseLeftHand = new DispatcherTimer();
+        DispatcherTimer ReleaseRightHand = new DispatcherTimer();
 		/// <summary>
         /// A user-friendly input name!
         /// </summary>
@@ -189,9 +191,11 @@ namespace RideOnMotion.Inputs.Kinect
 
 		/// <summary>
 		/// Manage the grip and grip release
-		/// </summary>
-		private bool _leftGrip = false;
-		private bool _rightGrip = false;
+        /// </summary>
+        private bool _leftGrip = false;
+        private bool _rightGrip = false;
+        private bool _lastLeftGrip = false;
+        private bool _lastRightGrip = false;
         private bool _operatorLost = false;
         private bool _lastOperatorLost = false;
 
@@ -396,8 +400,22 @@ namespace RideOnMotion.Inputs.Kinect
 			this._inputState = new InputState();
 
             this.InputUIControl = new KinectSensorControllerUI( this );
+            ReleaseLeftHand.Interval = new TimeSpan( 0, 0, 1 );
+            ReleaseLeftHand.Tick += new EventHandler( OnReleaseLeftHand );
+            ReleaseRightHand.Interval = new TimeSpan( 0, 0, 1 );
+            ReleaseRightHand.Tick += new EventHandler( OnReleaseRightHand );
 
+        }
+        private void OnReleaseLeftHand( object sender, EventArgs e )
+        {
+            _leftGrip = false;
+            ReleaseLeftHand.Stop();
+        }
 
+        private void OnReleaseRightHand( object sender, EventArgs e )
+        {
+            _rightGrip = false;
+            ReleaseRightHand.Stop();
         }
 
         /// <summary>
@@ -826,13 +844,13 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 		}
 
-
 		private void TestTakeOffCapabitility( UserInfo curUser )
 		{
 			// HandEvent are a single occurence, so we must store the current state
 			if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 			{
 				_leftGrip = true;
+                ReleaseLeftHand.Start();
 			}
 			else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.GripRelease )
 			{
@@ -840,7 +858,8 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 			if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 			{
-				_rightGrip = true;
+                _rightGrip = true;
+                ReleaseRightHand.Start();
 			}
 			else if( curUser.HandPointers[1].HandEventType == InteractionHandEventType.GripRelease )
 			{
@@ -1176,11 +1195,11 @@ namespace RideOnMotion.Inputs.Kinect
                 hover = true;
                 _lastOperatorLost = false;
             }
-            if (_leftGrip && !_rightGrip)
+            if ( _leftGrip && !_lastLeftGrip && !_rightGrip && ActiveDrone.CanLand )
             {
                 land = true;
             }
-            if (_rightGrip && !_leftGrip)
+            if (_rightGrip&& !_lastRightGrip && !_leftGrip && ActiveDrone.CanTakeoff)
             {
                 takeOff = true;
             }

@@ -123,11 +123,11 @@ namespace RideOnMotion.Inputs.Keyboard
 			{
 				cameraSwap = true;
 			}
-			if ( _heldDown[Properties.Settings.Default.TakeOff] )
+			if ( _heldDown[Properties.Settings.Default.TakeOff] && ActiveDrone.CanTakeoff)
 			{
 				takeOff = true;
 			}
-			if ( _heldDown[Properties.Settings.Default.Land] )
+			if ( _heldDown[Properties.Settings.Default.Land] && ActiveDrone.CanLand)
 			{
 				land = true;
 			}
