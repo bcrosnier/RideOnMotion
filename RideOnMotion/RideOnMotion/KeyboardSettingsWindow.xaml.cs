@@ -135,6 +135,30 @@ namespace RideOnMotion.UI
             }
         }
         #endregion INotifyPropertyChanged utilities
+
+        private void ButtonRestoreDefaults_Click( object sender, RoutedEventArgs e )
+        {
+            RestoreDefaultSettings();
+            LoadSettings();
+            RefreshLayoutKeys();
+        }
+
+        private void ButtonApply_Click( object sender, RoutedEventArgs e )
+        {
+            SaveSettings();
+            RefreshLayoutKeys();
+        }
+
+        private void ButtonCancel_Click( object sender, RoutedEventArgs e )
+        {
+            this.Close();
+        }
+
+        private void ButtonOK_Click( object sender, RoutedEventArgs e )
+        {
+            SaveSettings();
+            this.Close();
+        }
     }
 
     public class KeyToStringConverter : IValueConverter
