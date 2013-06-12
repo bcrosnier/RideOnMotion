@@ -31,6 +31,8 @@ namespace RideOnMotion.Inputs.Keyboard
 			_heldDown = new bool[256];
         }
 
+        public DroneCommand ActiveDrone;
+
 
         /// <summary>
         /// Event triggered on key press.

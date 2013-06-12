@@ -34,6 +34,8 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		float gazAndYawValues;
 
 
+        public DroneCommand ActiveDrone;
+
 		public Xbox360GamepadController()
 		{
 		}

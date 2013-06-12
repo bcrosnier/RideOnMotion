@@ -341,9 +341,9 @@ namespace RideOnMotion.UI
 			_lastGamepadInput = new InputState();
             _lastKinectInput = new InputState();
             _keyboardController = new KeyboardController();
-            ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
 			_Xbox360Gamepad = new Xbox360GamepadController();
 			_Xbox360Gamepad.Start();
+            ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
 			DroneOrderTimer.Interval = new TimeSpan( 0, 0, 0,0,30 );
 			DroneOrderTimer.Tick += new EventHandler( OrderTheMotherfuckingDrone );
 			DroneOrderTimer.Start();
@@ -544,6 +544,10 @@ namespace RideOnMotion.UI
 
 			_sendDroneCommand = new SendDroneCommand();
 			_sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
+
+            _Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
+            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
+            ( (RideOnMotion.Inputs.Kinect.KinectSensorController)_inputController ).ActiveDrone = _droneInit.DroneCommand;
         }
 
 		void OnOrientationChange( object sender, DroneDataReadyEventArgs e )

@@ -220,6 +220,8 @@ namespace RideOnMotion.Inputs.Kinect
             private set;
         }
 
+        public DroneCommand ActiveDrone;
+
         /// <summary>
         /// Kinect status text
         /// </summary>
@@ -271,11 +273,6 @@ namespace RideOnMotion.Inputs.Kinect
                     return DroneInputStatus.NotReady;
                 }
             }
-        }
-
-        public IDroneController ActiveDrone
-        {
-            set { throw new NotImplementedException(); }
         }
 
 		public bool IsActive
@@ -828,6 +825,7 @@ namespace RideOnMotion.Inputs.Kinect
 				}
 			}
 		}
+
 
 		private void TestTakeOffCapabitility( UserInfo curUser )
 		{
