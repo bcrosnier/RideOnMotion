@@ -70,6 +70,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="KeyboardSettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -80,6 +84,9 @@
     </Compile>
     <Compile Include="DroneSettingsWindow.xaml.cs">
       <DependentUpon>DroneSettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="KeyboardSettingsWindow.xaml.cs">
+      <DependentUpon>KeyboardSettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

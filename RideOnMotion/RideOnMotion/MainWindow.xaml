@@ -29,6 +29,9 @@
             <MenuItem Header="File">
                 <MenuItem Header="Quit" Click="MenuItem_Quit_Click" />
             </MenuItem>
+            <MenuItem Header="Input settings">
+                <MenuItem Header="Keyboard Settings" Command="{Binding OpenKeyboardSettingsCommand}" />
+            </MenuItem>
             <MenuItem Header="Drone">
                 <MenuItem Header="Settings" Command="{Binding OpenDroneSettingsCommand}" />
                 <MenuItem Header="Reconnect" Command="{Binding ReconnectDroneCommand}" />

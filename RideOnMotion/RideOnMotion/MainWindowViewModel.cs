@@ -59,6 +59,7 @@ namespace RideOnMotion.UI
         private MenuItem _inputMenu;
 
         private Window _droneSettingsWindow;
+        private Window _keyboardSettingsWindow;
 
         private String _droneNetworkStatusText;
         private bool _droneConnectionStatus;
@@ -99,6 +100,12 @@ namespace RideOnMotion.UI
         }
 
         public ICommand ReconnectDroneCommand
+        {
+            get;
+            internal set;
+        }
+
+        public ICommand OpenKeyboardSettingsCommand
         {
             get;
             internal set;
@@ -662,6 +669,7 @@ namespace RideOnMotion.UI
         {
             OpenDroneSettingsCommand = new RelayCommand( OpenDroneSettingsExecute, CanExecuteOpenDroneSettingsCommand );
             ReconnectDroneCommand = new RelayCommand( ReconnectDroneExecute, CanExecuteReconnectDroneCommand );
+            OpenKeyboardSettingsCommand = new RelayCommand( OpenKeyboardSettingsExecute, CanExecuteOpenKeyboardSettingsCommand );
         }
 
         private bool CanExecuteOpenDroneSettingsCommand( object param )
@@ -708,12 +716,39 @@ namespace RideOnMotion.UI
 
                 _droneSettingsWindow = window;
 
-                _droneSettingsWindow.Closed += ( object sender, EventArgs args ) => {
+                _droneSettingsWindow.Closed += ( object sender, EventArgs args ) =>
+                {
                     _droneSettingsWindow = null;
                     window.DroneConfigAvailable -= newDroneConfigDelegate;
                 };
 
                 _droneSettingsWindow.Show();
+            }
+        }
+
+        private bool CanExecuteOpenKeyboardSettingsCommand( object param )
+        {
+            return true;
+        }
+
+        private void OpenKeyboardSettingsExecute( object param )
+        {
+            if ( _keyboardSettingsWindow != null )
+            {
+                _keyboardSettingsWindow.Activate();
+            }
+            else
+            {
+                KeyboardSettingsWindow window = new KeyboardSettingsWindow();
+
+                _keyboardSettingsWindow = window;
+
+                _keyboardSettingsWindow.Closed += ( object sender, EventArgs args ) =>
+                {
+                    _keyboardSettingsWindow = null;
+                };
+
+                _keyboardSettingsWindow.Show();
             }
         }
 
