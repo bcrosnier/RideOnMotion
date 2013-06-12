@@ -66,6 +66,28 @@ namespace RideOnMotion.UI
             RefreshLayoutKeys();
         }
 
+        private bool HasDuplicateKeys()
+        {
+            List<Key> keyList = new List<Key>();
+            keyList.Add( PitchUpKey );
+            keyList.Add( PitchDownKey );
+            keyList.Add( RollLeftKey );
+            keyList.Add( RollRightKey );
+            keyList.Add( YawLeftKey );
+            keyList.Add( YawRightKey );
+            keyList.Add( GazUpKey );
+            keyList.Add( GazDownKey );
+            keyList.Add( TakeoffKey );
+            keyList.Add( LandKey );
+            keyList.Add( HoverKey );
+            keyList.Add( CameraSwapKey );
+            keyList.Add( EmergencyKey );
+            keyList.Add( FlatTrimKey );
+            keyList.Add( SpecialActionKey );
+
+            return keyList.GroupBy( x => x ).Any(c => c.Count() > 1);
+        }
+
         private void SaveSettings()
         {
             Settings.Default.PitchUp = (int)PitchUpKey;
@@ -98,7 +120,7 @@ namespace RideOnMotion.UI
                  * [TODO]
                  * Note: With WPF, this SHOULD refresh all bounds listeners.
                  * However, there is no telling what will happen with other PropertyChanged listeners.
-                 * So, yes. This is an ugly hack, and done with full knowledge of it. :)
+                 * So, yes. This is an ugly hack, and one done with full knowledge of it. :)
                  * -- Benjamin
                  * */
                 PropertyChanged( this, new PropertyChangedEventArgs( null ) );
@@ -136,6 +158,11 @@ namespace RideOnMotion.UI
         }
         #endregion INotifyPropertyChanged utilities
 
+        private void DuplicateKeyAlert()
+        {
+            MessageBox.Show( "You cannot use the same key for more than one action.", "Duplicate keys", MessageBoxButton.OK );
+        }
+
         private void ButtonRestoreDefaults_Click( object sender, RoutedEventArgs e )
         {
             RestoreDefaultSettings();
@@ -145,7 +172,12 @@ namespace RideOnMotion.UI
 
         private void ButtonApply_Click( object sender, RoutedEventArgs e )
         {
-            SaveSettings();
+            if ( !HasDuplicateKeys() )
+            {
+                SaveSettings();
+            } else {
+                DuplicateKeyAlert();
+            }
             RefreshLayoutKeys();
         }
 
@@ -156,8 +188,15 @@ namespace RideOnMotion.UI
 
         private void ButtonOK_Click( object sender, RoutedEventArgs e )
         {
-            SaveSettings();
-            this.Close();
+            if ( !HasDuplicateKeys() )
+            {
+                SaveSettings();
+                this.Close();
+            }
+            else
+            {
+                DuplicateKeyAlert();
+            }
         }
 
         private void TextBox_KeyDownReplace( object sender, KeyEventArgs e )
