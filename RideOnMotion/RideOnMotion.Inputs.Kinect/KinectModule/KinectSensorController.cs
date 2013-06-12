@@ -61,12 +61,12 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// Default trigger zone width (side size)
         /// </summary>
-        public static readonly int TRIGGER_BUTTON_WIDTH = 300;
+        public static readonly int TRIGGER_BUTTON_WIDTH = 80;
 
         /// <summary>
         /// Default trigger zone height (button thickness)
         /// </summary>
-        public static readonly int TRIGGER_BUTTON_HEIGHT = 100;
+        public static readonly int TRIGGER_BUTTON_HEIGHT = (int)(TRIGGER_BUTTON_WIDTH * (4.0 / 3.0));
 
         /// <summary>
         /// The Kinect sensor used by the controller. Can be null.
@@ -483,14 +483,14 @@ namespace RideOnMotion.Inputs.Kinect
 		}
 
         /// <summary>
-        /// Initializes the position tracker and its related trigger zones for the hands.
+        /// Initializes the isLeftArea tracker and its related trigger zones for the hands.
         /// </summary>
         private void initializePositionTrackerController()
         {
             _positionTrackerController = new PositionTrackerController();
 
-            IPositionTracker<UserInfo> leftTracker = new LeftHandPositionTracker( _leftTriggerArea.TriggerCaptionsCollection.Values.ToList() );
-            IPositionTracker<UserInfo> rightTracker = new RightHandPositionTracker( _rightTriggerArea.TriggerCaptionsCollection.Values.ToList() );
+            IPositionTracker<UserInfo> leftTracker = new LeftHandPositionTracker( _leftTriggerArea.DeadZoneCaptionsCollection.Values.ToList() );
+            IPositionTracker<UserInfo> rightTracker = new RightHandPositionTracker( _rightTriggerArea.DeadZoneCaptionsCollection.Values.ToList() );
 
             this.PositionTrackerController.AttachPositionTracker( leftTracker );
             this.PositionTrackerController.AttachPositionTracker( rightTracker );
@@ -499,8 +499,8 @@ namespace RideOnMotion.Inputs.Kinect
         /// <summary>
         /// Prepare the right and left trigger zones.
         /// </summary>
-        /// <param name="buttonWidth">Width of each button / side size of the zone</param>
-        /// <param name="buttonHeight">Height of each button / thickness of the triggers</param>
+        /// <param name="deadZoneWidth">Width of each button / side size of the zone</param>
+        /// <param name="deadZoneHeight">Height of each button / thickness of the triggers</param>
         private void initTriggerZones( int buttonWidth, int buttonHeight )
         {
             int zoneWidth = DEPTH_FRAME_WIDTH / 2;
@@ -511,8 +511,8 @@ namespace RideOnMotion.Inputs.Kinect
             _rightTriggerArea = new TriggerArea( zoneWidth, zoneHeight, zoneWidth, 0, buttonWidth, buttonHeight, false);
 
             // Create a collection from both zones
-                _leftTriggerArea.TriggerCaptionsCollection.Values.Union(
-                        _rightTriggerArea.TriggerCaptionsCollection.Values
+                _leftTriggerArea.DeadZoneCaptionsCollection.Values.Union(
+                        _rightTriggerArea.DeadZoneCaptionsCollection.Values
                 ).ToList().ForEach((element) => TriggerButtons.Add(element));
 			( (INotifyPropertyChanged)TriggerButtons ).PropertyChanged += ( x, y ) => ChangeCurrentInputState(x,y);
         }
