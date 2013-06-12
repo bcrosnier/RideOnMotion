@@ -1198,11 +1198,21 @@ namespace RideOnMotion.Inputs.Kinect
             if ( _leftGrip && !_lastLeftGrip && !_rightGrip && ActiveDrone.CanLand )
             {
                 land = true;
+				_lastLeftGrip = true;
             }
+			else if ( !_leftGrip && _lastLeftGrip )
+			{
+				_lastLeftGrip = false;
+			}
             if (_rightGrip&& !_lastRightGrip && !_leftGrip && ActiveDrone.CanTakeoff)
             {
                 takeOff = true;
-            }
+				_lastLeftGrip = true;
+			}
+			else if ( !_rightGrip && _lastRightGrip )
+			{
+				_lastRightGrip = false;
+			}
         }
     }
 
