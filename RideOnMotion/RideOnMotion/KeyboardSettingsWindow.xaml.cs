@@ -159,6 +159,15 @@ namespace RideOnMotion.UI
             SaveSettings();
             this.Close();
         }
+
+        private void TextBox_KeyDownReplace( object sender, KeyEventArgs e )
+        {
+            TextBox box = (TextBox)sender;
+
+            box.Text = e.Key.ToString();
+
+            e.Handled = true;
+        }
     }
 
     public class KeyToStringConverter : IValueConverter

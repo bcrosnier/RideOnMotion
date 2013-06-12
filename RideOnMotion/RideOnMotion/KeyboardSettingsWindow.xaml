@@ -46,14 +46,14 @@
                     <Label Grid.Row="6" Grid.Column="0">Gaz up</Label>
                     <Label Grid.Row="7" Grid.Column="0">Gaz down</Label>
 
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding PitchUpKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PitchDownKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding RollLeftKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding RollRightKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding YawLeftKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding YawRightKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding GazUpKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding GazDownKey, Converter={StaticResource converter}}" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding PitchUpKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PitchDownKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding RollLeftKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding RollRightKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding YawLeftKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding YawRightKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding GazUpKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding GazDownKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
 
 
                     <Label Grid.Row="0" Grid.Column="2">Take off</Label>
@@ -64,13 +64,13 @@
                     <Label Grid.Row="5" Grid.Column="2">Flat trim</Label>
                     <Label Grid.Row="6" Grid.Column="2">Special action!</Label>
 
-                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding TakeoffKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding LandKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding HoverKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding CameraSwapKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding EmergencyKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="5" Grid.Column="3" Text="{Binding FlatTrimKey, Converter={StaticResource converter}}" />
-                    <TextBox Grid.Row="6" Grid.Column="3" Text="{Binding SpecialActionKey, Converter={StaticResource converter}}" />
+                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding TakeoffKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding LandKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding HoverKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding CameraSwapKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding EmergencyKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="5" Grid.Column="3" Text="{Binding FlatTrimKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="6" Grid.Column="3" Text="{Binding SpecialActionKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
                 </Grid>
             </GroupBox>
         </StackPanel>
