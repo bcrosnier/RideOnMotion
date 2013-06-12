@@ -85,8 +85,6 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( switchCameraCommand );
 
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : ChangeCamera" );
-
 		}
 
 		public void Takeoff()
@@ -98,8 +96,6 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( takeOffCommand );
 
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Takeoff" );
-
 		}
 
 		public void Land()
@@ -110,8 +106,6 @@ namespace RideOnMotion
 				return;
 
 			_droneControl.SendCommand( landCommand );
-
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Land" );
 		}
 
 		public void Emergency()
@@ -122,8 +116,6 @@ namespace RideOnMotion
 				return;
 
 			_droneControl.SendCommand( emergencyCommand );
-
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Emergency" );
 		}
 
 		public void FlatTrim()
@@ -136,8 +128,6 @@ namespace RideOnMotion
 
 			_droneControl.SendCommand( resetCommand );
 			_droneControl.SendCommand( flatTrimCommand );
-
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : FlatTrim" );
 		}
 
 		public void EnterHoverMode()
@@ -148,8 +138,6 @@ namespace RideOnMotion
 				return;
 
 			_droneControl.SendCommand( enterHoverModeCommand );
-
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : EnterHoverMode" );
 		}
 
 		public void LeaveHoverMode()
@@ -160,8 +148,6 @@ namespace RideOnMotion
 				return;
 
 			_droneControl.SendCommand( leaveHoverModeCommand );
-
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : LeaveHoverMode" );
 		}
 
 		public void Navigate( float roll, float pitch, float yaw, float gaz )
@@ -171,8 +157,6 @@ namespace RideOnMotion
 			if( _droneControl.IsCommandPossible( flightMoveCommand ) )
 			{
 				_droneControl.SendCommand( flightMoveCommand );
-
-				Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Navigate with : " + roll + " " + pitch + " " + yaw + " " + gaz );
 			}
 		}
 
@@ -184,8 +168,6 @@ namespace RideOnMotion
 				return;
 
 			_droneControl.SendCommand( PlayLedCommand );
-
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : PlayLED" );
 		}
 
 		public void Pair( )

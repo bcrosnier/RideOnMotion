@@ -10,7 +10,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 	{
 		XboxController _selectedController;
 
-		readonly float NavigationValue = 1f;
+		readonly float MaxSpeed = 1f;
 		readonly float NavigationValue2 = 1f;
 		readonly int TriggerDeadZone = 4096;
 		readonly int TriggerReactionscale = 2048;
@@ -30,8 +30,8 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		bool flatTrim = false;
 		bool specialActionButton = false;
 
-		float rollAndPitchValues;
-		float gazAndYawValues;
+		bool usingTrigger;
+		bool usingStick;
 
 
 		public Xbox360GamepadController()
@@ -81,103 +81,111 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 			specialActionButton = false;
 
 
-			if ( _selectedController.IsBackPressed )
+			if ( ConvertStringToBoolMapping(Properties.Settings.Default.CameraSwap ) )
 			{
 				cameraSwap = true;
 			}
-			if ( _selectedController.IsRightShoulderPressed )
+			if ( ConvertStringToBoolMapping(Properties.Settings.Default.TakeOff) )
 			{
 				takeOff = true;
 			}
-			if ( _selectedController.IsLeftShoulderPressed )
+			if ( ConvertStringToBoolMapping(Properties.Settings.Default.Land) )
 			{
 				land = true;
 			}
-			if ( _selectedController.IsAPressed )
+			if ( ConvertStringToBoolMapping(Properties.Settings.Default.Hover) )
 			{
 				hover = true;
 			}
-			if ( _selectedController.IsBPressed )
+			if ( ConvertStringToBoolMapping(Properties.Settings.Default.Emergency) )
 			{
 				emergency = true;
 			}
-			if ( _selectedController.IsStartPressed )
+			if ( ConvertStringToBoolMapping(Properties.Settings.Default.FlatTrim) )
 			{
 				flatTrim = true;
 			}
-			if ( _selectedController.IsXPressed )
+			if ( ConvertStringToBoolMapping(Properties.Settings.Default.SpecialAction) )
 			{
 				specialActionButton = true;
 			}
+			//Properties.Settings.Default.
+			gaz = SetValueBasedOnInput( Properties.Settings.Default.GazUp, Properties.Settings.Default.GazDown );
+			roll = SetValueBasedOnInput( Properties.Settings.Default.RollLeft, Properties.Settings.Default.RollRight );
+			//Pitch is reversed
+			pitch = -SetValueBasedOnInput( Properties.Settings.Default.PitchDown, Properties.Settings.Default.PitchUp );
+			yaw = SetValueBasedOnInput( Properties.Settings.Default.YawLeft, Properties.Settings.Default.YawRight );
+		}
 
-			gazAndYawValues = NavigationValue;
-			rollAndPitchValues = NavigationValue2;
-
-			if ( _selectedController.LeftTrigger > 0 || _selectedController.RightTrigger > 0 )
+		public float SetValueBasedOnInput(String UpOrLeft, String DownOrRight)
+		{
+			float scale = 14;
+			ResetUsingStickAndTrigger();
+			if ( ConvertStringToBoolMapping( UpOrLeft ) && ConvertStringToBoolMapping(  DownOrRight ) )
 			{
-				float gazScale = 0;
-				if ( _selectedController.LeftTrigger > 0 && _selectedController.RightTrigger > 0 )
-				{
-					gazScale = 0;
-				}
-				else if ( _selectedController.RightTrigger > 0 )
-				{
-					gazScale = ( _selectedController.RightTrigger ) / 255f;
-				}
-				else if ( _selectedController.LeftTrigger > 0 )
-				{
-					gazScale = ( _selectedController.LeftTrigger ) / -255f;
-				}
-				gaz = gazAndYawValues * gazScale;
+				scale = 0;
+				ResetUsingStickAndTrigger();
 			}
-
-			if ( _selectedController.LeftThumbStick.X > TriggerDeadZone || _selectedController.LeftThumbStick.X < -TriggerDeadZone
-				|| _selectedController.LeftThumbStick.Y > TriggerDeadZone || _selectedController.LeftThumbStick.Y < -TriggerDeadZone )
+			else if ( ConvertStringToBoolMapping( UpOrLeft ) )
 			{
-				int rollScale = 14;
-				if ( _selectedController.LeftThumbStick.X > 0 )
+				if ( usingStick )
 				{
-					rollScale = ( ( _selectedController.LeftThumbStick.X - TriggerDeadZone ) + TriggerReactionscale - 1 ) / TriggerReactionscale;
+					scale = ( ( ConvertStringToIntMapping( UpOrLeft ) - 1 ) / TriggerReactionscale ) / 14f;
+					ResetUsingStickAndTrigger();
 				}
 				else
 				{
-					rollScale = ( ( _selectedController.LeftThumbStick.X + TriggerDeadZone ) - TriggerReactionscale + 1 ) / TriggerReactionscale;
+					float maxValue = MaxValue();
+					scale = ( ConvertStringToIntMapping( UpOrLeft ) ) / maxValue;
 				}
-				roll = rollAndPitchValues * ( rollScale / NumberOfScale );
-
-				int pitchScale = 14;
-
-				//reverse from the others
-				if ( _selectedController.LeftThumbStick.Y > 0 )
-				{
-					pitchScale = ( ( _selectedController.LeftThumbStick.Y - TriggerDeadZone ) + TriggerReactionscale - 1 ) / TriggerReactionscale;
-				}
-				else
-				{
-					pitchScale = ( ( _selectedController.LeftThumbStick.Y + TriggerDeadZone ) - TriggerReactionscale + 1 ) / TriggerReactionscale;
-				}
-				pitch = -(rollAndPitchValues * ( pitchScale / NumberOfScale ));
 			}
-			if ( _selectedController.RightThumbStick.X > TriggerDeadZone || _selectedController.RightThumbStick.X < - TriggerDeadZone )
+			else if ( ConvertStringToBoolMapping( DownOrRight ) )
 			{
-				int yawScale = 14;
-				if ( _selectedController.RightThumbStick.X > 0 )
+				if ( usingStick )
 				{
-					yawScale = ( ( _selectedController.RightThumbStick.X - TriggerDeadZone ) + TriggerReactionscale - 1 ) / TriggerReactionscale;
+					scale = ( ( ConvertStringToIntMapping( DownOrRight ) + 1 ) / TriggerReactionscale ) / 14f;
+					ResetUsingStickAndTrigger();
 				}
 				else
 				{
-					yawScale = ( ( _selectedController.RightThumbStick.X + TriggerDeadZone ) - TriggerReactionscale + 1 ) / TriggerReactionscale;
+					float maxValue = MaxValue();
+					scale = ( ConvertStringToIntMapping( DownOrRight ) ) / -maxValue;
 				}
-				yaw = gazAndYawValues * ( yawScale / NumberOfScale );
 			}
+			else
+			{
+				scale = 0;
+			}
+			return MaxSpeed * scale;
 		}
 		public void Stop()
 		{
 			XboxController.StopPolling();
 		}
 
-		internal bool ConvertStringToboolMapping( String Input )
+		float MaxValue()
+		{
+			float max = 1;
+			if ( usingTrigger )
+			{
+				max = 255f;
+				usingTrigger = false;
+			}
+			else if ( usingStick )
+			{
+				max = ushort.MaxValue - TriggerDeadZone/2;
+				usingStick = false;
+			}
+			return max;
+		}
+
+		void ResetUsingStickAndTrigger()
+		{
+			usingTrigger = false;
+			usingStick = false;
+		}
+
+		internal bool ConvertStringToBoolMapping( String Input )
 		{
 			switch ( Input )
 			{
@@ -194,30 +202,40 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				case "Y": ;
 					return _selectedController.IsYPressed;
 				case "Left Trigger": ;
+					usingTrigger = true;
 					return _selectedController.LeftTrigger > 0;
 				case "Right Trigger": ;
+					usingTrigger = true;
 					return _selectedController.RightTrigger > 0;
 				case "Left Shoulder": ;
 					return _selectedController.IsLeftShoulderPressed;
 				case "Right Shoulder": ;
 					return _selectedController.IsRightShoulderPressed;
 				case "Left Thumbstick Up": ;
+					usingStick = true;
 					return _selectedController.LeftThumbStick.Y > TriggerDeadZone;
 				case "Left Thumbstick Down": ;
+					usingStick = true;
 					return _selectedController.LeftThumbStick.Y < -TriggerDeadZone;
 				case "Left Thumbstick Left": ;
+					usingStick = true;
 					return _selectedController.LeftThumbStick.X < -TriggerDeadZone;
 				case "Left Thumbstick Right": ;
+					usingStick = true;
 					return _selectedController.LeftThumbStick.X > TriggerDeadZone;
 				case "Left Thumbstick Pression": ;
 					return _selectedController.IsLeftStickPressed;
 				case "Right Thumbstick Up": ;
+					usingStick = true;
 					return _selectedController.RightThumbStick.Y > TriggerDeadZone;
 				case "Right Thumbstick Down": ;
+					usingStick = true;
 					return _selectedController.RightThumbStick.Y < -TriggerDeadZone;
 				case "Right Thumbstick Left": ;
+					usingStick = true;
 					return _selectedController.RightThumbStick.X < -TriggerDeadZone;
 				case "Right Thumbstick Right": ;
+					usingStick = true;
 					return _selectedController.RightThumbStick.X > TriggerDeadZone;
 				case "Right Thumbstick Pression": ;
 					return _selectedController.IsRightStickPressed;
@@ -250,30 +268,40 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 				case "Y": ;
 					return _selectedController.IsYPressed ? 1 : 0;
 				case "Left Trigger": ;
+					usingTrigger = true;
 					return _selectedController.LeftTrigger;
 				case "Right Trigger": ;
+					usingTrigger = true;
 					return _selectedController.RightTrigger;
 				case "Left Shoulder": ;
 					return _selectedController.IsLeftShoulderPressed ? 1 : 0;
 				case "Right Shoulder": ;
 					return _selectedController.IsRightShoulderPressed ? 1 : 0;
 				case "Left Thumbstick Up": ;
+					usingStick = true;
 					return _selectedController.LeftThumbStick.Y > TriggerDeadZone ? _selectedController.LeftThumbStick.Y - TriggerDeadZone : 0;
 				case "Left Thumbstick Down": ;
-					return _selectedController.LeftThumbStick.Y < -TriggerDeadZone ? _selectedController.LeftThumbStick.Y - TriggerDeadZone : 0;
+					usingStick = true;
+					return _selectedController.LeftThumbStick.Y < -TriggerDeadZone ? _selectedController.LeftThumbStick.Y + TriggerDeadZone : 0;
 				case "Left Thumbstick Left": ;
-					return _selectedController.LeftThumbStick.X < -TriggerDeadZone ? _selectedController.LeftThumbStick.X - TriggerDeadZone : 0;
+					usingStick = true;
+					return _selectedController.LeftThumbStick.X < -TriggerDeadZone ? _selectedController.LeftThumbStick.X + TriggerDeadZone : 0;
 				case "Left Thumbstick Right": ;
+					usingStick = true;
 					return _selectedController.LeftThumbStick.X > TriggerDeadZone ? _selectedController.LeftThumbStick.X - TriggerDeadZone : 0;
 				case "Left Thumbstick Pression": ;
 					return _selectedController.IsLeftStickPressed ? 1 : 0;
 				case "Right Thumbstick Up": ;
+					usingStick = true;
 					return _selectedController.RightThumbStick.Y > TriggerDeadZone ? _selectedController.RightThumbStick.Y - TriggerDeadZone : 0;
 				case "Right Thumbstick Down": ;
+					usingStick = true;
 					return _selectedController.RightThumbStick.Y < -TriggerDeadZone ? _selectedController.RightThumbStick.Y + TriggerDeadZone : 0;
 				case "Right Thumbstick Left": ;
+					usingStick = true;
 					return _selectedController.RightThumbStick.X < -TriggerDeadZone ? _selectedController.RightThumbStick.X + TriggerDeadZone : 0;
 				case "Right Thumbstick Right": ;
+					usingStick = true;
 					return _selectedController.RightThumbStick.X > TriggerDeadZone ? _selectedController.RightThumbStick.X - TriggerDeadZone : 0;
 				case "Right Thumbstick Pression": ;
 					return _selectedController.IsRightStickPressed ? 1 : 0;

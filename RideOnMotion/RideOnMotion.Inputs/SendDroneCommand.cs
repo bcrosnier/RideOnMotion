@@ -55,7 +55,7 @@ namespace RideOnMotion.Inputs
 			float pitch = inputState.Pitch / 3.0f;
 			float yaw = inputState.Yaw / 2.0f;
 			float gaz = inputState.Gaz / 3.0f;
-			RelativeDirection = false;
+			RelativeDirection = true;
 			if ( RelativeDirection )
 			{
 				_drone.Navigate( roll, pitch, yaw, gaz );
