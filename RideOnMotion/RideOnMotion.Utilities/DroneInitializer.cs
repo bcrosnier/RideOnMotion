@@ -135,7 +135,7 @@ namespace RideOnMotion
 
 		private void droneControl_Error( object sender, DroneErrorEventArgs e )
 		{
-			Logger.Instance.NewEntry( CKLogLevel.Error, CKTraitTags.ARDrone, e.CausingException.Message );
+			Logger.Instance.NewEntry( CKLogLevel.Error, CKTraitTags.ARDrone, "DroneControl : "+ e.CausingException.Message );
 		}
 
 		private void timerVideoUpdate_Tick( object sender, EventArgs e )

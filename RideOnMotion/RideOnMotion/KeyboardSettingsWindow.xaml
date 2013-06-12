@@ -1,0 +1,79 @@
+﻿<Window x:Class="RideOnMotion.UI.KeyboardSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:RideOnMotion.UI"
+        Title="Keyboard settings" Height="320px" Width="500">
+    <Window.Resources>
+        <l:KeyToStringConverter x:Key="converter" />
+    </Window.Resources>
+    <DockPanel LastChildFill="True">
+        <DockPanel.Background>
+            <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+        </DockPanel.Background>
+        <StackPanel DockPanel.Dock="Bottom" Height="Auto" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
+            <Button Height="Auto" Width="Auto" Content="Restore defaults" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="ButtonRestoreDefaults_Click"/>
+            <Button Height="Auto" Width="48" Content="Apply" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonApply_Click"/>
+            <Button Height="Auto" Width="48" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonCancel_Click" />
+            <Button Height="Auto" Width="48" Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonOK_Click" />
+        </StackPanel>
+
+        <StackPanel Margin="3">
+            <GroupBox Header="Keyboard bindings" Padding="3">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0">Pitch up</Label>
+                    <Label Grid.Row="1" Grid.Column="0">Pitch down</Label>
+                    <Label Grid.Row="2" Grid.Column="0">Roll left</Label>
+                    <Label Grid.Row="3" Grid.Column="0">Roll right</Label>
+                    <Label Grid.Row="4" Grid.Column="0">Yaw left</Label>
+                    <Label Grid.Row="5" Grid.Column="0">Yaw right</Label>
+                    <Label Grid.Row="6" Grid.Column="0">Gaz up</Label>
+                    <Label Grid.Row="7" Grid.Column="0">Gaz down</Label>
+
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding PitchUpKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PitchDownKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding RollLeftKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding RollRightKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding YawLeftKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding YawRightKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding GazUpKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding GazDownKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+
+
+                    <Label Grid.Row="0" Grid.Column="2">Take off</Label>
+                    <Label Grid.Row="1" Grid.Column="2">Land</Label>
+                    <Label Grid.Row="2" Grid.Column="2">Toggle hovering</Label>
+                    <Label Grid.Row="3" Grid.Column="2">Switch cameras</Label>
+                    <Label Grid.Row="4" Grid.Column="2">Emergency stop</Label>
+                    <Label Grid.Row="5" Grid.Column="2">Flat trim</Label>
+                    <Label Grid.Row="6" Grid.Column="2">Special action!</Label>
+
+                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding TakeoffKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding LandKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding HoverKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding CameraSwapKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding EmergencyKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="5" Grid.Column="3" Text="{Binding FlatTrimKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                    <TextBox Grid.Row="6" Grid.Column="3" Text="{Binding SpecialActionKey, Converter={StaticResource converter}}" PreviewKeyDown="TextBox_KeyDownReplace" />
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+    </DockPanel>
+
+</Window>
