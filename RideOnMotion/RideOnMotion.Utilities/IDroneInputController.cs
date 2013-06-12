@@ -55,12 +55,6 @@ namespace RideOnMotion
         string InputStatusString { get; }
 
         /// <summary>
-        /// Set the drone controller linked to this input.
-        /// The IDroneController set here should be the one the commands are sent to.
-        /// </summary>
-        IDroneController ActiveDrone { set; }
-
-        /// <summary>
         /// A MenuItem to be displayed, if applicable. Can contain other elements and/or be null.
         /// </summary>
         MenuItem InputMenu { get; }
@@ -86,11 +80,6 @@ namespace RideOnMotion
         /// Also fired when the InputStatusString changed (<see cref="RideOnMotion.IDroneInputController.InputStatusString"/>).
         /// </summary>
         event EventHandler<DroneInputStatus> InputStatusChanged;
-
-		/// <summary>
-		/// Fired when the state of the input changed
-		/// </summary>
-		event EventHandler<bool[]> InputsStateChanged;
 
 		/// <summary>
 		/// Fired when there is activity on the controller

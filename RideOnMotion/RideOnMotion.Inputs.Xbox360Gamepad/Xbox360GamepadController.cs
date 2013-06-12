@@ -34,6 +34,8 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		bool usingStick;
 
 
+        public DroneCommand ActiveDrone;
+
 		public Xbox360GamepadController()
 		{
 		}

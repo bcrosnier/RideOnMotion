@@ -85,6 +85,7 @@ namespace RideOnMotion.UI
 
 		InputState _lastKeyboardInput;
 		InputState _lastGamepadInput;
+        InputState _lastKinectInput;
 
 		SendDroneCommand _sendDroneCommand;
 		public bool DroneOriginalOrientationSet;
@@ -345,10 +346,11 @@ namespace RideOnMotion.UI
 
 			_lastKeyboardInput = new InputState();
 			_lastGamepadInput = new InputState();
+            _lastKinectInput = new InputState();
             _keyboardController = new KeyboardController();
-            ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
 			_Xbox360Gamepad = new Xbox360GamepadController();
 			_Xbox360Gamepad.Start();
+            ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
 			DroneOrderTimer.Interval = new TimeSpan( 0, 0, 0,0,30 );
 			DroneOrderTimer.Tick += new EventHandler( OrderTheMotherfuckingDrone );
 			DroneOrderTimer.Start();
@@ -358,8 +360,9 @@ namespace RideOnMotion.UI
 		private void OrderTheMotherfuckingDrone( object sender, EventArgs e )
 		{
 			InputState newKeyboardInput = _keyboardController.GetCurrentControlInput(_lastKeyboardInput);
+            InputState newKinectInput = ((RideOnMotion.Inputs.Kinect.KinectSensorController)_inputController).GetCurrentControlInput(_lastKinectInput);
 			InputState newGamepadInput = _Xbox360Gamepad.GetCurrentControlInput( _lastGamepadInput );
-			if ( newGamepadInput != null || newKeyboardInput != null)
+			if ( newGamepadInput != null || newKeyboardInput != null || newKinectInput != null)
 			{
 				if ( newKeyboardInput != null )
 				{
@@ -369,7 +372,11 @@ namespace RideOnMotion.UI
 				{
 					_lastGamepadInput = newGamepadInput;
 				}
-				InputState MixedInput = SendDroneCommand.MixInput( _lastKeyboardInput, _lastGamepadInput );
+                if ( newKinectInput != null )
+                {
+                    _lastKinectInput = newKinectInput;
+                }
+				InputState MixedInput = SendDroneCommand.MixInput( _lastKeyboardInput, _lastGamepadInput, _lastKinectInput );
 				if ( MixedInput != null )
 				{
 					_sendDroneCommand.Process( MixedInput );
@@ -486,7 +493,6 @@ namespace RideOnMotion.UI
                 _inputController.InputImageSourceChanged -= OnInputBitmapSourceChanged;
                 _inputController.InputStatusChanged -= OnInputStatusChanged;
 				_inputController.ControllerActivity -= OnControllerActivity;
-				_inputController.InputsStateChanged -= OnInputsStateChanged;
                 _inputStatusInfo = "";
                 this.OnNotifyPropertyChange( "InputStatusInfo" );
                 this._inputController = null;
@@ -504,55 +510,7 @@ namespace RideOnMotion.UI
 
 			// Bind activity
 			_inputController.ControllerActivity += OnControllerActivity;
-			_inputController.InputsStateChanged += OnInputsStateChanged;
-			_inputController.SecurityModeChanged += OnSecurityModeNeeded;
         }
-
-		private void OnSecurityModeNeeded( object sender, int e )
-		{
-			switch( e )
-			{
-				case 0:
-					_droneInit.DroneCommand.LeaveHoverMode();
-					break;
-				case 1:
-					_droneInit.DroneCommand.EnterHoverMode();
-					break;
-				case 2:
-					_droneInit.DroneCommand.Land();
-					break;
-                case 3:
-                    _droneInit.DroneCommand.Takeoff();
-                    break;
-				default:
-					_droneInit.DroneCommand.Land();
-					break;
-			}
-		}
-		void OnInputsStateChanged( object sender, bool[] e )
-		{
-			DroneCommandProcessing( e );
-		}
-		/// <summary>
-		/// Control Navigation of the drone
-		/// </summary>
-		/// <param name="CurrentInputState">Must contains 8 bool value for pitch[0-1], roll[2-3], gaz[4-5], yaw[6-7] (for the AR Drone) </param>
-		public void DroneCommandProcessing( bool[] CurrentInputState )
-		{
-
-			float roll = 0; // = CurrentInputState[2-3];
-			float pitch = 0; // = CurrentInputState[0-1];
-			float yaw = 0; // = CurrentInputState[6-7];
-			float gaz = 0; // = CurrentInputState[4-5];
-
-            if ( CurrentInputState[2] ) { roll = -_droneTranslationSpeed; } else if ( CurrentInputState[3] ) { roll = _droneTranslationSpeed; }
-            if ( CurrentInputState[0] ) { pitch = -_droneTranslationSpeed; } else if ( CurrentInputState[1] ) { pitch = _droneTranslationSpeed; }
-            if ( CurrentInputState[6] ) { yaw = -_droneRotationSpeed; } else if ( CurrentInputState[7] ) { yaw = _droneRotationSpeed; }
-            if ( CurrentInputState[4] ) { gaz = _droneElevationSpeed; } else if ( CurrentInputState[5] ) { gaz = -_droneElevationSpeed; }
-
-			_droneInit.DroneCommand.Navigate( roll, pitch, yaw, gaz );
-
-		}
 
 		public void OnControllerActivity(object sender, bool e)
 		{
@@ -593,6 +551,10 @@ namespace RideOnMotion.UI
 
 			_sendDroneCommand = new SendDroneCommand();
 			_sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
+
+            _Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
+            _keyboardController.ActiveDrone = _droneInit.DroneCommand;
+            ( (RideOnMotion.Inputs.Kinect.KinectSensorController)_inputController ).ActiveDrone = _droneInit.DroneCommand;
         }
 
 		void OnOrientationChange( object sender, DroneDataReadyEventArgs e )

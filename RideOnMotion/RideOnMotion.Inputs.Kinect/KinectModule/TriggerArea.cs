@@ -9,131 +9,84 @@ using System.Windows;
 namespace RideOnMotion.Inputs.Kinect
 {
     /// <summary>
-    /// Trigger zone, reprensenting 4 overlayed TriggerButtons as sides of a square.
+    /// Trigger area, representing a space to move a hand in.
     /// Centered in a given area.
     /// </summary>
     internal class TriggerArea
     {
-        public enum Buttons { Up = 0, Down = 1, Left = 2, Right = 3 };
+        public enum Buttons { Center = 0 };
 
         public int AreaWidth { get; private set; }
         public int AreaHeight { get; private set; }
         public int OffsetX { get; private set; }
         public int OffsetY { get; private set; }
-        public int ButtonWidth { get; private set; }
-        public int ButtonHeight { get; private set; }
+        public int DeadZoneWidth { get; private set; }
+        public int DeadZoneHeight { get; private set; }
 
-        public ICaptionArea LeftButton { get { return this.TriggerCaptionsCollection[Buttons.Left]; } }
-        public ICaptionArea RightButton { get { return this.TriggerCaptionsCollection[Buttons.Right]; } }
-        public ICaptionArea UpButton { get { return this.TriggerCaptionsCollection[Buttons.Up]; } }
-        public ICaptionArea DownButton { get { return this.TriggerCaptionsCollection[Buttons.Down]; } }
+        public ICaptionArea CenterButton { get; private set; }
 
-        public Dictionary<Buttons, ICaptionArea> TriggerCaptionsCollection { get; private set; }
+        public Dictionary<Buttons, ICaptionArea> DeadZoneCaptionsCollection { get; private set; }
 
 		//private Action Quack;
 
         /// <summary>
-        /// Create a trigger area, with 4 triggerable captions.
+        /// Create a trigger area, containing a triggerable dead zone.
         /// </summary>
-        /// <param name="areaWidth">Total width of the zone to use ; area will be centered in it.</param>
-        /// <param name="areaHeight">Total height of the zone to use ; area will be centered in it.</param>
-        /// <param name="offsetX">X offset to all buttons</param>
-        /// <param name="offsetY">Y offset to all buttons</param>
-        /// <param name="buttonWidth">Width of each button. Side size of the area.</param>
-        /// <param name="buttonHeight">Height of each button; "thickness" of the area.</param>
-		/// <param name="position">True if the trigger area is on the left, false if it is on the right</param>
-        public TriggerArea( int areaWidth, int areaHeight, int offsetX, int offsetY, int buttonWidth, int buttonHeight, bool position )
+        /// <param name="areaWidth">Total width of the area to use ; dead zone will be centered in it.</param>
+        /// <param name="areaHeight">Total height of the area to use ; dead zone will be centered in it.</param>
+        /// <param name="offsetX">X offset to the area</param>
+        /// <param name="offsetY">Y offset to the area</param>
+        /// <param name="deadZoneWidth">Width of each button. Side size of the area.</param>
+        /// <param name="deadZoneHeight">Height of each button; "thickness" of the area.</param>
+		/// <param name="isLeftArea">True if the trigger area is on the left, false if it is on the right</param>
+        public TriggerArea( int areaWidth, int areaHeight, int offsetX, int offsetY, int deadZoneWidth, int deadZoneHeight, bool isLeftArea )
         {
             this.AreaHeight = areaHeight;
             this.AreaWidth = areaWidth;
             this.OffsetX = offsetX;
             this.OffsetY = offsetY;
-            this.ButtonWidth = buttonWidth;
-            this.ButtonHeight = buttonHeight;
+            this.DeadZoneWidth = deadZoneWidth;
+            this.DeadZoneHeight = deadZoneHeight;
 
-            this.TriggerCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
+            this.DeadZoneCaptionsCollection = new Dictionary<Buttons, ICaptionArea>();
 
 			//Quack = new Action( () => {
 			//	System.Media.SoundPlayer sp = new System.Media.SoundPlayer( RideOnMotion.Inputs.Kinect.Properties.Resources.quack );
 			//	sp.Play();
 			//} );
 
-            generateButtonCaptions(position);
+            generateButtonCaptions(isLeftArea);
         }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="position">Specify if the buttons are on the left (true) or on the right (false)</param>
-        public void generateButtonCaptions( bool position)
+		/// <param name="isLeftArea">Specify if the buttons are on the left (true) or on the right (false)</param>
+        public void generateButtonCaptions( bool isLeftArea )
         {
-			int up = 0;
-			int down = 0;
-			int left = 0;
-			int right = 0;
+            int center = 0;
 
-			if ( position )
+			if ( isLeftArea )
 			{
-				up = 1;
-				down = 2;
-				left = 4;
-				right = 8;
+				center = 1;
 			}
-			else if ( !position )
+			else if ( !isLeftArea )
 			{
-				up = 16;
-				down = 32;
-				left = 64;
-				right = 128;
+				center = 2;
 			}
-            int horizontalMargin = ( AreaWidth - ButtonWidth ) / 2;
-            int verticalMargin = ( AreaHeight - ButtonWidth ) / 2;
+            int horizontalMargin = AreaWidth / 2 - DeadZoneWidth / 2;
+            int verticalMargin = AreaHeight / 2 - DeadZoneHeight / 2;
 
-            ICaptionArea upCaption = createCaptionArea(
-                "Up button",
+            ICaptionArea centerCaption = createCaptionArea(
+                "Center button",
                 OffsetX + horizontalMargin,
                 OffsetY + verticalMargin,
-                ButtonWidth,
-                ButtonHeight,
-				up
+                DeadZoneWidth,
+                DeadZoneHeight,
+				center
             );
 
-            ICaptionArea leftCaption = createCaptionArea(
-                "Left button",
-                OffsetX + horizontalMargin,
-                OffsetY + verticalMargin,
-                ButtonHeight,
-                ButtonWidth,
-				left
-            );
-
-            ICaptionArea downCaption = createCaptionArea(
-                "Down button",
-                OffsetX + horizontalMargin,
-                OffsetY + verticalMargin + ButtonWidth - ButtonHeight,
-                ButtonWidth,
-                ButtonHeight,
-				down
-            );
-
-            ICaptionArea rightCaption = createCaptionArea(
-                "Right button",
-                OffsetX + horizontalMargin + ButtonWidth - ButtonHeight,
-                OffsetY + verticalMargin,
-                ButtonHeight,
-                ButtonWidth,
-				right
-            );
-
-			//((CaptionArea)upCaption).AddFunction( Quack );
-			//((CaptionArea)downCaption).AddFunction( Quack );
-			//((CaptionArea)leftCaption).AddFunction( Quack );
-			//((CaptionArea)rightCaption).AddFunction( Quack );
-
-            TriggerCaptionsCollection.Add( Buttons.Up, upCaption );
-            TriggerCaptionsCollection.Add( Buttons.Down, downCaption );
-            TriggerCaptionsCollection.Add( Buttons.Left, leftCaption );
-            TriggerCaptionsCollection.Add( Buttons.Right, rightCaption );
+            DeadZoneCaptionsCollection.Add( Buttons.Center, centerCaption );
 
             // Fire stuff to update rectangles here. --BC
         }
