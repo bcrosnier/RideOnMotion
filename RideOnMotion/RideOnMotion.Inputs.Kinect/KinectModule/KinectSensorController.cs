@@ -194,8 +194,6 @@ namespace RideOnMotion.Inputs.Kinect
         /// </summary>
         private bool _leftGrip = false;
         private bool _rightGrip = false;
-        private bool _lastLeftGrip = false;
-        private bool _lastRightGrip = false;
         private bool _operatorLost = false;
         private bool _lastOperatorLost = false;
 
@@ -400,9 +398,9 @@ namespace RideOnMotion.Inputs.Kinect
 			this._inputState = new InputState();
 
             this.InputUIControl = new KinectSensorControllerUI( this );
-            ReleaseLeftHand.Interval = new TimeSpan( 0, 0, 1 );
+            ReleaseLeftHand.Interval = new TimeSpan( 0, 0, 2 );
             ReleaseLeftHand.Tick += new EventHandler( OnReleaseLeftHand );
-            ReleaseRightHand.Interval = new TimeSpan( 0, 0, 1 );
+            ReleaseRightHand.Interval = new TimeSpan( 0, 0, 2 );
             ReleaseRightHand.Tick += new EventHandler( OnReleaseRightHand );
 
         }
@@ -834,6 +832,8 @@ namespace RideOnMotion.Inputs.Kinect
 					_skeletonFound = false;
                     SafetyModeCheck( null );
 				}
+				_leftGrip = false;
+				_rightGrip = false;
 			}
 			else
 			{
@@ -841,6 +841,8 @@ namespace RideOnMotion.Inputs.Kinect
 				{
 					_skeletonFound = false;
 				}
+				_leftGrip = false;
+				_rightGrip = false;
 			}
 		}
 
@@ -1195,23 +1197,13 @@ namespace RideOnMotion.Inputs.Kinect
                 hover = true;
                 _lastOperatorLost = false;
             }
-            if ( _leftGrip && !_lastLeftGrip && !_rightGrip && ActiveDrone.CanLand )
+            if ( _leftGrip && !_rightGrip && ActiveDrone.CanLand )
             {
                 land = true;
-				_lastLeftGrip = true;
             }
-			else if ( !_leftGrip && _lastLeftGrip )
-			{
-				_lastLeftGrip = false;
-			}
-            if (_rightGrip&& !_lastRightGrip && !_leftGrip && ActiveDrone.CanTakeoff)
+            if (_rightGrip && !_leftGrip && ActiveDrone.CanTakeoff)
             {
                 takeOff = true;
-				_lastLeftGrip = true;
-			}
-			else if ( !_rightGrip && _lastRightGrip )
-			{
-				_lastRightGrip = false;
 			}
         }
     }
