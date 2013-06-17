@@ -350,6 +350,7 @@ namespace RideOnMotion.UI
             _keyboardController = new KeyboardController();
 			_Xbox360Gamepad = new Xbox360GamepadController();
 			_Xbox360Gamepad.Start();
+			_Xbox360Gamepad.StartMappingForDrone();
             ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
 			DroneOrderTimer.Interval = new TimeSpan( 0, 0, 0,0,30 );
 			DroneOrderTimer.Tick += new EventHandler( OrderTheMotherfuckingDrone );
@@ -524,6 +525,7 @@ namespace RideOnMotion.UI
                 _droneSettingsWindow.Close();
             }
             this._inputController.Stop();
+			this._Xbox360Gamepad.StopMappingForDrone();
 			this._Xbox360Gamepad.Stop();
 
             DisconnectDrone(this._droneInit);

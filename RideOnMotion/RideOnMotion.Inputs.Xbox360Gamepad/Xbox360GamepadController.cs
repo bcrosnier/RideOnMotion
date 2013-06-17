@@ -32,6 +32,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 
 		bool usingTrigger;
 		bool usingStick;
+		String InputString;
 
 
         public DroneCommand ActiveDrone;
@@ -43,27 +44,148 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		public void Start()
 		{
 			_selectedController = XboxController.RetrieveController( 0 );
-			_selectedController.StateChanged += SelectedController_StateChanged;
 			XboxController.StartPolling();
+		}
+
+		public void Stop()
+		{
+			XboxController.StopPolling();
+		}
+
+		public void StartMappingForDrone()
+		{
+			_selectedController.StateChanged += SelectedController_StateChanged;
+		}
+
+		public void StopMappingForDrone()
+		{
+			_selectedController.StateChanged -= SelectedController_StateChanged;
+		}
+
+		public void StartMappingForSettings()
+		{
+			_selectedController.StateChanged += SelectedController_SettingsStateChanged;
+		}
+
+		public void StopMappingForSettings()
+		{
+			_selectedController.StateChanged -= SelectedController_SettingsStateChanged;
+		}
+
+		private void SelectedController_SettingsStateChanged( object sender, XboxControllerStateChangedEventArgs e )
+		{
+			InputString = MapSettings();
+		}
+
+		private string MapSettings()
+		{
+			String Input = null;
+			if ( _selectedController.IsBackPressed )
+			{
+				return "Back";
+			}
+			else if ( _selectedController.IsBackPressed )
+			{
+				return "Back";
+			}
+			else if ( _selectedController.IsStartPressed )
+			{
+				return "Start";
+			}
+			else if ( _selectedController.IsAPressed )
+			{
+				return "A";
+			}
+			else if ( _selectedController.IsBPressed )
+			{
+				return "B";
+			}
+			else if ( _selectedController.IsXPressed )
+			{
+				return "X";
+			}
+			else if ( _selectedController.IsYPressed )
+			{
+				return "Y";
+			}
+			else if ( _selectedController.LeftTrigger > 0 )
+			{
+				return "Left Trigger";
+			}
+			else if ( _selectedController.RightTrigger > 0 )
+			{
+				return "Right Trigger";
+			}
+			else if ( _selectedController.IsLeftShoulderPressed )
+			{
+				return "Left Shoulder";
+			}
+			else if ( _selectedController.IsRightShoulderPressed )
+			{
+				return "Right Shoulder";
+			}
+			else if ( _selectedController.LeftThumbStick.Y > TriggerDeadZone )
+			{
+				return "Left Thumbstick Up";
+			}
+			else if ( _selectedController.LeftThumbStick.Y < -TriggerDeadZone )
+			{
+				return "Left Thumbstick Down";
+			}
+			else if ( _selectedController.LeftThumbStick.X < -TriggerDeadZone )
+			{
+				return "Left Thumbstick Left";
+			}
+			else if ( _selectedController.LeftThumbStick.X > TriggerDeadZone )
+			{
+				return "Left Thumbstick Right";
+			}
+			else if ( _selectedController.IsLeftStickPressed )
+			{
+				return "Left Thumbstick Pression";
+			}
+			else if ( _selectedController.RightThumbStick.Y > TriggerDeadZone )
+			{
+				return "Right Thumbstick Up";
+			}
+			else if ( _selectedController.RightThumbStick.Y < -TriggerDeadZone )
+			{
+				return "Right Thumbstick Down";
+			}
+			else if ( _selectedController.RightThumbStick.X < -TriggerDeadZone )
+			{
+				return "Right Thumbstick Left";
+			}
+			else if ( _selectedController.RightThumbStick.X > TriggerDeadZone )
+			{
+				return "Right Thumbstick Right";
+			}
+			else if ( _selectedController.IsRightStickPressed )
+			{
+				return "Right Thumbstick Pression";
+			}
+			else if ( _selectedController.IsDPadUpPressed )
+			{
+				return "Directionnal Pad Up";
+			}
+			else if ( _selectedController.IsDPadDownPressed )
+			{
+				return "Directionnal Pad Down";
+			}
+			else if ( _selectedController.IsDPadLeftPressed )
+			{
+				return "Directionnal Pad Left";
+			}
+			else if ( _selectedController.IsDPadRightPressed )
+			{
+				return "Directionnal Pad Right";
+			}
+			return Input;
 		}
 
 		private void SelectedController_StateChanged( object sender, XboxControllerStateChangedEventArgs e )
 		{
 			MapInput();
-		}
-
-		public InputState GetCurrentControlInput(InputState _lastInputState)
-		{
-			if ( roll != _lastInputState.Roll || pitch != _lastInputState.Pitch || yaw != _lastInputState.Yaw || gaz != _lastInputState.Gaz || cameraSwap != _lastInputState.CameraSwap || takeOff != _lastInputState.TakeOff ||
-				land != _lastInputState.Land || hover != _lastInputState.Hover || emergency != _lastInputState.Emergency || flatTrim != _lastInputState.FlatTrim || specialActionButton != _lastInputState.SpecialAction )
-			{
-				InputState newInputState = new InputState( roll, pitch, yaw, gaz, cameraSwap, takeOff, land, hover, emergency, flatTrim, specialActionButton );
-				return newInputState;
-			}
-			else
-			{
-				return null;
-			}
 		}
 			
 		internal void MapInput()
@@ -160,10 +282,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 			}
 			return MaxSpeed * scale;
 		}
-		public void Stop()
-		{
-			XboxController.StopPolling();
-		}
 
 		float MaxValue()
 		{
@@ -185,6 +303,20 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		{
 			usingTrigger = false;
 			usingStick = false;
+		}
+
+		public InputState GetCurrentControlInput(InputState _lastInputState)
+		{
+			if ( roll != _lastInputState.Roll || pitch != _lastInputState.Pitch || yaw != _lastInputState.Yaw || gaz != _lastInputState.Gaz || cameraSwap != _lastInputState.CameraSwap || takeOff != _lastInputState.TakeOff ||
+				land != _lastInputState.Land || hover != _lastInputState.Hover || emergency != _lastInputState.Emergency || flatTrim != _lastInputState.FlatTrim || specialActionButton != _lastInputState.SpecialAction )
+			{
+				InputState newInputState = new InputState( roll, pitch, yaw, gaz, cameraSwap, takeOff, land, hover, emergency, flatTrim, specialActionButton );
+				return newInputState;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		internal bool ConvertStringToBoolMapping( String Input )
@@ -253,6 +385,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 					return false;
 			}
 		}
+
 		internal int ConvertStringToIntMapping( String Input )
 		{
 			switch ( Input )
