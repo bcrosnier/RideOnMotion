@@ -11,7 +11,6 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 		XboxController _selectedController;
 
 		readonly float MaxSpeed = 1f;
-		readonly float NavigationValue2 = 1f;
 		readonly int TriggerDeadZone = 4096;
 		readonly int TriggerReactionscale = 2048;
 		readonly float NumberOfScale = 14f;
@@ -243,7 +242,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 
 		public float SetValueBasedOnInput(String UpOrLeft, String DownOrRight)
 		{
-			float scale = 14;
+			float scale = NumberOfScale;
 			ResetUsingStickAndTrigger();
 			if ( ConvertStringToBoolMapping( UpOrLeft ) && ConvertStringToBoolMapping(  DownOrRight ) )
 			{
@@ -254,7 +253,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 			{
 				if ( usingStick )
 				{
-					scale = ( ( ConvertStringToIntMapping( UpOrLeft ) - 1 ) / TriggerReactionscale ) / 14f;
+					scale = ( ( ConvertStringToIntMapping( UpOrLeft ) - 1 ) / TriggerReactionscale ) / NumberOfScale;
 					ResetUsingStickAndTrigger();
 				}
 				else
@@ -267,7 +266,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 			{
 				if ( usingStick )
 				{
-					scale = ( ( ConvertStringToIntMapping( DownOrRight ) + 1 ) / TriggerReactionscale ) / 14f;
+					scale = ( ( ConvertStringToIntMapping( DownOrRight ) + 1 ) / TriggerReactionscale ) / NumberOfScale;
 					ResetUsingStickAndTrigger();
 				}
 				else
