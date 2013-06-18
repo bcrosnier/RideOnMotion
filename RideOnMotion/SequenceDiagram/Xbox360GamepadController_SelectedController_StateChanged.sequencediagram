@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SequenceDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" dslVersion="1.0.0.0" Id="be3a35c6-019d-48e4-9b7e-5b9b176af915" name="Xbox360GamepadController_SelectedController_StateChanged" mode="DotNet" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner">
+  <packagedElements>
+    <packageHasNamedElement>
+      <interaction Id="db056cac-e37d-4829-a531-337ace85e5d3" name="Xbox360GamepadController_SelectedController_StateChanged" collapseFragmentsFlag="false" isActiveClass="false" isAbstract="false" isLeaf="false" isReentrant="false">
+        <fragments>
+          <behaviorExecutionSpecification Id="67f8d1c2-574a-4d21-917e-f2270fffe5dc" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="f72074d9-2df1-4134-925f-543e13ff4e94" LastKnownName="this : Xbox360GamepadController" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="c849dd77-0bf6-44d9-be71-1ac20273fb9d" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="af78666f-5ccd-49c3-a4ee-c0249ca10153" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="ea24de6b-b4b8-4dcd-9a26-ea8979b0f8a6" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="7ce69d0a-b824-4540-b01b-c6387b81ec46" LastKnownName="MessageOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="9697cc3d-685d-4969-9dd9-c773dd0ca7bc" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="7e1a49ff-9766-495e-9bf8-ed597621a8d9" LastKnownName="ExecutionOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="af78666f-5ccd-49c3-a4ee-c0249ca10153" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="f99edd0f-74f5-4326-910f-5e8a5d1c8f64" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="f72074d9-2df1-4134-925f-543e13ff4e94" LastKnownName="this : Xbox360GamepadController" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <lostFoundTarget Id="6bbe825a-d340-4a56-a0f4-911759a4e1d1" name="LostFoundTarget" />
+          <messageOccurrenceSpecification Id="ea24de6b-b4b8-4dcd-9a26-ea8979b0f8a6" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="f72074d9-2df1-4134-925f-543e13ff4e94" LastKnownName="this : Xbox360GamepadController" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="7ce69d0a-b824-4540-b01b-c6387b81ec46" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="f72074d9-2df1-4134-925f-543e13ff4e94" LastKnownName="this : Xbox360GamepadController" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification Id="8a072f23-041b-4aab-8e3e-1f07acd626c2" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="f72074d9-2df1-4134-925f-543e13ff4e94" LastKnownName="this : Xbox360GamepadController" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="7e1a49ff-9766-495e-9bf8-ed597621a8d9" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="9697cc3d-685d-4969-9dd9-c773dd0ca7bc" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="030f9921-2ded-4961-a51f-69f945ba0420" LastKnownName="MessageOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="9697cc3d-685d-4969-9dd9-c773dd0ca7bc" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="48050b27-5bd2-4415-ba52-a0aafa1e08cc" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="f72074d9-2df1-4134-925f-543e13ff4e94" LastKnownName="this : Xbox360GamepadController" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="030f9921-2ded-4961-a51f-69f945ba0420" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="f72074d9-2df1-4134-925f-543e13ff4e94" LastKnownName="this : Xbox360GamepadController" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="7e1a49ff-9766-495e-9bf8-ed597621a8d9" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="8af1e2a9-4ebf-43ca-b98c-7a663e1a7377" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="f72074d9-2df1-4134-925f-543e13ff4e94" LastKnownName="this : Xbox360GamepadController" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="c849dd77-0bf6-44d9-be71-1ac20273fb9d" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="c2b1eeb4-9efa-4ce5-b64c-e6e892020b0e" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="f72074d9-2df1-4134-925f-543e13ff4e94" LastKnownName="this : Xbox360GamepadController" />
+            </covered>
+          </executionOccurrenceSpecification>
+        </fragments>
+        <lifelines>
+          <lifeline Id="f72074d9-2df1-4134-925f-543e13ff4e94" name="this : Xbox360GamepadController" isActor="false" lifelineDisplayName="this : Xbox360GamepadController" referencedInstance="(Assembly=$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri) Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=Xbox360GamepadController ObjectInstance=&quot;Object instance 3&quot;)" referencedType="RideOnMotion‎.Inputs‎.Xbox360Gamepad‎.Xbox360GamepadController">
+            <referencesInternal>
+              <reference Id="9ee3d0c2-ffac-41e2-a508-76ddeaa6decb" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs.Xbox360Gamepad)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=Xbox360GamepadController)&quot;)" tag="DGQL" />
+              <reference Id="83350dba-6c40-46ad-918c-763451d00177" handle="(Assembly=&quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=Xbox360GamepadController)" tag="DGML" />
+            </referencesInternal>
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker Id="af78666f-5ccd-49c3-a4ee-c0249ca10153" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="c849dd77-0bf6-44d9-be71-1ac20273fb9d" LastKnownName="ExecutionOccurrenceSpecification" />
+            </topLevelOccurrences>
+          </lifeline>
+        </lifelines>
+        <messages>
+          <message Id="836199dc-9cd3-4380-be88-08f1149da581" name="SelectedController_StateChanged" messageKind="Found" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="15bf4483-449f-4e23-acdc-1d39f7eebfab" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs.Xbox360Gamepad)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=Xbox360GamepadController)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=Xbox360GamepadController Member=(Name=SelectedController_StateChanged OverloadingParameters=[(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&amp;quot; Namespace=System Type=Object),(Assembly=&amp;quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=XboxControllerStateChangedEventArgs)]))&quot;)" tag="DGQL" />
+              <reference Id="93e0b64b-caa1-481f-a7f2-b7d07ad1a655" handle="(Assembly=&quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=Xbox360GamepadController Member=(Name=SelectedController_StateChanged OverloadingParameters=[(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&quot; Namespace=System Type=Object),(Assembly=&quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=XboxControllerStateChangedEventArgs)]))" tag="DGML" />
+            </referencesInternal>
+            <sendEvent>
+              <lostFoundTargetMoniker Id="6bbe825a-d340-4a56-a0f4-911759a4e1d1" LastKnownName="LostFoundTarget" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="ea24de6b-b4b8-4dcd-9a26-ea8979b0f8a6" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="762dba55-9634-4d55-b2fd-228a4fb8108e" name="MapInput" messageKind="Complete" messageSort="SynchCall" createSelfMessage="true" signatureText="MapInput()">
+            <referencesInternal>
+              <reference Id="e6a52571-d100-4765-83f6-78c3d2790c95" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs.Xbox360Gamepad)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=Xbox360GamepadController)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=Xbox360GamepadController Member=MapInput)&quot;)" tag="DGQL" />
+              <reference Id="0f2fdfcc-7665-4cc9-b998-0724eca0ee16" handle="(Assembly=&quot;$(146bcdf6-0354-4401-bbdd-57a52d2598a6.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs.Xbox360Gamepad Type=Xbox360GamepadController Member=MapInput)" tag="DGML" />
+            </referencesInternal>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="7ce69d0a-b824-4540-b01b-c6387b81ec46" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="030f9921-2ded-4961-a51f-69f945ba0420" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+        </messages>
+      </interaction>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="f99edd0f-74f5-4326-910f-5e8a5d1c8f64" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="c2b1eeb4-9efa-4ce5-b64c-e6e892020b0e" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="48050b27-5bd2-4415-ba52-a0aafa1e08cc" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="8af1e2a9-4ebf-43ca-b98c-7a663e1a7377" name="ExecutionEvent" />
+    </packageHasNamedElement>
+  </packagedElements>
+</SequenceDesignerModel>

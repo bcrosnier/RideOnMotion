@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SequenceDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" dslVersion="1.0.0.0" Id="ccc7fa74-3c9a-4b73-abbc-f07642689e9b" name="KeyboardController_ProcessKeyDown" mode="DotNet" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner">
+  <packagedElements>
+    <packageHasNamedElement>
+      <interaction Id="b7fb7e5f-bad4-4cd8-8426-94c3bdf2b30a" name="KeyboardController_ProcessKeyDown" collapseFragmentsFlag="false" isActiveClass="false" isAbstract="false" isLeaf="false" isReentrant="false">
+        <fragments>
+          <behaviorExecutionSpecification Id="9d85e5a2-2598-44de-9718-60b03bc62097" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" LastKnownName="this : KeyboardController" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="33ee4c93-28f9-418e-a8f0-0acd61af3d29" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="3fb216d0-3f3b-4ca3-abcb-1b86b7a91d1a" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="cc44c049-7eea-46bf-8510-e148d1bc6942" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="e04b228b-ee7f-4cdb-82e9-e03a75b4121b" LastKnownName="MessageOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="a6b6781d-30c0-4a56-abfe-ce874f325b4a" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="47e85137-2cc1-4a2e-b98a-12ab3d11d002" LastKnownName="ExecutionOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="3fb216d0-3f3b-4ca3-abcb-1b86b7a91d1a" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="04a32e1e-019e-45d6-9b6c-0aa5f971c397" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" LastKnownName="this : KeyboardController" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <lostFoundTarget Id="291a920c-0f3a-4245-be7f-e763af792d0c" name="LostFoundTarget" />
+          <messageOccurrenceSpecification Id="cc44c049-7eea-46bf-8510-e148d1bc6942" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" LastKnownName="this : KeyboardController" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="e04b228b-ee7f-4cdb-82e9-e03a75b4121b" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" LastKnownName="this : KeyboardController" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <behaviorExecutionSpecification Id="e1c30d5f-dea4-41f3-94ed-625d7569e62b" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" LastKnownName="this : KeyboardController" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="47e85137-2cc1-4a2e-b98a-12ab3d11d002" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="a6b6781d-30c0-4a56-abfe-ce874f325b4a" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="6d394e67-a713-48b0-81a1-36761156dbf3" LastKnownName="MessageOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="a6b6781d-30c0-4a56-abfe-ce874f325b4a" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="e6abb197-812a-422b-a662-abdaa9fa6b14" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" LastKnownName="this : KeyboardController" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="6d394e67-a713-48b0-81a1-36761156dbf3" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" LastKnownName="this : KeyboardController" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="47e85137-2cc1-4a2e-b98a-12ab3d11d002" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="92c43eb7-d6c0-411c-bc85-bebd576c6939" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" LastKnownName="this : KeyboardController" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="33ee4c93-28f9-418e-a8f0-0acd61af3d29" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="7cc5d787-5260-4cd6-b8a0-949d55fa3a4c" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" LastKnownName="this : KeyboardController" />
+            </covered>
+          </executionOccurrenceSpecification>
+        </fragments>
+        <lifelines>
+          <lifeline Id="ca21e845-f4db-4c9c-b742-4cb1189aedfc" name="this : KeyboardController" isActor="false" lifelineDisplayName="this : KeyboardController" referencedInstance="(Assembly=$(1939fa1b-04f0-429b-a575-ee75114b365c.OutputPathUri) Namespace=RideOnMotion.Inputs.Keyboard Type=KeyboardController ObjectInstance=&quot;Object instance 2&quot;)" referencedType="RideOnMotion‎.Inputs‎.Keyboard‎.KeyboardController">
+            <referencesInternal>
+              <reference Id="3e76e4ff-1936-4c20-9495-251242ad26a4" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs.Keyboard)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(1939fa1b-04f0-429b-a575-ee75114b365c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Keyboard Type=KeyboardController)&quot;)" tag="DGQL" />
+              <reference Id="5b54c408-14b2-4460-9a04-da407239f892" handle="(Assembly=&quot;$(1939fa1b-04f0-429b-a575-ee75114b365c.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs.Keyboard Type=KeyboardController)" tag="DGML" />
+            </referencesInternal>
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker Id="3fb216d0-3f3b-4ca3-abcb-1b86b7a91d1a" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="33ee4c93-28f9-418e-a8f0-0acd61af3d29" LastKnownName="ExecutionOccurrenceSpecification" />
+            </topLevelOccurrences>
+          </lifeline>
+        </lifelines>
+        <messages>
+          <message Id="7b319ab9-6597-43b1-ac84-4742b202c749" name="ProcessKeyDown" messageKind="Found" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="ddd77c68-56cd-40cf-bae3-066a8b854ed3" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs.Keyboard)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(1939fa1b-04f0-429b-a575-ee75114b365c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Keyboard Type=KeyboardController)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(1939fa1b-04f0-429b-a575-ee75114b365c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Keyboard Type=KeyboardController Member=(Name=ProcessKeyDown OverloadingParameters=[(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/PresentationCore.dll&amp;quot; Namespace=System.Windows.Input Type=KeyEventArgs)]))&quot;)" tag="DGQL" />
+              <reference Id="d7746df4-f086-4fdb-97b6-5b1d281b37b8" handle="(Assembly=&quot;$(1939fa1b-04f0-429b-a575-ee75114b365c.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs.Keyboard Type=KeyboardController Member=(Name=ProcessKeyDown OverloadingParameters=[(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/PresentationCore.dll&quot; Namespace=System.Windows.Input Type=KeyEventArgs)]))" tag="DGML" />
+            </referencesInternal>
+            <sendEvent>
+              <lostFoundTargetMoniker Id="291a920c-0f3a-4245-be7f-e763af792d0c" LastKnownName="LostFoundTarget" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="cc44c049-7eea-46bf-8510-e148d1bc6942" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="a7e5556f-a0ce-4982-bb11-f4ad372bc4d8" name="MapInput" messageKind="Complete" messageSort="SynchCall" createSelfMessage="true" signatureText="MapInput()">
+            <referencesInternal>
+              <reference Id="32c1b8b0-a70c-4dd1-b562-75cc28226c77" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs.Keyboard)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(1939fa1b-04f0-429b-a575-ee75114b365c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Keyboard Type=KeyboardController)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(1939fa1b-04f0-429b-a575-ee75114b365c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs.Keyboard Type=KeyboardController Member=MapInput)&quot;)" tag="DGQL" />
+              <reference Id="0d4b175b-b071-444d-bbbc-06d5d7bd8fcc" handle="(Assembly=&quot;$(1939fa1b-04f0-429b-a575-ee75114b365c.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs.Keyboard Type=KeyboardController Member=MapInput)" tag="DGML" />
+            </referencesInternal>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="e04b228b-ee7f-4cdb-82e9-e03a75b4121b" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="6d394e67-a713-48b0-81a1-36761156dbf3" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+        </messages>
+      </interaction>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="04a32e1e-019e-45d6-9b6c-0aa5f971c397" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="7cc5d787-5260-4cd6-b8a0-949d55fa3a4c" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="e6abb197-812a-422b-a662-abdaa9fa6b14" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="92c43eb7-d6c0-411c-bc85-bebd576c6939" name="ExecutionEvent" />
+    </packageHasNamedElement>
+  </packagedElements>
+</SequenceDesignerModel>

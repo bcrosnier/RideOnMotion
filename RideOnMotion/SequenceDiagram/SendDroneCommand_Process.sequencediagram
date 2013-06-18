@@ -1,0 +1,765 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SequenceDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" dslVersion="1.0.0.0" Id="adbfc215-0ecf-4f7d-9b34-af520c0c93e4" name="SendDroneCommand_Process" mode="DotNet" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner">
+  <packagedElements>
+    <packageHasNamedElement>
+      <interaction Id="d8d115ba-ffc8-4fe7-bbec-3ea559a5ed16" name="SendDroneCommand_Process" collapseFragmentsFlag="false" isActiveClass="false" isAbstract="false" isLeaf="false" isReentrant="false">
+        <fragments>
+          <behaviorExecutionSpecification Id="97eed46a-8e95-4a89-a699-72da847d6170" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="0fa1d5b9-436f-4972-9c3f-040c295c884b" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="1cc33bd3-c2d6-4a10-9dba-26402da75fec" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="ca456eb0-a1b6-4f42-81a8-fc741ae47ffe" LastKnownName="MessageOccurrenceSpecification" />
+              <operandOccurrenceSpecificationMoniker Id="27436adb-5956-4ba3-be22-3a814099473d" LastKnownName="OperandOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="4ca984b3-dd1c-4f23-a3c2-61ded385beb3" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="6c5bde46-17a7-4606-b7f9-30d34895ae09" LastKnownName="MessageOccurrenceSpecification" />
+              <operandOccurrenceSpecificationMoniker Id="10d0d399-9b10-40fa-9610-750648cc1454" LastKnownName="OperandOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="3ae3720c-585d-4bf2-bfe7-9fc5ec705f9e" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="6ca9ae5f-9270-4e3a-90bf-e639d4594a60" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="db001b2b-bfae-422d-836f-3dc8a8faf2b3" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="ab7d369a-ff59-4edd-9ffc-622aef17b2d5" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="f288cdd7-c6b9-42fd-85be-cb306fa4abe2" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="34738fa7-bb34-48d2-af31-6b067a391227" LastKnownName="MessageOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="1cc33bd3-c2d6-4a10-9dba-26402da75fec" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="b335fef5-55f8-491a-ad8f-df3b82ac22a6" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <lostFoundTarget Id="6a31a3f3-e705-4df8-99a5-4a3aaa1f15e8" name="LostFoundTarget" />
+          <messageOccurrenceSpecification Id="ca456eb0-a1b6-4f42-81a8-fc741ae47ffe" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <combinedFragment Id="ad453d4c-5339-4f99-8be5-f1b9434d7d3d" name="CombinedFragment1" interactionOperator="Alt" customInteractionOperator="If">
+            <coveredLifelines>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </coveredLifelines>
+            <operands>
+              <interactionOperand Id="a4ae2d9e-79f1-4000-a5b1-96cb9217b4d7" name="InteractionOperand1">
+                <coveredLifelines>
+                  <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+                  <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+                </coveredLifelines>
+                <fragments>
+                  <combinedFragment Id="fb9efa04-41a1-4813-950e-917a7560c030" name="CombinedFragment1" interactionOperator="Opt" customInteractionOperator="If">
+                    <coveredLifelines>
+                      <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+                    </coveredLifelines>
+                    <operands>
+                      <interactionOperand Id="4eac5a78-d0cb-4695-b7f6-56045a68a326" name="InteractionOperand1">
+                        <coveredLifelines>
+                          <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+                        </coveredLifelines>
+                        <guard>
+                          <interactionConstraint Id="68a19646-9e60-41c2-9eab-cefca8afdf03" guardText="if (!_droneControl.IsCommandPossible( Command))" />
+                        </guard>
+                        <operandOccurrenceSpecifications>
+                          <operandOccurrenceSpecificationMoniker Id="99b9ec7a-1723-406c-b147-bf29afa6c320" LastKnownName="OperandOccurrenceSpecification" />
+                          <operandOccurrenceSpecificationMoniker Id="7c9be503-66f3-44b0-b89d-3e4d45f58164" LastKnownName="OperandOccurrenceSpecification" />
+                        </operandOccurrenceSpecifications>
+                      </interactionOperand>
+                    </operands>
+                  </combinedFragment>
+                </fragments>
+                <guard>
+                  <interactionConstraint Id="4856121a-364b-4f6b-9227-5795a93a970d" guardText="if (inputState.Command &amp;&amp; _drone.CanCommand" />
+                </guard>
+                <operandOccurrenceSpecifications>
+                  <operandOccurrenceSpecificationMoniker Id="27436adb-5956-4ba3-be22-3a814099473d" LastKnownName="OperandOccurrenceSpecification" />
+                  <operandOccurrenceSpecificationMoniker Id="10d0d399-9b10-40fa-9610-750648cc1454" LastKnownName="OperandOccurrenceSpecification" />
+                  <operandOccurrenceSpecificationMoniker Id="acf5f4c7-6933-40d4-b57d-44e377f44f49" LastKnownName="OperandOccurrenceSpecification" />
+                  <operandOccurrenceSpecificationMoniker Id="2ca47b37-7ea5-4d18-9ee7-f36b47915f6d" LastKnownName="OperandOccurrenceSpecification" />
+                </operandOccurrenceSpecifications>
+              </interactionOperand>
+            </operands>
+          </combinedFragment>
+          <operandOccurrenceSpecification Id="acf5f4c7-6933-40d4-b57d-44e377f44f49" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <operandOccurrenceSpecification Id="27436adb-5956-4ba3-be22-3a814099473d" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <behaviorExecutionSpecification Id="60dbdf39-3b86-4ab6-a279-30984f98525a" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="3d236abd-0e96-42e7-8b0e-63a9b2efaa85" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="19cc6c0e-d39d-4905-8daa-f2122b89f7a3" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="900cac61-0074-4d84-8baa-c6adb9777fd6" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="1f76c867-52fb-428b-b044-b524e4f21d0f" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="8014b9ed-94cc-4049-a9e3-c1a75bd96278" LastKnownName="MessageOccurrenceSpecification" />
+              <operandOccurrenceSpecificationMoniker Id="99b9ec7a-1723-406c-b147-bf29afa6c320" LastKnownName="OperandOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="63564664-ac30-4762-aa4b-d3fe5c3e4fd6" LastKnownName="MessageOccurrenceSpecification" />
+              <operandOccurrenceSpecificationMoniker Id="7c9be503-66f3-44b0-b89d-3e4d45f58164" LastKnownName="OperandOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="ad201b91-4b5b-4b0c-b192-b0ce5ad6358f" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="5e3335b3-f79c-4898-83f1-7eec46380943" LastKnownName="MessageOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="19cc6c0e-d39d-4905-8daa-f2122b89f7a3" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="62297986-419d-4dbf-b548-289abf270de5" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="900cac61-0074-4d84-8baa-c6adb9777fd6" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="4ca984b3-dd1c-4f23-a3c2-61ded385beb3" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="1f76c867-52fb-428b-b044-b524e4f21d0f" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <lostFoundTarget Id="fa8fea66-5a16-4e20-bf7d-9e43c91013b4" name="LostFoundTarget" />
+          <lostFoundTarget Id="f07827a0-7208-44a6-b152-f53724c4f4c1" name="LostFoundTarget" />
+          <messageOccurrenceSpecification Id="8014b9ed-94cc-4049-a9e3-c1a75bd96278" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <operandOccurrenceSpecification Id="99b9ec7a-1723-406c-b147-bf29afa6c320" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="63564664-ac30-4762-aa4b-d3fe5c3e4fd6" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <lostFoundTarget Id="a709a52b-499e-4565-a166-15d8322898da" name="LostFoundTarget" />
+          <operandOccurrenceSpecification Id="7c9be503-66f3-44b0-b89d-3e4d45f58164" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <lostFoundTarget Id="a2e88b23-3dcb-4804-920e-0e39a39ceafe" name="LostFoundTarget" />
+          <messageOccurrenceSpecification Id="ad201b91-4b5b-4b0c-b192-b0ce5ad6358f" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="5e3335b3-f79c-4898-83f1-7eec46380943" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="6c5bde46-17a7-4606-b7f9-30d34895ae09" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="3d236abd-0e96-42e7-8b0e-63a9b2efaa85" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="ddf5b2b6-92b2-4c7f-bbaa-89a4f1c592ad" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <operandOccurrenceSpecification Id="2ca47b37-7ea5-4d18-9ee7-f36b47915f6d" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <operandOccurrenceSpecification Id="10d0d399-9b10-40fa-9610-750648cc1454" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <behaviorExecutionSpecification Id="b13bcce7-f406-4336-9433-507816c4dd82" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="99689c0b-ba20-4152-9062-f6c4d8a593f2" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="053a92a8-e062-4486-942e-365dc2b9a712" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="035fcd51-465c-47f2-a48b-b27e59a178e5" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="71c7459f-3fec-477c-8402-1b873148843f" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="8d56e153-69bd-4229-863a-ad707ab80a0a" LastKnownName="MessageOccurrenceSpecification" />
+              <operandOccurrenceSpecificationMoniker Id="8a2d1d4c-8fad-4b59-8bf0-42508abb1df2" LastKnownName="OperandOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="7bd6d249-8d8e-47f3-a509-367b806c3a04" LastKnownName="MessageOccurrenceSpecification" />
+              <operandOccurrenceSpecificationMoniker Id="d7aa655d-4e25-478c-a76a-85d14dd14afd" LastKnownName="OperandOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="3201c797-33cd-4d26-b50c-2c13ef65dc98" LastKnownName="MessageOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="053a92a8-e062-4486-942e-365dc2b9a712" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="bbf5eb0e-5294-42de-a23c-871273a35d41" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="3ae3720c-585d-4bf2-bfe7-9fc5ec705f9e" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="035fcd51-465c-47f2-a48b-b27e59a178e5" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="71c7459f-3fec-477c-8402-1b873148843f" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <lostFoundTarget Id="2d1165b5-9871-4a00-8f25-1a49cb44ec62" name="LostFoundTarget" />
+          <messageOccurrenceSpecification Id="8d56e153-69bd-4229-863a-ad707ab80a0a" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <lostFoundTarget Id="6abeada0-0210-4ffb-a100-998683de8133" name="LostFoundTarget" />
+          <combinedFragment Id="2f5041ae-e668-4a1a-8c20-89a84d32e239" name="CombinedFragment6" interactionOperator="Opt" customInteractionOperator="If">
+            <coveredLifelines>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </coveredLifelines>
+            <operands>
+              <interactionOperand Id="0ebe82aa-8f55-492b-a4ba-0d9223607d16" name="InteractionOperand1">
+                <coveredLifelines>
+                  <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+                </coveredLifelines>
+                <guard>
+                  <interactionConstraint Id="76c23e2e-bdf4-41fd-aae4-4e71c592c186" guardText="if (_droneControl.IsCommandPossible( flightMoveCommand ))" />
+                </guard>
+                <operandOccurrenceSpecifications>
+                  <operandOccurrenceSpecificationMoniker Id="8a2d1d4c-8fad-4b59-8bf0-42508abb1df2" LastKnownName="OperandOccurrenceSpecification" />
+                  <operandOccurrenceSpecificationMoniker Id="d7aa655d-4e25-478c-a76a-85d14dd14afd" LastKnownName="OperandOccurrenceSpecification" />
+                </operandOccurrenceSpecifications>
+              </interactionOperand>
+            </operands>
+          </combinedFragment>
+          <operandOccurrenceSpecification Id="8a2d1d4c-8fad-4b59-8bf0-42508abb1df2" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="7bd6d249-8d8e-47f3-a509-367b806c3a04" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <lostFoundTarget Id="57a1ee83-3729-4356-98d0-d9016c5b2118" name="LostFoundTarget" />
+          <operandOccurrenceSpecification Id="d7aa655d-4e25-478c-a76a-85d14dd14afd" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="3201c797-33cd-4d26-b50c-2c13ef65dc98" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="6ca9ae5f-9270-4e3a-90bf-e639d4594a60" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="99689c0b-ba20-4152-9062-f6c4d8a593f2" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="6b11305f-4f8d-4cf7-a077-9b4db86ea751" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" LastKnownName="this._drone : DroneCommand" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification Id="75c31741-6ff0-4cf5-8581-4e470eadcaff" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="74c8bd3c-0838-4121-acb7-5dbeda0cb0ee" LastKnownName="inputState : InputState" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="8b1b3cda-fd0f-4f78-9ddb-ef6a0a31eaa9" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="ce7559dd-775e-4db5-a1d1-f47f860ce02c" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="c45cf303-7759-4fa2-852f-88d79fa3a228" LastKnownName="MessageOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="74ce4cd8-fa9d-4d11-bdca-7838eaca4b44" LastKnownName="MessageOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="ce7559dd-775e-4db5-a1d1-f47f860ce02c" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="c4d3b698-4c7e-45ab-910f-43cb5664320e" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="74c8bd3c-0838-4121-acb7-5dbeda0cb0ee" LastKnownName="inputState : InputState" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="db001b2b-bfae-422d-836f-3dc8a8faf2b3" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="c45cf303-7759-4fa2-852f-88d79fa3a228" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="74c8bd3c-0838-4121-acb7-5dbeda0cb0ee" LastKnownName="inputState : InputState" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="74ce4cd8-fa9d-4d11-bdca-7838eaca4b44" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="74c8bd3c-0838-4121-acb7-5dbeda0cb0ee" LastKnownName="inputState : InputState" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="ab7d369a-ff59-4edd-9ffc-622aef17b2d5" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="8b1b3cda-fd0f-4f78-9ddb-ef6a0a31eaa9" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="923c6da3-9699-4d31-8462-5a47000fc873" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="74c8bd3c-0838-4121-acb7-5dbeda0cb0ee" LastKnownName="inputState : InputState" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <behaviorExecutionSpecification Id="c7ac654a-45fc-49c6-88aa-54258b884809" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="597af59c-6ef0-406d-8aef-f6803ea0e91f" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="14ae7a6d-e7a3-42b9-91c7-8e7344952136" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="8244073b-eef1-4b17-999b-40dc4930cddc" LastKnownName="MessageOccurrenceSpecification" />
+              <operandOccurrenceSpecificationMoniker Id="8f083593-d805-410d-b9b7-624974303c63" LastKnownName="OperandOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="f62e6688-28eb-4f83-8fe7-c078b6580e70" LastKnownName="MessageOccurrenceSpecification" />
+              <operandOccurrenceSpecificationMoniker Id="ccdb5c2a-16bf-4bc8-a2b4-3488a906c310" LastKnownName="OperandOccurrenceSpecification" />
+              <messageOccurrenceSpecificationMoniker Id="01d88c68-7bfb-4c4c-947b-478275a52c84" LastKnownName="MessageOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="14ae7a6d-e7a3-42b9-91c7-8e7344952136" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="8ad83d98-ea8b-4ebb-a6c1-b4e9bbf879e9" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="8244073b-eef1-4b17-999b-40dc4930cddc" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="f288cdd7-c6b9-42fd-85be-cb306fa4abe2" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <combinedFragment Id="25976cd0-17eb-4f08-a5ce-d56b1bc34a3f" name="CombinedFragment7" interactionOperator="Opt" customInteractionOperator="If">
+            <coveredLifelines>
+              <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+            </coveredLifelines>
+            <operands>
+              <interactionOperand Id="68f8b7c3-1d45-4fbc-8467-57672dec5034" name="InteractionOperand1">
+                <coveredLifelines>
+                  <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+                </coveredLifelines>
+                <guard>
+                  <interactionConstraint Id="7b1c96dc-40f8-48d9-a071-17a7de58cf42" guardText="if (NewLogStringReady != null)" />
+                </guard>
+                <operandOccurrenceSpecifications>
+                  <operandOccurrenceSpecificationMoniker Id="8f083593-d805-410d-b9b7-624974303c63" LastKnownName="OperandOccurrenceSpecification" />
+                  <operandOccurrenceSpecificationMoniker Id="ccdb5c2a-16bf-4bc8-a2b4-3488a906c310" LastKnownName="OperandOccurrenceSpecification" />
+                </operandOccurrenceSpecifications>
+              </interactionOperand>
+            </operands>
+          </combinedFragment>
+          <operandOccurrenceSpecification Id="8f083593-d805-410d-b9b7-624974303c63" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <lostFoundTarget Id="1121bef8-bc54-4962-a1cd-2d4047899300" name="LostFoundTarget" />
+          <messageOccurrenceSpecification Id="f62e6688-28eb-4f83-8fe7-c078b6580e70" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <operandOccurrenceSpecification Id="ccdb5c2a-16bf-4bc8-a2b4-3488a906c310" name="OperandOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+            </covered>
+          </operandOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="34738fa7-bb34-48d2-af31-6b067a391227" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="01d88c68-7bfb-4c4c-947b-478275a52c84" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="597af59c-6ef0-406d-8aef-f6803ea0e91f" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="a9c996f9-617f-4adf-b30a-e8c3a50e58c4" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" LastKnownName="Logger.instance : Logger" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="0fa1d5b9-436f-4972-9c3f-040c295c884b" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="a7cf6eb2-2b99-42f0-b717-2635c6ab2ba2" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="9ae53225-1599-4b54-b21a-f80cc49a825b" LastKnownName="this : SendDroneCommand" />
+            </covered>
+          </executionOccurrenceSpecification>
+        </fragments>
+        <lifelines>
+          <lifeline Id="9ae53225-1599-4b54-b21a-f80cc49a825b" name="this : SendDroneCommand" isActor="false" lifelineDisplayName="this : SendDroneCommand" referencedInstance="(Assembly=$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri) Namespace=RideOnMotion.Inputs Type=SendDroneCommand ObjectInstance=&quot;Object instance 2&quot;)" referencedType="RideOnMotion‎.Inputs‎.SendDroneCommand">
+            <referencesInternal>
+              <reference Id="9afc96bb-f1f0-4ad1-8087-6e222d9112dd" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs Type=SendDroneCommand)&quot;)" tag="DGQL" />
+              <reference Id="fa9fe008-493d-4388-8e97-7094b65f03b5" handle="(Assembly=&quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs Type=SendDroneCommand)" tag="DGML" />
+            </referencesInternal>
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker Id="1cc33bd3-c2d6-4a10-9dba-26402da75fec" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="0fa1d5b9-436f-4972-9c3f-040c295c884b" LastKnownName="ExecutionOccurrenceSpecification" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline Id="0483582f-6aa8-4633-9b75-8ffb600d03b6" name="this._drone : DroneCommand" isActor="false" lifelineDisplayName="this._drone : DroneCommand" referencedInstance="(Assembly=$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri) Namespace=RideOnMotion.Inputs Type=SendDroneCommand Member=_drone ObjectInstance=&quot;Object instance 4&quot;)" referencedType="RideOnMotion‎.DroneCommand">
+            <referencesInternal>
+              <reference Id="f0ec2f6e-069d-4c5a-bf69-b397734849fc" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=DroneCommand)&quot;)" tag="DGQL" />
+              <reference Id="b06d029b-1e32-415a-83fd-215894fd3fea" handle="(Assembly=&quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&quot; Namespace=RideOnMotion Type=DroneCommand)" tag="DGML" />
+            </referencesInternal>
+            <topLevelOccurrences>
+              <operandOccurrenceSpecificationMoniker Id="acf5f4c7-6933-40d4-b57d-44e377f44f49" LastKnownName="OperandOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="19cc6c0e-d39d-4905-8daa-f2122b89f7a3" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="3d236abd-0e96-42e7-8b0e-63a9b2efaa85" LastKnownName="ExecutionOccurrenceSpecification" />
+              <operandOccurrenceSpecificationMoniker Id="2ca47b37-7ea5-4d18-9ee7-f36b47915f6d" LastKnownName="OperandOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="053a92a8-e062-4486-942e-365dc2b9a712" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="99689c0b-ba20-4152-9062-f6c4d8a593f2" LastKnownName="ExecutionOccurrenceSpecification" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline Id="74c8bd3c-0838-4121-acb7-5dbeda0cb0ee" name="inputState : InputState" isActor="false" lifelineDisplayName="inputState : InputState" referencedInstance="(Assembly=$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri) Namespace=RideOnMotion.Inputs Type=SendDroneCommand Member=(Name=Process OverloadingParameters=[(Assembly=$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri) Namespace=RideOnMotion.Inputs Type=InputState)]) ParameterIdentifier=inputState ObjectInstance=&quot;Object instance 1&quot;)" referencedType="RideOnMotion‎.Inputs‎.InputState">
+            <referencesInternal>
+              <reference Id="db4abf63-e50a-40a6-bfdf-4c5abe985ae8" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs Type=InputState)&quot;)" tag="DGQL" />
+              <reference Id="0bc6ca7a-241c-41b9-9774-1f04af3784cc" handle="(Assembly=&quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs Type=InputState)" tag="DGML" />
+            </referencesInternal>
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker Id="ce7559dd-775e-4db5-a1d1-f47f860ce02c" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="8b1b3cda-fd0f-4f78-9ddb-ef6a0a31eaa9" LastKnownName="ExecutionOccurrenceSpecification" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline Id="c81a0918-27fd-47c8-9ed6-aa41c17c628d" name="Logger.instance : Logger" isActor="false" lifelineDisplayName="Logger.instance : Logger" referencedInstance="(Assembly=$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri) Namespace=RideOnMotion Type=Logger ObjectInstance=&quot;Object instance 91&quot;)" referencedType="RideOnMotion‎.Logger">
+            <referencesInternal>
+              <reference Id="feea6aef-4712-494e-a4b1-6e48fb16101e" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=Logger)&quot;)" tag="DGQL" />
+              <reference Id="29ee3c38-c900-4ebf-a8d7-2c4eaa36378e" handle="(Assembly=&quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&quot; Namespace=RideOnMotion Type=Logger)" tag="DGML" />
+            </referencesInternal>
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker Id="14ae7a6d-e7a3-42b9-91c7-8e7344952136" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="597af59c-6ef0-406d-8aef-f6803ea0e91f" LastKnownName="ExecutionOccurrenceSpecification" />
+            </topLevelOccurrences>
+          </lifeline>
+        </lifelines>
+        <messages>
+          <message Id="56a80084-feaf-4f49-ab6b-9037ec9b9726" name="Process" messageKind="Found" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="ad23e500-c33a-4153-9987-a95355cfcb3d" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs Type=SendDroneCommand)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs Type=SendDroneCommand Member=(Name=Process OverloadingParameters=[(Assembly=&amp;quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs Type=InputState)]))&quot;)" tag="DGQL" />
+              <reference Id="1d9692ff-fcf1-4331-9d35-2ac9f3fe00f8" handle="(Assembly=&quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs Type=SendDroneCommand Member=(Name=Process OverloadingParameters=[(Assembly=&quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs Type=InputState)]))" tag="DGML" />
+            </referencesInternal>
+            <sendEvent>
+              <lostFoundTargetMoniker Id="6a31a3f3-e705-4df8-99a5-4a3aaa1f15e8" LastKnownName="LostFoundTarget" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="ca456eb0-a1b6-4f42-81a8-fc741ae47ffe" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="b13aefd4-1933-4900-95be-09bfb1069622" name="Command" messageKind="Complete" messageSort="SynchCall" createSelfMessage="false" signatureText="_drone.Command()">
+            <referencesInternal>
+              <reference Id="c8cdb75b-cb34-45a9-9493-7669edd8a121" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=DroneCommand)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=DroneCommand Member=Land)&quot;)" tag="DGQL" />
+              <reference Id="117fcdb6-78fc-4b6c-ab68-7aa907c2380d" handle="(Assembly=&quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&quot; Namespace=RideOnMotion Type=DroneCommand Member=Land)" tag="DGML" />
+            </referencesInternal>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="4ca984b3-dd1c-4f23-a3c2-61ded385beb3" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="900cac61-0074-4d84-8baa-c6adb9777fd6" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="7f858e09-484d-4d1b-ab1a-3fff05f34d7f" name="Create FlightModeCommand" messageKind="Lost" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="5a2f615f-10ae-4f62-a160-417f5b69829b" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=ARDrone.Control.Commands)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control.Commands Type=FlightModeCommand)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control.Commands Type=FlightModeCommand Member=(Name=.ctor OverloadingParameters=[(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control.Commands Type=DroneFlightMode)]))&quot;)" tag="DGQL" />
+              <reference Id="9caa96a7-e7c3-42a4-9e2c-c5c054653fa9" handle="(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control.Commands Type=FlightModeCommand Member=(Name=.ctor OverloadingParameters=[(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control.Commands Type=DroneFlightMode)]))" tag="DGML" />
+            </referencesInternal>
+            <generationState>H4sIAAAAAAAEAO2Y22rbQBCG51GErxooFulNS4kLQWmoqZuUOLkqoci24qiV5WDJAffp+83oYMd2HDeQopZFWNrd+eew8+8suz6SvkQyk1hCSXj/ojeSwHqJnCIJZcLYBzmSS7kFkcmFTHly8aQLtiMteSXHjGfgJjJAb8HoDdiEkffi2xNY68pQM96+9GSO/lTuQQ7pnyDJ5CeWp3JH/yv2fbzFoCI5l1S+mN+Yd7pTcozsBC/ai+Q7/cLWAERaehrgfbyBDeybWz8hwhic5mDGnNax7TV0m2g0a56clVnLmEfI3CLy8ZSu9ic8IaMjND3yvUBfdU+NmzH5z22mozLSJf4AFpYaZyXG8dNMfrS+cr5jMBp5xVNQ6vaJ6dbYCslOgPXQ+FMbPdoDZIlpPO25ZXWaMb/UZrRAMiW3Wamvla6ct6zGuyAybKmu5sXVeFPXkKvxZvPzt2v8HI0fSIag1qu48v2ujFC93llcRVYf+rtkbG47QrFzfKIdgl/18BCnO0d1KtCs+Tbib8RRjK6fI1a1vbr1GfzCrexGrGyP8SL7mt0OjFQxdLA9tJzObA3eGyKhH6Kn+RiTnbA+R+YlPx355nh9YV6XetsYPpBrft4WdromTy0zykfB+c1WGy13QnB16nj9J+rUnRybye/zT40fsTqnvXlm3LYK/teb4GOSNv5ziyu2b2RxVKvownIV2ak7+kMru9fKY5a2r4ndO3ivHu8bF7lJi6rXvflQXte/N3X72lW8q/iy4ve5F77d6164ukO8zM1w9Ubo7/3P9G/G+qmZxBYAAA==
+(Assembly=$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri) Namespace=ARDrone.Control.Commands Type=FlightModeCommand ObjectInstance="Object instance 8")
+landCommand : FlightModeCommand
+new FlightModeCommand( DroneFlightMode.Land )</generationState>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="1f76c867-52fb-428b-b044-b524e4f21d0f" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <lostFoundTargetMoniker Id="fa8fea66-5a16-4e20-bf7d-9e43c91013b4" LastKnownName="LostFoundTarget" />
+            </receiveEvent>
+          </message>
+          <message Id="3828dbcc-6331-4217-96fe-06504f9d7dc0" name="IsCommandPossible" messageKind="Lost" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="64dad7c8-2ca0-42ef-9a3b-1bb55cc13f2a" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=ARDrone.Control)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control Type=DroneControl)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control Type=DroneControl Member=(Name=IsCommandPossible OverloadingParameters=[(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control.Commands Type=Command)]))&quot;)" tag="DGQL" />
+              <reference Id="c5168a70-39bb-4d31-84e6-263f8c997c49" handle="(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control Type=DroneControl Member=(Name=IsCommandPossible OverloadingParameters=[(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control.Commands Type=Command)]))" tag="DGML" />
+            </referencesInternal>
+            <generationState>H4sIAAAAAAAEAO1ZbW/aMBC+nxL1wwTSFDRpraqtTOro0NBoQaP7NE1VgJCyhsBw6Mp+/R4/SQCHF0G7VVBZCGKf7833+M52OJOW+DKWvngS4vcPel2psBdKFSOeDED7IGdyLbfgUPJVhvjE4kgNvGU5koKcg67AN5A25Kag9sAbgvJOSvxU2PpGrjF+S1KXCeSHcg/ODvoXGFFyB81DGaHfhP4SrPXB5UtDIrmk3T5+o0eNuLAf068+nz79aKOVSPn02KOPu2lxwakj5shVGjGFOXiYl49YrNPkIKZT8GmeC0RF03xEaggNA0hHkHIgkcRVx60sN6AtckbQpvuhFIHEXOMVaNrmvmJ0jrH5nG/QT3RlaGhLbVgPlnjNWdfB3+Y6HWNOeV43x70Zp82y69Fah4HOoxjPAGPauwyLSopNC3ZviYiHCFQg7xEjraOOdpsrUkvEae65Bv7uhtVwxPxUmFNE+hRWhoinor4qM1zjfMTcroFDQVavOR0Lm9s2t21u73NuN6DhJ0Y6oOazN/PlOPVYezGin0kkTfuLtSCpGZ+ZKSPDhua8hvRkVjOyc4Ayes6s9QWcU7s+n2195qtJheuhntaaYoqurRj7hcguNf2V/EIMdNzer0GrSctBem53kNsJl0K7IA9yKiewm+yHPXrlz3Z80162g14Sa61V4duD7dLCveA3q8odaC5m8AmzWTV2L28xfozWAFo6pIdEKkNgcWar0WghAooVd2DE/iOrTbK3R0+q0S3iNmG1W67SJnb2dHV4p6sAz5h78SKSDnH30pXlM3vL8l3eyOv0+8Nm6oFn6jZnpZOtzkrzE9DjTkoOIqsppSU/EmrGafbURpn8exl7GtvHvb8ws1PmyjFrVZNZqziDkDneQKR9Zt8QPF3GIgCfN8vaOMVGVyuL6VMxdXOIKANlc6zIPcFZgUaN8YgYiR4rs8a+k5O2J3GbjRbTfcpG+2ZtP5D8P2/YTMRf6t3tpa2NKm8eATCOOdOu5G94NncPCZ9/l89hqt+0tu1N7/SZ3orvdtfb9n/4v6Dab2KyHwAA
+(Assembly=$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri) Namespace=RideOnMotion Type=DroneCommand Member=_droneControl ObjectInstance="Object instance 5")
+this._drone._droneControl : DroneControl
+_droneControl.IsCommandPossible( landCommand )</generationState>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="8014b9ed-94cc-4049-a9e3-c1a75bd96278" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <lostFoundTargetMoniker Id="f07827a0-7208-44a6-b152-f53724c4f4c1" LastKnownName="LostFoundTarget" />
+            </receiveEvent>
+          </message>
+          <message Id="ef1cf45d-a005-471c-9a22-13a5569dcdbc" name="Return" messageKind="Lost" messageSort="AsynchCall" createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="63564664-ac30-4762-aa4b-d3fe5c3e4fd6" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <lostFoundTargetMoniker Id="a709a52b-499e-4565-a166-15d8322898da" LastKnownName="LostFoundTarget" />
+            </receiveEvent>
+          </message>
+          <message Id="4d99f8f1-1498-47df-a65f-872907772a02" name="SendCommand" messageKind="Lost" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="79d4ad74-2bd5-4560-98c9-50e33d827b30" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=ARDrone.Control)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control Type=DroneControl)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control Type=DroneControl Member=(Name=SendCommand OverloadingParameters=[(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control.Commands Type=Command)]))&quot;)" tag="DGQL" />
+              <reference Id="d423b445-d541-408b-bd27-dc89bb595125" handle="(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control Type=DroneControl Member=(Name=SendCommand OverloadingParameters=[(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control.Commands Type=Command)]))" tag="DGML" />
+            </referencesInternal>
+            <generationState>H4sIAAAAAAAEAO1Za2/aMBS9PyXiwwTSFDRpraqtTOro0NBoqUb3aZqqACFlDYHh0I39+h2fJIDDQ9BuHVQWSmJf34d9j+/1g1NpiS9j6YsnId6/UetKlbVQamjxZADaOzmVa7kFh5LPMsQvFkfq4K1IQYpyBroC30DakJuC2gNvCMobKfNXZekLucZ4l6UhE8gP5R6cHdTP0aLkDpqHMkL9CvrLsNYHly9NieSCdvt4Rw9qcWE/Zr/6/PrsRxulRMpnjz32cTctLji1xxy5TD2mMAYP4/Lhi3WaHPh0Cj7Ncw6vaJoPTw2hYQDpCFIOJBK/ar9V5Aa0Rc4I2nQ9lBKQmGu8BE3b3FeMztA2H/MN6omuDA1tqQ3rwRKvOeoG+Nucp2OMKc/r5rg347RZdj1a6zDQcRTjG6BN9y7Doppi04LdWyLiwQNVyHvESOtooNzmjNQScRp7roG/u2E2FBifCmOKSJ/CyhD+VNRXY4RrnAuM7To4FGT1nNO+sLFtY9vG9j7HdhMavqOlA2o+erO+HKU91r0YsZ+JJ037i7kgyRkfGSkjw4bmvIb0ZJYzsn2AMmrOrPQJnFM7P59sfuazSZXzoZHmmlKKrs0Y+4XILjn9hfyAD7Tf3q5B64qWg3Tf7iC2Ey6FclF+yYkcw26yHvbYK3+24pv2shX0glhrrQpPD7bLC+eCn8wqd6C5GMEHjGZV2728RvsRSgNo6ZAeEqkMgcWRrUajBQ8oZtyB4fv3zDbJ2h49Kke3iNuE2W45S5vY2d3V4e2uAnxjrsWLSDrE3Utnls/orchXeSUv0+ebjdQDj9Rt9krHW+2V5jugh+2UHHhWU8pL/UioGadZUxtl8vcydje2j2t/cWanwju3iPdsZr5qwrs+I24IWpfjD+ANbxapcYqHzlAWx8fi6OYQUAayZluJ64CzAo06/RHREz1mY413Jydtd982Ai2O/zsC7Q3afiD5b27STMSf6xntuc2NGk8YATCOOdKu5E9yNnYPCZ+/F89hqt+0tu2J7uSJbr93O9Nt+3/7H4kS6ymaHwAA
+(Assembly=$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri) Namespace=RideOnMotion Type=DroneCommand Member=_droneControl ObjectInstance="Object instance 5")
+this._drone._droneControl : DroneControl
+_droneControl.SendCommand( landCommand )</generationState>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="ad201b91-4b5b-4b0c-b192-b0ce5ad6358f" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <lostFoundTargetMoniker Id="a2e88b23-3dcb-4804-920e-0e39a39ceafe" LastKnownName="LostFoundTarget" />
+            </receiveEvent>
+          </message>
+          <message Id="e0bd91d4-88d0-4867-b4ea-9358e6b2347b" name="&lt;&lt;return&gt;&gt;" messageKind="Complete" messageSort="Reply" createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="5e3335b3-f79c-4898-83f1-7eec46380943" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="6c5bde46-17a7-4606-b7f9-30d34895ae09" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="b22cb5d5-263b-49e6-839a-0a246517562f" name="Navigate" messageKind="Complete" messageSort="SynchCall" createSelfMessage="false" signatureText="_drone.Navigate( roll, pitch, yaw, gaz )">
+            <referencesInternal>
+              <reference Id="b2cf3672-e2ed-4ba2-827d-7a6745f6f8d2" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=DroneCommand)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=DroneCommand Member=(Name=Navigate OverloadingParameters=[(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&amp;quot; Namespace=System Type=Single),(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&amp;quot; Namespace=System Type=Single),(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&amp;quot; Namespace=System Type=Single),(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&amp;quot; Namespace=System Type=Single)]))&quot;)" tag="DGQL" />
+              <reference Id="572c078c-4797-41dd-ab56-d976f796ff83" handle="(Assembly=&quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&quot; Namespace=RideOnMotion Type=DroneCommand Member=(Name=Navigate OverloadingParameters=[(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&quot; Namespace=System Type=Single),(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&quot; Namespace=System Type=Single),(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&quot; Namespace=System Type=Single),(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&quot; Namespace=System Type=Single)]))" tag="DGML" />
+            </referencesInternal>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="3ae3720c-585d-4bf2-bfe7-9fc5ec705f9e" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="035fcd51-465c-47f2-a48b-b27e59a178e5" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="c09734d7-4c47-4be9-a71a-fdd292af3cdc" name="Create FlightMoveCommand" messageKind="Lost" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="378bb91c-654b-464a-82a0-dd9914e3af2d" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=ARDrone.Control.Commands)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control.Commands Type=FlightMoveCommand)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control.Commands Type=FlightMoveCommand Member=(Name=.ctor OverloadingParameters=[(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.0/mscorlib.dll&amp;quot; Namespace=System Type=Single),(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.0/mscorlib.dll&amp;quot; Namespace=System Type=Single),(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.0/mscorlib.dll&amp;quot; Namespace=System Type=Single),(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.0/mscorlib.dll&amp;quot; Namespace=System Type=Single)]))&quot;)" tag="DGQL" />
+              <reference Id="85b5fa83-0268-4fee-a39c-8331bee97df7" handle="(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control.Commands Type=FlightMoveCommand Member=(Name=.ctor OverloadingParameters=[(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.0/mscorlib.dll&quot; Namespace=System Type=Single),(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.0/mscorlib.dll&quot; Namespace=System Type=Single),(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.0/mscorlib.dll&quot; Namespace=System Type=Single),(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.0/mscorlib.dll&quot; Namespace=System Type=Single)]))" tag="DGML" />
+            </referencesInternal>
+            <generationState>H4sIAAAAAAAEAO1c/U/aUBS9fwrxh0UTQ6fZnNlkicGZmfkVcT8tZimIyCwfoxWHf/3OvS0WELXg6lo5IUDfe/d9ndN73+2JsiUVqUtPmuKKh89blM6lbCVPdtHiSgt1n2VLTuUSFr6cSAevQAqyB9uSLMmybKPeh11Lqug3QO0FbD3UfBTHXmW7+m5WPXw6si/X6N+RPixrKO+gxZcrjNyRLsrHGN/BbE1Y1eVI2nJg8zbx2X60ZRttO5hFS3X5iXI4VhUW7WimKmZv3LMt23dgZQ8rbMJOMehhT5O2xQnrIlajqBXkMELNxz5c7K0OPJ7qq+UWXi5qz9GzALwH6K99d42bBvAPbKf9aKWx/QpYiHscok2RIT/Z5Ef9K8B3Aza68iFP5Yi3CtZ0aWy5QKeM0V3jT8fYx3UVbZ71eHrmJfNTH/tr244GaOkAWz/qr56unC+Zj+/BwsdY2ldxoY9n9R6ij2ebn5f28SP0+IWWGqwmvXg496a8i9ao83ZtZSGu4zOeou7aYkIYO77i2oX96Bzjdho7hnmB4uZYjXNvJWHtZCYx2rtwd/UN9gPe25m4twuoD9FXdEtgZLiGEsauGaY9uwv7ZuGh7KKf4tEAOu5dJhlE/JTkx1Re38hvIKdof3qA42PbUyMasYDVh1a6p2X5g7t8A76o/NUxgs5WvzvNxudrWi8He9M7REf18b7A3M5I7ntje7tCXRG7/gLcprX14VtFeYurFkapWb1n/A55G93ZdA4rQMA3hFpj/FQiHHWXK7JK3Igbccs8bmd4F6bEvj07Vdp2nlzY3jSihnHai7IIZnU8+ehRjETEjbjlD7fnnHyz6Btk4ikm5lckKnaCXtsJd1+TGHKWprqYb3bfp8LugXF4+WhWUrbVMyNJh4Edu7+rI5Fu0eJWOri+bNxaT6yZfsAriWY6GuvSUU2plvKZ8XVFEubwxI24EbfZnxm7uArs3KdeyrOPPsVYRNyIW15xe97ZtzjKQ54V05g1aqbUTBeLAWqmedZM48iVXDXdlLXUVNNYJ6UiyqfC1xUnmKUTN+JG3GZ/KhzA5oZqKM89+hPjEHEjbrnFbf5zb3H0hDwroSFjaaqg/zPHeailaHvoYt7AVjDMeU4MF9U8dHVJ+z+e0yQbY5z5uuUr4xlXsjwm9JOareHfaKjkb1b+4vqKeUkwEknjmlYUPxX3NZxPa4gjq3a1bt9nCxdH86zLxnE0iSK7kfB///l3rHx65dNr9rIxPk0QN+KWfdxme3ptwOaWqi3PPfoT4xBxI265xW3+c29x1IY8q7YhY1Rts6T6UbXNN3/zqrbrVG1fQRxNptpm8dcHnMS/Gv8XiB3FiGBeAAA=
+(Assembly=$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri) Namespace=ARDrone.Control.Commands Type=FlightMoveCommand ObjectInstance="Object instance 84")
+flightMoveCommand : FlightMoveCommand
+new FlightMoveCommand( roll, pitch, yaw, gaz )</generationState>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="71c7459f-3fec-477c-8402-1b873148843f" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <lostFoundTargetMoniker Id="2d1165b5-9871-4a00-8f25-1a49cb44ec62" LastKnownName="LostFoundTarget" />
+            </receiveEvent>
+          </message>
+          <message Id="4ccfe411-326a-4e83-beb0-0b1bac190549" name="IsCommandPossible" messageKind="Lost" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="fbee7738-dfcf-4f23-b3f2-71bade175168" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=ARDrone.Control)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control Type=DroneControl)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control Type=DroneControl Member=(Name=IsCommandPossible OverloadingParameters=[(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control.Commands Type=Command)]))&quot;)" tag="DGQL" />
+              <reference Id="e409e64e-0eb1-48aa-a8e0-da3032435032" handle="(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control Type=DroneControl Member=(Name=IsCommandPossible OverloadingParameters=[(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control.Commands Type=Command)]))" tag="DGML" />
+            </referencesInternal>
+            <generationState>H4sIAAAAAAAEAO1abW/aMBC+nxLxYQJpSlRpraqtTOpoUdGgoNF9mqYqsEBZQ2A4sLJfv8cXB+IAGbRblXQWgtjne7Hv8Z3PCmfUJY9mNCKXfPz+Qu8b1bjnUx0jLo1Be09ndEN34BD0iSb4hGRRA7xVKlGZzkEX4BtTD3JLUAfg9UF5Sw5/atz6zFwz/DrUpDnkJ7QAZx/9C4wIuofmCU3R70C/A2sjcHnUpoBabHeE3+BRIzbshzyvET89nkcPrUjK4xm7PMfDtNjglB6z6Fp5TGANLtblwRe7NFnw6RJ8kucCXpE0D56aQMMY0gGkLEhEfpV+q9ItaEnOANpk36cKkFhrvAZN2swrRucYW6/5Fv1IV4yGtNSD9eEGr77qJvh7vE9nWFOa105xZ+OULbsbrV0YyDgK8RxiTM4uxqKmsOnC7h0j4sIDNci7jJHU0US7xztSSoQq9mwNfztjN5Q4PgXWFDB9CSsT+FOwvjpHuMS5xLHdAIeArNxz0hcmtk1sm9jOc2y3oeE7RvqgpqM3nsuxmrGcxZTnGXlSt5/MBVHOuOJImWo2JOcNpOernBHXAULrWavWR3Auzf58tv2ZziY13g9NlWsqCl2TMfKFyCE5/RX9gA+k397tQKvDloeqbrcQ2xGXQLtMD3RKJ7AbnYcDnpW3OvF1e/EJ2mKspVaB7wC2ncS94CdnlXvQbKzgEqvZNragNxg/RmsMLX2m+4xUjEByZdvR6MIDgjPuWPP9B8420dkePClHdxm3OWe7zSytY2eqq+JVV0M8Qz6Lk0hajLurdpbH0VulL3REr9X3q4nUgkfqPrXSyV610roCelylZMGzkuJszCOixpymosrv+X3JHJJyxb6UrZbap6bKKg5KJp8XKZ9n4WmqsaJXY1nomgrt/4zofaq2I6CQt7rNSchlyaTfp5maL4/VRHllp8o7R89qHY5lwSvwOfLbaif7GHHBIX0xBJ+7iuVQYSNzmMH0qZjaKUSEhrI+VuGTwtqCRoP9EbAnBpyvJfb9lLSp7U00GkzzFI3mjWg+kPw3b0Z1xF/qLe+l7Y0630eGwDjklS4ofRc0sVskfP5ePA/+aHnfe98pbsHP89+Gw25++/6b8jes5d6seCkAAA==
+(Assembly=$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri) Namespace=RideOnMotion Type=DroneCommand Member=_droneControl ObjectInstance="Object instance 5")
+this._drone._droneControl : DroneControl
+_droneControl.IsCommandPossible( flightMoveCommand )</generationState>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="8d56e153-69bd-4229-863a-ad707ab80a0a" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <lostFoundTargetMoniker Id="6abeada0-0210-4ffb-a100-998683de8133" LastKnownName="LostFoundTarget" />
+            </receiveEvent>
+          </message>
+          <message Id="9ea6465d-4fe4-4078-a01d-8d6e8838c36c" name="SendCommand" messageKind="Lost" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="06d887a7-9658-435d-80ec-9ddc022e0085" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=ARDrone.Control)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control Type=DroneControl)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control Type=DroneControl Member=(Name=SendCommand OverloadingParameters=[(Assembly=&amp;quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&amp;quot; Namespace=ARDrone.Control.Commands Type=Command)]))&quot;)" tag="DGQL" />
+              <reference Id="3b8f5300-8a7f-4c60-89bf-648d26e60cc4" handle="(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control Type=DroneControl Member=(Name=SendCommand OverloadingParameters=[(Assembly=&quot;$(92277dfc-0d55-4998-8acf-b01f3a7fb508.OutputPathUri)&quot; Namespace=ARDrone.Control.Commands Type=Command)]))" tag="DGML" />
+            </referencesInternal>
+            <generationState>H4sIAAAAAAAEAO1abW/aMBC+nxL1wwTSlKjSWlVbmdTRoqJBqUb3aZqqwELKGgLDgY39+j2+OBAHyKDduqSzEMQ+34t9j+98VjilLnk0pSG5FOD3J3pfqM69gBoYcWkE2ls6pRu6A4egDzTGJyKLmuCt0QFV6Ax0Ab4R9SC3AHUA3gCU1+Twp86tj8w1xa9DLZpBfkxzcPbRP8eIoHtoHtME/Wvod2BtCC6POhRSm+0O8Rs+aMSG/YjnNeSnx/PooRVLeTxjl+e4nxYbnNJjFl0pjwmswcW6PPhimyYLPl2AT/KcwyuS5sFTY2gYQTqElAWJ2K/SbzW6BS3NGUKb7AdUBRIrjVegSZtFxegMY6s136If60rQkJZ6sO6v8eqrboG/x/t0ijVlee0Mdz5O+bLb0dqGgYyjCE8fY3J2CRZ1hU0Xdu8YERceqEPeZYykjhbaPd6RUiJSsWdr+Ns5u+GA41NgTSHTF7Ayhj8F62twhEucDzi2m+AQkJV7TvrCxLaJbRPbRY7tDjR8xUgf1Gz0JnM5UjOWs5jwPGNP6vbTuSDOGZccKRPNhuS8gfRsmTOSOkBoPWvZeg/OhdmfT7Y/s9mkzvuhpXJNVaFrMkaxENknp7+gb/CB9NubLWhds2Vf1e0WYjvmEmhX6Aed0DHsxufhgGflLU983V5ygrYZa6lV4DuAbSd1L/jOWeUeNBsruMBqNo3N6RXGj9AaQUuf6QEjlSCQXtlmNLrwgOCMO9J8/46zTXy2h4/K0V3GbcbZbj1L69iZ6qp81ZWPZ8RncRpJi3F31c7yOHpr9IkO6aX6fjaRWvJI3aVWOt6pVlpVQA+rlCx4VlKctXnE1ITTVFTFPb8vmENSLtmXstVW+9RUWeVByeTzMuXzPDxNNVb2aiwPXVOh/Z8RvUvVdggUila3OSm5PJns+zRT8xWxmqgs7dT4XWnI70f1zNZRuzcA3QVFrt+HN9xl/EYKD5m3DI6PxdHOICA0ZPWxKp8O1gY0muyPkD0x4Bwt8e5npE09byLQ4PivI9C8+SwGkn/nDaiO+HO9zT23vdHge4cPjCNe6Zyydz4Tu2XC58/F8+C3lne9353gtvs0/2HY74a3678mfwHUcTJWYCkAAA==
+(Assembly=$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri) Namespace=RideOnMotion Type=DroneCommand Member=_droneControl ObjectInstance="Object instance 5")
+this._drone._droneControl : DroneControl
+_droneControl.SendCommand( flightMoveCommand )</generationState>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="7bd6d249-8d8e-47f3-a509-367b806c3a04" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <lostFoundTargetMoniker Id="57a1ee83-3729-4356-98d0-d9016c5b2118" LastKnownName="LostFoundTarget" />
+            </receiveEvent>
+          </message>
+          <message Id="d98bd8c2-e3bf-4d88-8f2a-0645640e08ce" name="&lt;&lt;return&gt;&gt;" messageKind="Complete" messageSort="Reply" createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="3201c797-33cd-4d26-b50c-2c13ef65dc98" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="6ca9ae5f-9270-4e3a-90bf-e639d4594a60" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="41ded44f-fdb7-4a35-b3a1-204a811c4a65" name="ToString" messageKind="Complete" messageSort="SynchCall" createSelfMessage="false" signatureText="inputState.ToString()">
+            <referencesInternal>
+              <reference Id="99eddfb2-f1e6-41ac-84ec-4fd7bb98db0f" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion.Inputs)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs Type=InputState)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&amp;quot; Namespace=RideOnMotion.Inputs Type=InputState Member=ToString)&quot;)" tag="DGQL" />
+              <reference Id="39510af8-9347-4e5a-ba50-e370f9dcf670" handle="(Assembly=&quot;$(c214cbf4-359d-40fd-8f0c-102e04d4742c.OutputPathUri)&quot; Namespace=RideOnMotion.Inputs Type=InputState Member=ToString)" tag="DGML" />
+            </referencesInternal>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="db001b2b-bfae-422d-836f-3dc8a8faf2b3" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="c45cf303-7759-4fa2-852f-88d79fa3a228" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="2772adab-65e4-4c31-a50a-f421f7b52d74" name="&lt;&lt;return&gt;&gt;" messageKind="Complete" messageSort="Reply" createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="74ce4cd8-fa9d-4d11-bdca-7838eaca4b44" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="ab7d369a-ff59-4edd-9ffc-622aef17b2d5" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="677fb63e-a904-484f-b788-730135dc036b" name="NewEntry" messageKind="Complete" messageSort="SynchCall" createSelfMessage="false" signatureText="Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, inputState.ToString())">
+            <referencesInternal>
+              <reference Id="2066d167-96ed-4875-93eb-2da7fef03d46" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=Logger)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=Logger Member=(Name=NewEntry OverloadingParameters=[(Assembly=&amp;quot;$(VsSolutionUri)/packages/CK.Core.2.8.10/lib/net45/CK.Core.dll&amp;quot; Namespace=CK.Core Type=LogLevel),(Assembly=&amp;quot;$(VsSolutionUri)/packages/CK.Core.2.8.10/lib/net45/CK.Core.dll&amp;quot; Namespace=CK.Core Type=CKTrait),(Assembly=&amp;quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&amp;quot; Namespace=System Type=String)]))&quot;)" tag="DGQL" />
+              <reference Id="26cfaaac-2ded-4229-94f4-6850ddf000f0" handle="(Assembly=&quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&quot; Namespace=RideOnMotion Type=Logger Member=(Name=NewEntry OverloadingParameters=[(Assembly=&quot;$(VsSolutionUri)/packages/CK.Core.2.8.10/lib/net45/CK.Core.dll&quot; Namespace=CK.Core Type=LogLevel),(Assembly=&quot;$(VsSolutionUri)/packages/CK.Core.2.8.10/lib/net45/CK.Core.dll&quot; Namespace=CK.Core Type=CKTrait),(Assembly=&quot;$(FxReferenceAssembliesUri)/.NETFramework/v4.5/mscorlib.dll&quot; Namespace=System Type=String)]))" tag="DGML" />
+            </referencesInternal>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="f288cdd7-c6b9-42fd-85be-cb306fa4abe2" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="8244073b-eef1-4b17-999b-40dc4930cddc" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+          <message Id="7e5e8c48-8484-4807-8ab9-8400a4bea2bd" name="Output" messageKind="Lost" messageSort="AsynchCall" createSelfMessage="false">
+            <referencesInternal>
+              <reference Id="410554bc-e1c8-497f-aa41-b6fc21b3d6d5" handle="+ Id.Equals(&quot;Microsoft.Solution.ClassView&quot;) /&#xD;&#xA;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Namespace=RideOnMotion)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=Logger)&quot;)/&#xD;&#xA;&quot;Microsoft.Contains&quot;/&#xD;&#xA;+ Id.EqualsIgnoreCase(&quot;(Assembly=&amp;quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&amp;quot; Namespace=RideOnMotion Type=Logger Member=Output)&quot;)" tag="DGQL" />
+              <reference Id="7109f4c5-b9a1-4b8e-9a1c-b1bd0c23008a" handle="(Assembly=&quot;$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri)&quot; Namespace=RideOnMotion Type=Logger Member=Output)" tag="DGML" />
+            </referencesInternal>
+            <generationState>H4sIAAAAAAAEAO2ZW28SQRTHz0fZ9MHQl10x1lgtJg21SmxpI/XJGLNQoMhVZqFdP72/Obsgy0XBCy1mstmdmTPnNv8z5+ywHElF6jKUloTS4fmN0bUUddSRU2ZC6UJ7JUdyJTdwGHkvfa5IPCnBW5A9yckxdANfV6rIxVAb8HagvJBAr6L2PijXkGcgZzJCvi9jOGuMT5gx0kZzXwaML9EfYK0FV10upCfnarfFs/dbMz72I/WrpW1d/ajSS6Tq6nGoPm6mxYfTIuZJOUXMsIaQddXBYpUmD0xj+CzPGZQml0VnH0x/zJWZsdIO7W2gbfd+RNuEYwhtgnoxjUIFKzeKfSifoXZ0BUZ1nNGv6rqsxKwNX1dt0BzSWj/3NH8MseypdzEa+8TIqOypZqBRPpt7pTlpl3su9/4/tLeZexdwf6Ffgz6fXRO7h5JP/bM2B+pVqJ5lrc1ma5LVbxXdQcaK5bxCejTN6smb1GRG3rT3Ds7Y7bt/sO88uBIs7ajAbuos7EqX8/eH/a7U3wSFNs9mineRrPW1Yg2h+PKE+zl3Xh4za1Gt0vaYi+SpHCyR+BnWWd5ZhEu6qgacI6QjcKqpn2ONY/zXqq6tlZFqaaRebVp9/bmIu5OQy1OXp7uRp+ucmvJgebClc5NHXCwlWPAmoU443fnqfmtHmfY25aggPVSPm+pxiObYnbkeZDw2qe+P5Cv4W19erojVJXasxeSrokf+J1w2j3NyR/19ht0Et4Z6Wp++5bP2Jkifa6StVsPdwHYw89XyVitPG5rPCl6zmmVzY+q7rxW+i5aa0pP6P4nB7MqWx6MCAkbrbTcTg9yUu4D9sa4nosrZKnWta7exeaP05DtsDZTCqZdJBS/qeaintTC/wH9M22S+m2q356aPLkJrRmh29+/LJ+4/eeuepBnfTKU2f+f+OjPdednVWJfBrsbuToR2s8au+1vn8AH+1gkk+215lcz8f7oJdd3/hL8DXVapYD4eAAA=
+(Assembly=$(7db44258-5127-4395-b0d6-619c899bf2a1.OutputPathUri) Namespace=RideOnMotion Type=Logger ObjectInstance="Object instance 91")
+Logger.instance : Logger
+Output()</generationState>
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="f62e6688-28eb-4f83-8fe7-c078b6580e70" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <lostFoundTargetMoniker Id="1121bef8-bc54-4962-a1cd-2d4047899300" LastKnownName="LostFoundTarget" />
+            </receiveEvent>
+          </message>
+          <message Id="1e4c37d1-0196-46bb-88a0-9aa99d18bc73" name="&lt;&lt;return&gt;&gt;" messageKind="Complete" messageSort="Reply" createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="01d88c68-7bfb-4c4c-947b-478275a52c84" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="34738fa7-bb34-48d2-af31-6b067a391227" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+        </messages>
+      </interaction>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="b335fef5-55f8-491a-ad8f-df3b82ac22a6" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="a7cf6eb2-2b99-42f0-b717-2635c6ab2ba2" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="62297986-419d-4dbf-b548-289abf270de5" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="ddf5b2b6-92b2-4c7f-bbaa-89a4f1c592ad" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="bbf5eb0e-5294-42de-a23c-871273a35d41" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="6b11305f-4f8d-4cf7-a077-9b4db86ea751" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="c4d3b698-4c7e-45ab-910f-43cb5664320e" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="923c6da3-9699-4d31-8462-5a47000fc873" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="8ad83d98-ea8b-4ebb-a6c1-b4e9bbf879e9" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="a9c996f9-617f-4adf-b30a-e8c3a50e58c4" name="ExecutionEvent" />
+    </packageHasNamedElement>
+  </packagedElements>
+</SequenceDesignerModel>
