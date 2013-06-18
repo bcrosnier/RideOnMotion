@@ -1,0 +1,51 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RideOnMotion.Inputs.Xbox360Gamepad.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="CameraSwap" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Back</Value>
+    </Setting>
+    <Setting Name="Emergency" Type="System.String" Scope="User">
+      <Value Profile="(Default)">B</Value>
+    </Setting>
+    <Setting Name="FlatTrim" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Start</Value>
+    </Setting>
+    <Setting Name="GazDown" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left Trigger</Value>
+    </Setting>
+    <Setting Name="GazUp" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Right Trigger</Value>
+    </Setting>
+    <Setting Name="Hover" Type="System.String" Scope="User">
+      <Value Profile="(Default)">A</Value>
+    </Setting>
+    <Setting Name="Land" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left Shoulder</Value>
+    </Setting>
+    <Setting Name="PitchDown" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left Thumbstick Down</Value>
+    </Setting>
+    <Setting Name="PitchUp" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left Thumbstick Up</Value>
+    </Setting>
+    <Setting Name="RollLeft" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left Thumbstick Left</Value>
+    </Setting>
+    <Setting Name="RollRight" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left Thumbstick Right</Value>
+    </Setting>
+    <Setting Name="SpecialAction" Type="System.String" Scope="User">
+      <Value Profile="(Default)">X</Value>
+    </Setting>
+    <Setting Name="TakeOff" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Right Shoulder</Value>
+    </Setting>
+    <Setting Name="YawLeft" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Right Thumbstick Left</Value>
+    </Setting>
+    <Setting Name="YawRight" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Right Thumbstick Right</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

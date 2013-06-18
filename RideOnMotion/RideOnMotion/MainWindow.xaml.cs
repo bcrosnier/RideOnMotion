@@ -1,138 +1,154 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using RideOnMotion.Inputs.Kinect;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+using RideOnMotion.Utilities;
 using System.Windows.Input;
-using System.Windows.Media;
+using System;
+using System.Collections.Specialized;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using KinectInfo;
-using Microsoft.Kinect;
-using KinectStatusNotifier;
+using System.Windows.Interop;
 
-namespace RideOnMotion
+namespace RideOnMotion.UI
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		/// <summary>
-		/// The instance of Kinect sensor
-		/// </summary>
-		private KinectSensor sensor;
+        /// <summary>
+        /// Model view for this window.
+        /// </summary>
+        private MainWindowViewModel mainWindowViewModel;
 
-		/// <summary>
-		/// The Main window View Model
-		/// </summary>
-		private MainWindowViewModel viewModel;
-
-		/// <summary>
-		/// Status Notifier
-		/// </summary>
-		private StatusNotifier notifier = new StatusNotifier();
+        private MenuItem _activeInputMenuItem;
 
 		public MainWindow()
 		{
-			InitializeComponent();
-			this.viewModel = new MainWindowViewModel();
-			this.viewModel.CanStart = false;
-			this.viewModel.CanStop = false;
-			this.DataContext = this.viewModel;
+            InitializeComponent();
+
+			this.mainWindowViewModel = new MainWindowViewModel();
+            this.DataContext = this.mainWindowViewModel;
+
+            // Bind input menu and fire once
+            this.mainWindowViewModel.InputMenuChanged += OnInputMenuChange;
+            this.OnInputMenuChange( this, this.mainWindowViewModel.InputMenu );
+
+            ( (INotifyCollectionChanged)this.LogListBox.Items ).CollectionChanged += LogListBox_CollectionChanged;
+
+            /*
+            // Drone bitmap placeholder. The image is from Atelier Totori, by the way. --BC
+            var uriSource = new Uri( @"http://intech.bcrosnier.com/franck_is_a_lolicon.jpg", UriKind.Absolute );
+            
+            var bi = new BitmapImage();
+            bi.BeginInit();
+            bi.CacheOption = BitmapCacheOption.OnLoad;
+            bi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bi.UriSource = uriSource;
+            bi.DownloadCompleted += ( object sender, EventArgs e ) =>
+            {
+                mainWindowViewModel.DroneImageSource = bi;
+            };
+            bi.DownloadFailed += ( sender, e ) =>
+            {
+                RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Application, "Image download failed: " + e.ErrorException.Message );
+            };
+            bi.EndInit();
+            mainWindowViewModel.DroneImageSource = bi;
+            */
 		}
 
-		/// <summary>
-		/// Starts the sensor.
-		/// </summary>
-		private void StartSensor()
+        private void LogListBox_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )
+        {
+            if ( e.Action == NotifyCollectionChangedAction.Add )
+            {
+                this.LogListBox.ScrollIntoView( e.NewItems[0] );
+            } 
+        }
+
+        private void OnInputMenuChange( object sender, MenuItem e )
+        {
+            if ( this._activeInputMenuItem != null )
+            {
+                this.MenuBar.Items.Remove( this._activeInputMenuItem );
+            }
+
+            if ( e != null )
+            {
+                this.MenuBar.Items.Add( e );
+            }
+
+            this._activeInputMenuItem = e;
+        }
+
+		private void MainWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e )
 		{
-			if ( this.sensor != null && !this.sensor.IsRunning )
+			this.mainWindowViewModel.Stop();
+		}
+
+        /// <summary>
+        /// File -> Quit action
+        /// </summary>
+        private void MenuItem_Quit_Click( object sender, RoutedEventArgs e )
+        {
+            this.Close();
+        }
+
+		#region KonamiCode
+		protected string _konami = string.Empty;
+		protected System.Windows.Media.Brush _originalBackground;
+		protected UIElement _originalViewBox;
+		protected override void OnPreviewKeyUp( KeyEventArgs e )
+		{
+			this.mainWindowViewModel.OnPreviewKeyUp( e );
+		}
+		protected override void OnPreviewKeyDown( KeyEventArgs e )
+		{
+            this.mainWindowViewModel.OnPreviewKeyDown( e );
+
+            // konami code management.
+			if ( _originalBackground == null )
 			{
-				this.sensor.Start();
-				this.viewModel.CanStart = false;
-				this.viewModel.CanStop = true;
+				_originalBackground = MainPanel.Background;
+				_originalViewBox = DepthViewerPanel.Children[0];
+			}
+			string i = "UpUpDownDownLeftRightLeftRightBA";
+			if ( e.Key.ToString() == "Up" && _konami != "Up" )
+			{
+				_konami = "";
+			}
+			_konami = ( _konami + e.Key.ToString() );
+			// Debug.Print(konami)
+			if ( ( _konami == i ) )
+			{
+				mainWindowViewModel.Konami = true;
+				string fileName = "..\\..\\Resources\\mad_duck.jpg";
+				System.Windows.Media.Imaging.BitmapImage image = new System.Windows.Media.Imaging.BitmapImage( new System.Uri( fileName, System.UriKind.Relative ) );
+				System.Windows.Media.ImageBrush brush = new System.Windows.Media.ImageBrush();
+				brush.ImageSource = image;
+				MainPanel.Background = brush;
+
+
+				Viewbox v = new Viewbox();
+				MediaElement me = new MediaElement();
+				fileName = "..\\..\\Resources\\Star Wars Ducks.mp4";
+				me.Source = new System.Uri( fileName, System.UriKind.Relative );
+				me.LoadedBehavior = MediaState.Manual;
+				me.MediaEnded += new RoutedEventHandler( delegate( object s, RoutedEventArgs re ) { me.Stop(); me.Play(); } );
+				me.Play();
+				v.Child = me;
+				DepthViewerPanel.Children.RemoveAt( 0 );
+				DepthViewerPanel.Children.Add( v );
+			}
+			else if ( _konami.Length > i.Length )
+			{
+				mainWindowViewModel.Konami = false;
+				MainPanel.Background = _originalBackground;
+				DepthViewerPanel.Children.RemoveAt( 0 );
+				DepthViewerPanel.Children.Add( _originalViewBox );
 			}
 		}
 
-		/// <summary>
-		/// Stops the sensor.
-		/// </summary>
-		private void StopSensor()
-		{
-			if ( this.sensor != null && this.sensor.IsRunning )
-			{
-				this.sensor.Stop();
-				this.viewModel.CanStart = true;
-				this.viewModel.CanStop = false;
-			}
-		}
-
-		/// <summary>
-		/// Status changed for Kinect sensor
-		/// </summary>
-		/// <param name="sender">Kinect Sensor</param>
-		/// <param name="e">Event Args</param>
-		void KinectSensors_StatusChanged( object sender, StatusChangedEventArgs e )
-		{
-			this.viewModel.SensorStatus = e.Status.ToString();
-		}
-
-		/// <summary>
-		/// Sets the Kinect info.
-		/// </summary>
-		private void SetKinectInfo()
-		{
-			if ( this.sensor != null )
-			{
-				this.viewModel.ConnectionID = this.sensor.DeviceConnectionId;
-				this.viewModel.DeviceID = this.sensor.UniqueKinectId;
-				this.viewModel.SensorStatus = this.sensor.Status.ToString();
-				this.viewModel.IsColorStreamEnabled = this.sensor.ColorStream.IsEnabled;
-				this.viewModel.IsDepthStreamEnabled = this.sensor.DepthStream.IsEnabled;
-				this.viewModel.IsSkeletonStreamEnabled = this.sensor.SkeletonStream.IsEnabled;
-				this.viewModel.SensorAngle = this.sensor.ElevationAngle;
-			}
-		}
-
-		/// <summary>
-		/// Handles the Click event of the ButtonExit control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-		private void ButtonExit_Click( object sender, RoutedEventArgs e )
-		{
-			this.StopSensor();
-			this.Close();
-		}
-
-		private void MainWindow_Loaded( object sender, RoutedEventArgs e )
-		{
-			int deviceCount = KinectSensor.KinectSensors.Count;
-			if (deviceCount > 0)
-			{
-				this.notifier.Sensors = KinectSensor.KinectSensors;
-				this.sensor = KinectSensor.KinectSensors[0];
-				KinectSensor.KinectSensors.StatusChanged += new System.EventHandler<StatusChangedEventArgs>( KinectSensors_StatusChanged );
-				this.sensor = KinectSensor.KinectSensors[0];
-				this.StartSensor();
-				this.sensor.ColorStream.Enable();
-				this.sensor.DepthStream.Enable();
-				this.sensor.SkeletonStream.Enable();
-
-				this.SetKinectInfo();
-			}
-			else
-			{
-				// No sensor connected. Take appropriate action
-				MessageBox.Show( "No device is connected with system!" );
-			}
-		}
+		#endregion //KonamiCode
 
 	}
 }

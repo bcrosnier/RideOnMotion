@@ -1,0 +1,34 @@
+﻿<Window x:Class="RideOnMotion.Inputs.Kinect.KinectDeviceSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Kinect device settings" Height="300" Width="300">
+
+    <DockPanel LastChildFill="True">
+        <DockPanel.Background>
+            <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+        </DockPanel.Background>
+        <StackPanel DockPanel.Dock="Bottom" Height="Auto" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
+            <Button Height="Auto" Width="48" Content="Apply" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="ButtonApply_Click"/>
+            <Button Height="Auto" Width="48" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonCancel_Click" />
+            <Button Height="Auto" Width="48" Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonOK_Click" />
+        </StackPanel>
+        <StackPanel Margin="3">
+            <GroupBox Header="Elevation angle" Padding="3">
+                <DockPanel LastChildFill="True">
+                    <TextBlock Text="{Binding MinimumElevationAngle}" DockPanel.Dock="Left"/>
+                    <TextBlock Text="{Binding MaximumElevationAngle}" DockPanel.Dock="Right"/>
+                    <TextBlock Text="{Binding CurrentElevationAngle}" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Top"></TextBlock>
+                    <Slider Height="24" Width="Auto" Maximum="27" Minimum="-27" SmallChange="1" Value="{Binding CurrentElevationAngle}"/>
+                </DockPanel>
+            </GroupBox>
+            <GroupBox Header="Device settings" Padding="3">
+                <StackPanel>
+                    <CheckBox Content="Enable near mode" IsChecked="{Binding NearModeIsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Content="Enable seating tracking mode" IsChecked="{Binding SeatingModeIsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Content="Enable smoothing" IsChecked="{Binding SkeletonSmoothingIsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Content="Disable depth rendering" IsChecked="{Binding DepthImageIsDisabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </DockPanel>
+</Window>
