@@ -37,8 +37,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
-    <Reference Include="CK.Core">
-      <HintPath>..\packages\CK.Core.2.8.10\lib\net45\CK.Core.dll</HintPath>
+    <Reference Include="CK.Core, Version=2.8.11.0, Culture=neutral, PublicKeyToken=731c291b31fb8d27, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\CK.Core.2.8.11\lib\net45\CK.Core.dll</HintPath>
     </Reference>
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ReachFramework" />
