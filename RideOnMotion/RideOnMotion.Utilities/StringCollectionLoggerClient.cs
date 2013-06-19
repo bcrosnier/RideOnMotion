@@ -48,25 +48,42 @@ namespace RideOnMotion.Utilities
 
         public void OnGroupClosed( IActivityLogGroup group, ICKReadOnlyList<ActivityLogGroupConclusion> conclusions )
         {
-            AddString( "Group closed: " + group.GroupText );
-            foreach ( var conclusion in conclusions )
+            //AddString( "Group closed: " + group.GroupText );
+            if ( conclusions != null )
             {
-                AddString( "    [" + conclusion.Tag + "] " + conclusion.Text );
+                foreach ( var conclusion in conclusions )
+                {
+                    AddString( "    [" + conclusion.Tag + "] " + conclusion.Text );
+                }
             }
         }
 
         public void OnGroupClosing( IActivityLogGroup group, ref List<ActivityLogGroupConclusion> conclusions )
         {
-            AddString( "Group closing: " + group.GroupText );
-            foreach ( var conclusion in conclusions )
+            //AddString( "Group closing: " + group.GroupText );
+            if ( conclusions != null )
             {
-                AddString( "    [" + conclusion.Tag + "] " + conclusion.Text );
+                foreach ( var conclusion in conclusions )
+                {
+                    AddString( "    [" + conclusion.Tag + "] " + conclusion.Text );
+                }
             }
         }
 
         public void OnOpenGroup( IActivityLogGroup group )
         {
-            AddString( "Group open: " + group.GroupText );
+            if ( group.IsGroupTextTheExceptionMessage )
+            {
+                AddString( "Exception group: " + group.GroupText );
+            }
+            else
+            {
+                AddString( "Group open: " + group.GroupText );
+            }
+            if ( group.Exception != null )
+            {
+                AddString( group.Exception.ToString() );
+            }
         }
 
         public void OnUnfilteredLog( CKTrait tags, LogLevel level, string text, DateTime logTimeUtc )

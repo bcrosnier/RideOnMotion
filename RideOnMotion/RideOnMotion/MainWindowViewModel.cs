@@ -57,6 +57,7 @@ namespace RideOnMotion.UI
 
         #region Values
         private IActivityLogger _logger;
+        private IActivityLoggerClient _logClient;
 
         private ImageSource _droneImageSource;
         private ImageSource _inputImageSource;
@@ -339,9 +340,17 @@ namespace RideOnMotion.UI
 
             _logger = new DefaultActivityLogger();
             _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "MainWindow" );
+            _logger.Filter = LogLevelFilter.Trace; // TODO : Make a filter setting
 
-            IActivityLoggerClient logClient = new StringCollectionLoggerClient( _logStrings, MAX_LOG_ENTRIES );
-            _logger.Output.RegisterClient( logClient );
+            _logClient = new StringCollectionLoggerClient( _logStrings, MAX_LOG_ENTRIES );
+            _logger.Output.RegisterClient( _logClient );
+
+            // Log testing.
+            _logger.Fatal( "Fatal test" );
+            _logger.Error( "Error test" );
+            _logger.Warn( "Warn test" );
+            _logger.Info( "Info test" );
+            _logger.Trace( "Trace test" );
 
             CreateDroneCommands();
 
@@ -361,15 +370,17 @@ namespace RideOnMotion.UI
             _lastKeyboardInput = new InputState();
             _lastGamepadInput = new InputState();
             _lastKinectInput = new InputState();
+
             _keyboardController = new KeyboardController();
             _Xbox360Gamepad = new Xbox360GamepadController();
             _Xbox360Gamepad.Start();
             _Xbox360Gamepad.StartMappingForDrone();
+
             ConnectDrone( this._currentDroneConfig ); // At this point, should be default config.
+
             DroneOrderTimer.Interval = new TimeSpan( 0, 0, 0, 0, 30 );
             DroneOrderTimer.Tick += new EventHandler( OrderTheDrone );
             DroneOrderTimer.Start();
-
         }
 
         private void OrderTheDrone( object sender, EventArgs e )
@@ -545,7 +556,16 @@ namespace RideOnMotion.UI
             {
                 paired = _droneInit.DroneCommand.IsDronePaired;
             }
-            _droneInit = new DroneInitializer( config );
+            try
+            {
+                _droneInit = new DroneInitializer( config );
+            }
+            catch ( Exception e )
+            {
+                // Breaks on no wifi service/card
+                _logger.Error( e );
+                return;
+            }
 
             _droneInit.NetworkConnectionStateChanged += OnNetworkConnectionStateChanged;
             _droneInit.ConnectionStateChanged += OnConnectionStateChanged;
@@ -581,15 +601,18 @@ namespace RideOnMotion.UI
 
         private void DisconnectDrone( DroneInitializer init )
         {
+            // Do nothing if drone was never connected.
+            if ( init != null )
+            {
+                init.NetworkConnectionStateChanged -= OnNetworkConnectionStateChanged;
+                init.ConnectionStateChanged -= OnConnectionStateChanged;
+                init.DroneDataReady -= OnDroneDataReady;
+                init.DroneDataReady -= OnOrientationChange;
+                // Bind front drone camera
+                init.DroneFrameReady -= OnDroneFrameReady;
 
-            init.NetworkConnectionStateChanged -= OnNetworkConnectionStateChanged;
-            init.ConnectionStateChanged -= OnConnectionStateChanged;
-            init.DroneDataReady -= OnDroneDataReady;
-            init.DroneDataReady -= OnOrientationChange;
-            // Bind front drone camera
-            init.DroneFrameReady -= OnDroneFrameReady;
-
-            init.EndDrone();
+                init.EndDrone();
+            }
         }
 
         private void ReconnectDrone()
@@ -656,44 +679,52 @@ namespace RideOnMotion.UI
             }
             else
             {
-                bool isPaired = this._droneInit.DroneCommand.IsDronePaired;
-
-                EventHandler<DroneSettingsEventArgs> newDroneConfigDelegate = ( sender, e ) =>
+                // Do nothing if drone could not be initialized.
+                if ( this._droneInit != null )
                 {
-                    isPaired = this._droneInit.DroneCommand.IsDronePaired;
-                    this._currentDroneConfig = e.DroneConfig;
+                    bool isPaired = this._droneInit.DroneCommand.IsDronePaired;
 
-                    if ( isPaired != e.IsPaired )
+                    EventHandler<DroneSettingsEventArgs> newDroneConfigDelegate = ( sender, e ) =>
                     {
-                        if ( e.IsPaired )
+                        isPaired = this._droneInit.DroneCommand.IsDronePaired;
+                        this._currentDroneConfig = e.DroneConfig;
+
+                        if ( isPaired != e.IsPaired )
                         {
-                            _logger.Info("Pairing drone");
-                            this._droneInit.DroneCommand.Pair();
+                            if ( e.IsPaired )
+                            {
+                                _logger.Info( "Pairing drone" );
+                                this._droneInit.DroneCommand.Pair();
+                            }
+                            else
+                            {
+                                _logger.Info( "Unpairing drone" );
+                                this._droneInit.DroneCommand.Unpair();
+                            }
                         }
-                        else
-                        {
-                            _logger.Info( "Unpairing drone" );
-                            this._droneInit.DroneCommand.Unpair();
-                        }
-                    }
 
-                    ReconnectDrone();
+                        ReconnectDrone();
 
-                };
+                    };
 
-                DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig, isPaired );
+                    DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig, isPaired );
 
-                window.DroneConfigAvailable += newDroneConfigDelegate;
+                    window.DroneConfigAvailable += newDroneConfigDelegate;
 
-                _droneSettingsWindow = window;
+                    _droneSettingsWindow = window;
 
-                _droneSettingsWindow.Closed += ( object sender, EventArgs args ) =>
+                    _droneSettingsWindow.Closed += ( object sender, EventArgs args ) =>
+                    {
+                        _droneSettingsWindow = null;
+                        window.DroneConfigAvailable -= newDroneConfigDelegate;
+                    };
+
+                    _droneSettingsWindow.Show();
+                }
+                else
                 {
-                    _droneSettingsWindow = null;
-                    window.DroneConfigAvailable -= newDroneConfigDelegate;
-                };
-
-                _droneSettingsWindow.Show();
+                    _logger.Error( "Can't open settings: Drone connection was never initialized." );
+                }
             }
         }
 
