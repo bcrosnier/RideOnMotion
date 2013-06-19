@@ -365,8 +365,6 @@ namespace RideOnMotion.UI
             mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
             mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
 
-            initializeBindings();
-
             _lastKeyboardInput = new InputState();
             _lastGamepadInput = new InputState();
             _lastKinectInput = new InputState();
@@ -435,14 +433,6 @@ namespace RideOnMotion.UI
             this.DroneImageSource = e.Frame;
         }
 
-        /// <summary>
-        /// Creates the event bindings with the model.
-        /// </summary>
-        private void initializeBindings()
-        {
-            Logger.Instance.NewLogStringReady += OnLogStringReceived;
-        }
-
         private void OnInputStatusChanged( object sender, DroneInputStatus e )
         {
             _inputStatusInfo = _inputController.InputStatusString;
@@ -453,11 +443,6 @@ namespace RideOnMotion.UI
         private void OnInputBitmapSourceChanged( object sender, BitmapSource s )
         {
             InputImageSource = s;
-        }
-
-        private void OnLogStringReceived( object sender, String e )
-        {
-            _logger.Warn( e );
         }
 
         internal void OnPreviewKeyDown( KeyEventArgs e )
@@ -559,7 +544,7 @@ namespace RideOnMotion.UI
             }
             try
             {
-                _droneInit = new DroneInitializer( config );
+                _droneInit = new DroneInitializer( _logger, config );
             }
             catch ( Exception e )
             {
@@ -579,7 +564,7 @@ namespace RideOnMotion.UI
             _droneInit.StartDrone();
 
 
-            _sendDroneCommand = new SendDroneCommand();
+            _sendDroneCommand = new SendDroneCommand(_logger);
             _sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
 
             _Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;

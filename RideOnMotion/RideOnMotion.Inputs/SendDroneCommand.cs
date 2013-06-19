@@ -3,15 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CK.Core;
 
 namespace RideOnMotion.Inputs
 {
 	public class SendDroneCommand
 	{
+        IActivityLogger _logger;
 		DroneCommand _drone;
 		public double DroneOriginalOrientation;
 		public double DroneCurrentOrientation;
 		public bool RelativeDirection;
+
+        public SendDroneCommand(IActivityLogger parentLogger)
+        {
+            _logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "SendDroneCommand" );
+            _logger.Output.BridgeTo( parentLogger );
+        }
 
 		internal double DroneOrientationDifference
 		{
@@ -77,10 +86,10 @@ namespace RideOnMotion.Inputs
 				inputState.Roll = roll2;
 				inputState.Pitch = pitch2;
 				// for debugging purpose
-				//Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Navigate with : roll2 : " + roll2 + " , pitch2 : " + pitch2);
+                //_logger.Trace("Navigate with : roll2 : " + roll2 + " , pitch2 : " + pitch2);
 			}
 			_drone.Navigate( roll2, pitch2, yaw, gaz );
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, inputState.ToString());
+            _logger.Trace( inputState.ToString() );
 		}
 
 		public void MixInputAndProcess(InputState Keyboard,InputState Gamepad, InputState Kinect)
