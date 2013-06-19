@@ -373,6 +373,7 @@ namespace RideOnMotion.UI
 
             _keyboardController = new KeyboardController();
             _Xbox360Gamepad = new Xbox360GamepadController();
+
             _Xbox360Gamepad.Start();
             _Xbox360Gamepad.StartMappingForDrone();
 
@@ -480,7 +481,7 @@ namespace RideOnMotion.UI
             if ( t != null && t.GetInterface( "RideOnMotion.IDroneInputController", true ) != null )
             {
 
-                IDroneInputController controller = (IDroneInputController)Activator.CreateInstance( t );
+                IDroneInputController controller = (IDroneInputController)Activator.CreateInstance( t, _logger );
 
                 clearInputController();
 
