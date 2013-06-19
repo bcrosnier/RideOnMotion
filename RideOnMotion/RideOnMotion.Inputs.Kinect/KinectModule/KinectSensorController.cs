@@ -888,8 +888,8 @@ namespace RideOnMotion.Inputs.Kinect
 				else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeChanged( this, 3 );
+					MapInput();
 					_canTakeOff = false;
-                    MapInput();
 				}
 			}
 		}
@@ -1201,7 +1201,7 @@ namespace RideOnMotion.Inputs.Kinect
             {
                 land = true;
             }
-            if (_rightGrip && !_leftGrip && ActiveDrone.CanTakeoff)
+			if( _canTakeOff && _rightGrip && !_leftGrip && ActiveDrone.CanTakeoff )
             {
                 takeOff = true;
 			}
