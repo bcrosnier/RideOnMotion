@@ -177,8 +177,6 @@ namespace RideOnMotion.Inputs.Kinect
                     {
                         action();
                     }
-
-					//Logger.Instance.NewEntry( LogLevel.Trace, CKTraitTags.ARDrone, joint.JointType.ToString() + " activated " + this.Name );
 				}
 
 				IsActive = true;
@@ -186,7 +184,6 @@ namespace RideOnMotion.Inputs.Kinect
 			else if( IsActive == true )
 			{
 				IsActive = false;
-				//Logger.Instance.NewEntry( LogLevel.Trace, CKTraitTags.ARDrone, joint.JointType.ToString() + " not on " + this.Name );
 			}
         }
 

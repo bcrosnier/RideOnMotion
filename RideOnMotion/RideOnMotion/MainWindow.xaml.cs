@@ -50,12 +50,13 @@ namespace RideOnMotion.UI
             };
             bi.DownloadFailed += ( sender, e ) =>
             {
-                RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Error, CKTraitTags.Application, "Image download failed: " + e.ErrorException.Message );
+                _logger.Error("Image download failed");
+                _logger.Error(e);
             };
             bi.EndInit();
             mainWindowViewModel.DroneImageSource = bi;
             */
-		}
+        }
 
         private void LogListBox_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )
         {

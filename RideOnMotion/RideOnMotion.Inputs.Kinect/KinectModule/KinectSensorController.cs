@@ -403,9 +403,9 @@ namespace RideOnMotion.Inputs.Kinect
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
 
-			this._inputState = new InputState();
+			this._inputState = new InputState(_logger);
 
-            this.InputUIControl = new KinectSensorControllerUI( this );
+            this.InputUIControl = new KinectSensorControllerUI( _logger, this );
             ReleaseLeftHand.Interval = new TimeSpan( 0, 0, 2 );
             ReleaseLeftHand.Tick += new EventHandler( OnReleaseLeftHand );
             ReleaseRightHand.Interval = new TimeSpan( 0, 0, 2 );
@@ -1084,7 +1084,7 @@ namespace RideOnMotion.Inputs.Kinect
             else
             {
                 // Prepare and open window
-                this._deviceSettingsWindow = new KinectDeviceSettings( this );
+                this._deviceSettingsWindow = new KinectDeviceSettings( _logger, this );
                 _deviceSettingsWindow.Closed += deviceSettingsWindow_Closed;
                 _deviceSettingsWindow.Show();
             }

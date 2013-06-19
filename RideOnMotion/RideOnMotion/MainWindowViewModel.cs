@@ -708,7 +708,7 @@ namespace RideOnMotion.UI
 
                     };
 
-                    DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig, isPaired );
+                    DroneSettingsWindow window = new DroneSettingsWindow( _logger, this._currentDroneConfig, isPaired );
 
                     window.DroneConfigAvailable += newDroneConfigDelegate;
 

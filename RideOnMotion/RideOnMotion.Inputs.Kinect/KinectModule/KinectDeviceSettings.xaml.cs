@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using CK.Core;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -23,9 +24,10 @@ namespace RideOnMotion.Inputs.Kinect
     {
         private KinectDeviceSettingsViewModel _viewModel;
 
-        public KinectDeviceSettings(Inputs.Kinect.KinectSensorController controller)
+        public KinectDeviceSettings(IActivityLogger parentLogger, Inputs.Kinect.KinectSensorController controller)
         {
-            this._viewModel = new KinectDeviceSettingsViewModel(controller);
+
+            this._viewModel = new KinectDeviceSettingsViewModel( parentLogger, controller );
             this.DataContext = _viewModel;
             InitializeComponent();
         }
@@ -56,6 +58,7 @@ namespace RideOnMotion.Inputs.Kinect
     public class KinectDeviceSettingsViewModel : INotifyPropertyChanged
     {
         private Inputs.Kinect.KinectSensorController _controller;
+        private IActivityLogger _logger;
 
         private int _minimumElevationAngle;
         private int _maximumElevationAngle;
@@ -65,8 +68,12 @@ namespace RideOnMotion.Inputs.Kinect
         private bool _skeletonSmoothingIsEnabled;
         private bool _depthImageIsDisabled;
 
-        public KinectDeviceSettingsViewModel( Inputs.Kinect.KinectSensorController controller )
+        public KinectDeviceSettingsViewModel( IActivityLogger parentLogger, Inputs.Kinect.KinectSensorController controller )
         {
+            _logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "KinectDeviceSettings" );
+            _logger.Output.BridgeTo( parentLogger );
+
             this._controller = controller;
             this.MinimumElevationAngle = this._controller.Sensor.MinElevationAngle;
             this.MaximumElevationAngle = this._controller.Sensor.MaxElevationAngle;
@@ -344,8 +351,8 @@ namespace RideOnMotion.Inputs.Kinect
 					catch ( InvalidOperationException e )
 					{
                         // Log ElevationAngle error here
-                        Logger.Instance.NewEntry( CKLogLevel.Error, CKTraitTags.Kinect, "Too much movement for the Kinect, please wait 20 sec:" );
-                        Logger.Instance.NewEntry( CKLogLevel.Error, CKTraitTags.Kinect, e.Message );
+                        _logger.Error( "Too much movement for the Kinect, please wait 20 sec" );
+                        _logger.Error( e );
 					}
 				} );
 			}
