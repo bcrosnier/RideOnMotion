@@ -8,6 +8,7 @@ using System.Windows.Threading;
 using CK.Core;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows;
 
 namespace RideOnMotion.Utilities
 {
@@ -18,7 +19,9 @@ namespace RideOnMotion.Utilities
     {
         private int _maxLogEntries;
         private Collection<ListBoxItem> _outputCollection;
+        private Thickness _currentPadding = new Thickness(0, 0, 0, 0);
 
+        public static readonly int OFFSET_VALUE = 20;
         public static readonly Brush FATAL_COLOR = Brushes.DarkRed;
         public static readonly Brush ERROR_COLOR = Brushes.Red;
         public static readonly Brush WARN_COLOR = Brushes.Orange;
@@ -48,6 +51,8 @@ namespace RideOnMotion.Utilities
                 var item = new ListBoxItem();
                 item.Content = str;
                 item.Foreground = color;
+                item.Padding = this._currentPadding;
+
                 _outputCollection.Add( item );
             } );
         }
@@ -83,6 +88,7 @@ namespace RideOnMotion.Utilities
 
         public void OnGroupClosed( IActivityLogGroup group, ICKReadOnlyList<ActivityLogGroupConclusion> conclusions )
         {
+            this._currentPadding.Left -= OFFSET_VALUE;
             //AddString( "Group closed: " + group.GroupText );
             if ( conclusions != null )
             {
@@ -115,6 +121,9 @@ namespace RideOnMotion.Utilities
             {
                 AddString( "Group open: " + group.GroupText );
             }
+
+            this._currentPadding.Left += OFFSET_VALUE;
+
             if ( group.Exception != null )
             {
                 AddString( group.Exception.ToString(), ERROR_COLOR );
