@@ -23,6 +23,8 @@
             <PackageSource Include="https://nuget.org/api/v2/" />
             <PackageSource Include="https://my-nuget-source/nuget/" />
         -->
+      <PackageSource Include="https://nuget.org/api/v2/" />
+      <PackageSource Include="https://get-package.net/feed/CiviKey/feed-CiviKey/" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
