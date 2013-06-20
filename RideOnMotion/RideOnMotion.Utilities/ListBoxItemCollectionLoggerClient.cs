@@ -6,30 +6,38 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using CK.Core;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace RideOnMotion.Utilities
 {
     /// <summary>
     /// Logger client that manages strings in a string collection.
     /// </summary>
-    public class StringCollectionLoggerClient : IActivityLoggerClient
+    public class ListBoxItemCollectionLoggerClient : IActivityLoggerClient
     {
         private int _maxLogEntries;
-        private Collection<string> _outputCollection;
+        private Collection<ListBoxItem> _outputCollection;
+
+        public static readonly Brush FATAL_COLOR = Brushes.DarkRed;
+        public static readonly Brush ERROR_COLOR = Brushes.Red;
+        public static readonly Brush WARN_COLOR = Brushes.Orange;
+        public static readonly Brush INFO_COLOR = Brushes.Blue;
+        public static readonly Brush TRACE_COLOR = Brushes.Gray;
 
         /// <summary>
         /// Create a new logger client that will add strings to a collection, and clear old entries whenever a maximum number of entries is reached.
         /// </summary>
         /// <param name="targetCollection">Collection to use</param>
         /// <param name="maxLogEntries">Maximum number of entries</param>
-        public StringCollectionLoggerClient( Collection<string> targetCollection, int maxLogEntries )
+        public ListBoxItemCollectionLoggerClient( Collection<ListBoxItem> targetCollection, int maxLogEntries )
         {
             if ( targetCollection == null ) throw new ArgumentNullException( "Output TextWriter must exist." );
             _outputCollection = targetCollection;
             _maxLogEntries = maxLogEntries;
         }
 
-        private void AddString( string str )
+        private void AddString( string str, Brush color )
         {
             Invoke( () =>
             {
@@ -37,8 +45,35 @@ namespace RideOnMotion.Utilities
                 {
                     _outputCollection.RemoveAt( 0 );
                 }
-                _outputCollection.Add( str );
+                var item = new ListBoxItem();
+                item.Content = str;
+                item.Foreground = color;
+                _outputCollection.Add( item );
             } );
+        }
+
+        private static Brush GetColorFromLevel( LogLevel level )
+        {
+            switch ( level )
+            {
+                case LogLevel.Fatal:
+                    return FATAL_COLOR;
+                case LogLevel.Error:
+                    return ERROR_COLOR;
+                case LogLevel.Warn:
+                    return WARN_COLOR;
+                case LogLevel.Info:
+                    return INFO_COLOR;
+                case LogLevel.Trace:
+                    return TRACE_COLOR;
+                default:
+                    return INFO_COLOR;
+            }
+        }
+
+        private void AddString( string str )
+        {
+            AddString( str, INFO_COLOR );
         }
 
         public void OnFilterChanged( LogLevelFilter current, LogLevelFilter newValue )
@@ -82,13 +117,14 @@ namespace RideOnMotion.Utilities
             }
             if ( group.Exception != null )
             {
-                AddString( group.Exception.ToString() );
+                AddString( group.Exception.ToString(), ERROR_COLOR );
             }
         }
 
         public void OnUnfilteredLog( CKTrait tags, LogLevel level, string text, DateTime logTimeUtc )
         {
-            AddString( "[" + logTimeUtc.ToLocalTime().ToString( "HH:mm:ss" ) + "] " + tags.AtomicTraits.First().ToString() + @": [" + level.ToString() + "] " + text );
+            AddString( "[" + logTimeUtc.ToLocalTime().ToString( "HH:mm:ss" ) + "] " + tags.AtomicTraits.First().ToString() + @": [" + level.ToString() + "] " + text,
+                GetColorFromLevel(level) );
         }
 
         private static void Invoke( Action action )

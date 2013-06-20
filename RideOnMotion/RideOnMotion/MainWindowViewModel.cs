@@ -76,7 +76,7 @@ namespace RideOnMotion.UI
 
         private string _inputStatusInfo = String.Empty;
 
-        private ObservableCollection<String> _logStrings;
+        private ObservableCollection<ListBoxItem> _logItems;
 
         internal bool Konami = false;
 
@@ -176,18 +176,18 @@ namespace RideOnMotion.UI
             }
         }
 
-        public ObservableCollection<String> LogData
+        public ObservableCollection<ListBoxItem> LogData
         {
             get
             {
-                return this._logStrings;
+                return this._logItems;
             }
 
-            set
+            private set
             {
-                if ( this._logStrings != value )
+                if ( this._logItems != value )
                 {
-                    this._logStrings = value;
+                    this._logItems = value;
                     this.OnNotifyPropertyChange( "LogData" );
                 }
             }
@@ -336,13 +336,13 @@ namespace RideOnMotion.UI
         /// </summary>
         public MainWindowViewModel()
         {
-            _logStrings = new ObservableCollection<string>();
+            _logItems = new ObservableCollection<ListBoxItem>();
 
             _logger = new DefaultActivityLogger();
             _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "MainWindow" );
             _logger.Filter = LogLevelFilter.Trace; // TODO : Make a filter setting
 
-            _logClient = new StringCollectionLoggerClient( _logStrings, MAX_LOG_ENTRIES );
+            _logClient = new ListBoxItemCollectionLoggerClient( _logItems, MAX_LOG_ENTRIES );
             _logger.Output.RegisterClient( _logClient );
 
             // Log testing.
