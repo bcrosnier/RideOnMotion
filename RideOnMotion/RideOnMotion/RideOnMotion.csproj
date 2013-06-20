@@ -163,7 +163,11 @@
     <Resource Include="Images\HelicopterIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\ToggleOfficeKeyboardScheme_7508.ico" />
     <Resource Include="Resources\mad_duck.jpg" />
+    <Resource Include="Resources\copy.ico" />
+    <Resource Include="Resources\PropertyIcon.ico" />
+    <Resource Include="Resources\Close_16xLG.png" />
     <Content Include="Resources\quack.wav" />
     <Content Include="Resources\quack2.wav" />
     <Content Include="Resources\quack3.wav" />

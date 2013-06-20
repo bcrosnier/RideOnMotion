@@ -27,13 +27,25 @@
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.MenuBarColorKey}}"/>
             </Menu.Background>
             <MenuItem Header="File">
-                <MenuItem Header="Quit" Click="MenuItem_Quit_Click" />
+                <MenuItem Header="Quit" Click="MenuItem_Quit_Click">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/Resources/Close_16xLG.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Input settings">
-                <MenuItem Header="Keyboard Settings" Command="{Binding OpenKeyboardSettingsCommand}" />
+                <MenuItem Header="Keyboard Settings" Command="{Binding OpenKeyboardSettingsCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/Resources/ToggleOfficeKeyboardScheme_7508.ico" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Drone">
-                <MenuItem Header="Settings" Command="{Binding OpenDroneSettingsCommand}" />
+                <MenuItem Header="Settings" Command="{Binding OpenDroneSettingsCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/Resources/PropertyIcon.ico" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Reconnect" Command="{Binding ReconnectDroneCommand}" />
             </MenuItem>
         </Menu>
@@ -85,7 +97,11 @@
 
                     <ListBox.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Copy" Click="Logger_CopyMenuItem_Click"></MenuItem>
+                            <MenuItem Header="Copy" Click="Logger_CopyMenuItem_Click">
+                                <MenuItem.Icon>
+                                    <Image Source="pack://application:,,,/Resources/copy.ico" MaxWidth="16" MaxHeight="16" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </ContextMenu>
                     </ListBox.ContextMenu>
                 </ListBox>
