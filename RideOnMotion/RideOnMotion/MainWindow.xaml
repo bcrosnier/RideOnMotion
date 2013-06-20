@@ -80,7 +80,7 @@
             </Viewbox>
 
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >
-                <ListBox x:Name="LogListBox" ItemsSource="{Binding LogData}"></ListBox>
+                <ListBox x:Name="LogListBox" ItemsSource="{Binding LogData}" VirtualizingPanel.ScrollUnit="Pixel"></ListBox>
             </DockPanel>
 
             <GridSplitter Grid.Row="2" Grid.Column="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" ResizeDirection="Rows" />
