@@ -151,5 +151,25 @@ namespace RideOnMotion.UI
 
 		#endregion //KonamiCode
 
+        private void Logger_CopyMenuItem_Click( object sender, RoutedEventArgs e )
+        {
+            try
+            {
+                MenuItem menuItem = (MenuItem)sender;
+                ContextMenu menu = (ContextMenu)menuItem.Parent;
+                ListBox listBox = (ListBox)menu.PlacementTarget;
+                if ( listBox.SelectedItem != null )
+                {
+                    ListBoxItem item = (ListBoxItem)listBox.SelectedItem;
+                    Clipboard.SetText( item.Content.ToString() );
+                }
+            }
+            catch ( InvalidCastException ex )
+            {
+                // Simple output on cast failure
+                Console.Out.WriteLine( ex.Message );
+            }
+        }
+
 	}
 }
