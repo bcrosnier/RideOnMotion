@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:RideOnMotion.UI" x:Name="MainWindow1" x:Class="RideOnMotion.UI.MainWindow"
         Title="RideOn[Motion]" Height="600" Width="800"
         MinWidth="800" MinHeight="600"
-        Closing="MainWindow_Closing">
+        Closing="MainWindow_Closing" WindowStartupLocation="CenterScreen" WindowState="Maximized">
 
     <Window.CommandBindings>
     </Window.CommandBindings>
