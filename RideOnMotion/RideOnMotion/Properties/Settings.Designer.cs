@@ -58,5 +58,17 @@ namespace RideOnMotion.UI.Properties {
                 this["DroneSSID"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Info")]
+        public global::CK.Core.LogLevelFilter LogLevelFilter {
+            get {
+                return ((global::CK.Core.LogLevelFilter)(this["LogLevelFilter"]));
+            }
+            set {
+                this["LogLevelFilter"] = value;
+            }
+        }
     }
 }

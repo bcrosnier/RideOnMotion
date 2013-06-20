@@ -159,6 +159,121 @@ namespace RideOnMotion.UI
             }
         }
 
+        #region LogLevels
+        private LogLevelFilter LogLevelFilter
+        {
+            get
+            {
+                return _logger.Filter;
+            }
+
+            set
+            {
+                if ( _logger.Filter != value )
+                {
+                    _logger.Filter = value;
+                    Settings.Default.LogLevelFilter = value;
+                    Settings.Default.Save();
+                    this.OnNotifyPropertyChange( "LogLevelFilter" );
+                }
+            }
+        }
+
+        public Boolean LogLevelIsFatal
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Fatal;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Fatal;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        public Boolean LogLevelIsError
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Error;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Error;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        public Boolean LogLevelIsWarn
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Warn;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Warn;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        public Boolean LogLevelIsInfo
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Info;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Info;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        public Boolean LogLevelIsTrace
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Trace;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Trace;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        private void NotifyLogLevels()
+        {
+            this.OnNotifyPropertyChange( "LogLevelIsFatal" );
+            this.OnNotifyPropertyChange( "LogLevelIsError" );
+            this.OnNotifyPropertyChange( "LogLevelIsWarn" );
+            this.OnNotifyPropertyChange( "LogLevelIsInfo" );
+            this.OnNotifyPropertyChange( "LogLevelIsTrace" );
+        }
+        #endregion LogLevels
+
         public ImageSource DroneImageSource
         {
             get
@@ -340,7 +455,7 @@ namespace RideOnMotion.UI
 
             _logger = new DefaultActivityLogger();
             _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "MainWindow" );
-            _logger.Filter = LogLevelFilter.Trace; // TODO : Make a filter setting
+            _logger.Filter = Settings.Default.LogLevelFilter;
 
             _logClient = new ListBoxItemCollectionLoggerClient( _logItems, MAX_LOG_ENTRIES );
             _logger.Output.RegisterClient( _logClient );

@@ -10,11 +10,11 @@ using System.Windows.Interop;
 
 namespace RideOnMotion.UI
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow : Window
-	{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
         /// <summary>
         /// Model view for this window.
         /// </summary>
@@ -22,11 +22,11 @@ namespace RideOnMotion.UI
 
         private MenuItem _activeInputMenuItem;
 
-		public MainWindow()
-		{
+        public MainWindow()
+        {
             InitializeComponent();
 
-			this.mainWindowViewModel = new MainWindowViewModel();
+            this.mainWindowViewModel = new MainWindowViewModel();
             this.DataContext = this.mainWindowViewModel;
 
             // Bind input menu and fire once
@@ -63,7 +63,7 @@ namespace RideOnMotion.UI
             if ( e.Action == NotifyCollectionChangedAction.Add )
             {
                 this.LogListBox.ScrollIntoView( e.NewItems[0] );
-            } 
+            }
         }
 
         private void OnInputMenuChange( object sender, MenuItem e )
@@ -81,10 +81,10 @@ namespace RideOnMotion.UI
             this._activeInputMenuItem = e;
         }
 
-		private void MainWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e )
-		{
-			this.mainWindowViewModel.Stop();
-		}
+        private void MainWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e )
+        {
+            this.mainWindowViewModel.Stop();
+        }
 
         /// <summary>
         /// File -> Quit action
@@ -94,62 +94,62 @@ namespace RideOnMotion.UI
             this.Close();
         }
 
-		#region KonamiCode
-		protected string _konami = string.Empty;
-		protected System.Windows.Media.Brush _originalBackground;
-		protected UIElement _originalViewBox;
-		protected override void OnPreviewKeyUp( KeyEventArgs e )
-		{
-			this.mainWindowViewModel.OnPreviewKeyUp( e );
-		}
-		protected override void OnPreviewKeyDown( KeyEventArgs e )
-		{
+        #region KonamiCode
+        protected string _konami = string.Empty;
+        protected System.Windows.Media.Brush _originalBackground;
+        protected UIElement _originalViewBox;
+        protected override void OnPreviewKeyUp( KeyEventArgs e )
+        {
+            this.mainWindowViewModel.OnPreviewKeyUp( e );
+        }
+        protected override void OnPreviewKeyDown( KeyEventArgs e )
+        {
             this.mainWindowViewModel.OnPreviewKeyDown( e );
 
             // konami code management.
-			if ( _originalBackground == null )
-			{
-				_originalBackground = MainPanel.Background;
-				_originalViewBox = DepthViewerPanel.Children[0];
-			}
-			string i = "UpUpDownDownLeftRightLeftRightBA";
-			if ( e.Key.ToString() == "Up" && _konami != "Up" )
-			{
-				_konami = "";
-			}
-			_konami = ( _konami + e.Key.ToString() );
-			// Debug.Print(konami)
-			if ( ( _konami == i ) )
-			{
-				mainWindowViewModel.Konami = true;
-				string fileName = "..\\..\\Resources\\mad_duck.jpg";
-				System.Windows.Media.Imaging.BitmapImage image = new System.Windows.Media.Imaging.BitmapImage( new System.Uri( fileName, System.UriKind.Relative ) );
-				System.Windows.Media.ImageBrush brush = new System.Windows.Media.ImageBrush();
-				brush.ImageSource = image;
-				MainPanel.Background = brush;
+            if ( _originalBackground == null )
+            {
+                _originalBackground = MainPanel.Background;
+                _originalViewBox = DepthViewerPanel.Children[0];
+            }
+            string i = "UpUpDownDownLeftRightLeftRightBA";
+            if ( e.Key.ToString() == "Up" && _konami != "Up" )
+            {
+                _konami = "";
+            }
+            _konami = ( _konami + e.Key.ToString() );
+            // Debug.Print(konami)
+            if ( ( _konami == i ) )
+            {
+                mainWindowViewModel.Konami = true;
+                string fileName = "..\\..\\Resources\\mad_duck.jpg";
+                System.Windows.Media.Imaging.BitmapImage image = new System.Windows.Media.Imaging.BitmapImage( new System.Uri( fileName, System.UriKind.Relative ) );
+                System.Windows.Media.ImageBrush brush = new System.Windows.Media.ImageBrush();
+                brush.ImageSource = image;
+                MainPanel.Background = brush;
 
 
-				Viewbox v = new Viewbox();
-				MediaElement me = new MediaElement();
-				fileName = "..\\..\\Resources\\Star Wars Ducks.mp4";
-				me.Source = new System.Uri( fileName, System.UriKind.Relative );
-				me.LoadedBehavior = MediaState.Manual;
-				me.MediaEnded += new RoutedEventHandler( delegate( object s, RoutedEventArgs re ) { me.Stop(); me.Play(); } );
-				me.Play();
-				v.Child = me;
-				DepthViewerPanel.Children.RemoveAt( 0 );
-				DepthViewerPanel.Children.Add( v );
-			}
-			else if ( _konami.Length > i.Length )
-			{
-				mainWindowViewModel.Konami = false;
-				MainPanel.Background = _originalBackground;
-				DepthViewerPanel.Children.RemoveAt( 0 );
-				DepthViewerPanel.Children.Add( _originalViewBox );
-			}
-		}
+                Viewbox v = new Viewbox();
+                MediaElement me = new MediaElement();
+                fileName = "..\\..\\Resources\\Star Wars Ducks.mp4";
+                me.Source = new System.Uri( fileName, System.UriKind.Relative );
+                me.LoadedBehavior = MediaState.Manual;
+                me.MediaEnded += new RoutedEventHandler( delegate( object s, RoutedEventArgs re ) { me.Stop(); me.Play(); } );
+                me.Play();
+                v.Child = me;
+                DepthViewerPanel.Children.RemoveAt( 0 );
+                DepthViewerPanel.Children.Add( v );
+            }
+            else if ( _konami.Length > i.Length )
+            {
+                mainWindowViewModel.Konami = false;
+                MainPanel.Background = _originalBackground;
+                DepthViewerPanel.Children.RemoveAt( 0 );
+                DepthViewerPanel.Children.Add( _originalViewBox );
+            }
+        }
 
-		#endregion //KonamiCode
+        #endregion //KonamiCode
 
         private void Logger_CopyMenuItem_Click( object sender, RoutedEventArgs e )
         {
@@ -170,6 +170,5 @@ namespace RideOnMotion.UI
                 Console.Out.WriteLine( ex.Message );
             }
         }
-
-	}
+    }
 }

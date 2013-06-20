@@ -102,6 +102,13 @@
                                     <Image Source="pack://application:,,,/Resources/copy.ico" MaxWidth="16" MaxHeight="16" />
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <MenuItem Name="logFilterMenuItem" Header="Log level filter">
+                                <MenuItem Header="Fatal" IsCheckable="True" IsChecked="{Binding LogLevelIsFatal, Mode=TwoWay}" />
+                                <MenuItem Header="Error" IsCheckable="True" IsChecked="{Binding LogLevelIsError, Mode=TwoWay}" />
+                                <MenuItem Header="Warn" IsCheckable="True" IsChecked="{Binding LogLevelIsWarn, Mode=TwoWay}" />
+                                <MenuItem Header="Info" IsCheckable="True" IsChecked="{Binding LogLevelIsInfo, Mode=TwoWay}" />
+                                <MenuItem Header="Trace" IsCheckable="True" IsChecked="{Binding LogLevelIsTrace, Mode=TwoWay}" />
+                            </MenuItem>
                         </ContextMenu>
                     </ListBox.ContextMenu>
                 </ListBox>
