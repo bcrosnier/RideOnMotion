@@ -23,9 +23,6 @@ namespace RideOnMotion.UI
     {
         private readonly int MAX_LOG_ENTRIES = 50; // Maximum number of log entries in the collection
 
-        private static readonly float DEFAULT_MAXIMUM_DRONE_TRANSLATION_SPEED = 0.15f;
-        private static readonly float DEFAULT_MAXIMUM_DRONE_ROTATION_SPEED = 0.25f;
-        private static readonly float DEFAULT_MAXIMUM_DRONE_ELEVATION_SPEED = 0.25f;
         public static ARDrone.Control.DroneConfig DefaultDroneConfig = new ARDrone.Control.DroneConfig()
         {
             DroneIpAddress = Settings.Default.DroneIPAddress,
@@ -48,9 +45,7 @@ namespace RideOnMotion.UI
 		private Xbox360GamepadController _Xbox360Gamepad;
         private DroneInitializer _droneInit;
 
-        private float _droneTranslationSpeed = DEFAULT_MAXIMUM_DRONE_TRANSLATION_SPEED;
-        private float _droneRotationSpeed = DEFAULT_MAXIMUM_DRONE_ROTATION_SPEED;
-        private float _droneElevationSpeed = DEFAULT_MAXIMUM_DRONE_ELEVATION_SPEED;
+		DroneSpeeds _droneSpeeds = new DroneSpeeds( Properties.Settings.Default.DefaultTanslationSpeed, Properties.Settings.Default.DefaultRotationSpeed, Properties.Settings.Default.DefaultElevationSpeed );
 
         #region Values
         private ImageSource _droneImageSource;
@@ -93,6 +88,14 @@ namespace RideOnMotion.UI
         #endregion Values
 
         #region GettersSetters
+
+		public DroneSpeeds DroneSpeeds
+		{
+			get
+			{
+				return _droneSpeeds;
+			}
+		}
 
         public ICommand OpenDroneSettingsCommand
         {
@@ -553,6 +556,7 @@ namespace RideOnMotion.UI
 
 			_sendDroneCommand = new SendDroneCommand();
 			_sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
+			_sendDroneCommand.DroneSpeeds = DroneSpeeds;
 
             _Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
             _keyboardController.ActiveDrone = _droneInit.DroneCommand;
@@ -594,25 +598,13 @@ namespace RideOnMotion.UI
         /// <summary>
         /// Sets new maximum drone speeds the drone can reach when moving.
         /// </summary>
-        /// <param name="translationSpeed">(Between 0 and 1) Speed to move on the pitch and yaw axis. 0: No change.</param>
-        /// <param name="rotationSpeed">(Between 0 and 1) Speed to move on the roll axis. 0: No change.</param>
-        /// <param name="elevationSpeed">(Between 0 and 1) Speed to raise or lower at. 0: No change.</param>
-        internal void SetDroneSpeeds( float translationSpeed, float rotationSpeed, float elevationSpeed )
+        /// <param name="TranslationSpeed">(Between 0 and 1) Speed to move on the pitch and yaw axis. 0: No change.</param>
+        /// <param name="RotationSpeed">(Between 0 and 1) Speed to move on the roll axis. 0: No change.</param>
+        /// <param name="ElevationSpeed">(Between 0 and 1) Speed to raise or lower at. 0: No change.</param>
+        internal void SetDroneSpeeds( DroneSpeeds DroneSpeeds )
         {
-            if ( translationSpeed > 0.0 && translationSpeed <= 1.0 )
-            {
-                this._droneTranslationSpeed = translationSpeed;
-            }
-
-            if ( rotationSpeed > 0.0 && rotationSpeed <= 1.0 )
-            {
-                this._droneRotationSpeed = rotationSpeed;
-            }
-
-            if ( rotationSpeed > 0.0 && rotationSpeed <= 1.0 )
-            {
-                this._droneElevationSpeed = elevationSpeed;
-            }
+			_droneSpeeds = DroneSpeeds;
+			_sendDroneCommand.DroneSpeeds = DroneSpeeds;
         }
 
         /// <summary>
@@ -620,9 +612,7 @@ namespace RideOnMotion.UI
         /// </summary>
         internal void SetDroneSpeeds()
         {
-            this._droneTranslationSpeed = DEFAULT_MAXIMUM_DRONE_TRANSLATION_SPEED;
-            this._droneRotationSpeed = DEFAULT_MAXIMUM_DRONE_ROTATION_SPEED;
-            this._droneElevationSpeed = DEFAULT_MAXIMUM_DRONE_ELEVATION_SPEED;
+			_droneSpeeds = new DroneSpeeds( Properties.Settings.Default.DefaultTanslationSpeed, Properties.Settings.Default.DefaultRotationSpeed, Properties.Settings.Default.DefaultElevationSpeed );
         }
 
         #endregion Contructor/initializers/event handlers
@@ -654,7 +644,8 @@ namespace RideOnMotion.UI
                 EventHandler<DroneSettingsEventArgs> newDroneConfigDelegate = ( sender, e ) =>
                 {
                     isPaired = this._droneInit.DroneCommand.IsDronePaired;
-                    this._currentDroneConfig = e.DroneConfig;
+					this._currentDroneConfig = e.DroneConfig;
+					SetDroneSpeeds(e.DroneSpeeds );
 
                     if ( isPaired != e.IsPaired )
                     {
@@ -674,7 +665,7 @@ namespace RideOnMotion.UI
 
                 };
 
-                DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig, isPaired );
+                DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig, isPaired, DroneSpeeds);
 
                 window.DroneConfigAvailable += newDroneConfigDelegate;
 

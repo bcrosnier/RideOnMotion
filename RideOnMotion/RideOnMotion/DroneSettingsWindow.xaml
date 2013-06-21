@@ -20,6 +20,9 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -29,11 +32,20 @@
                     <Label Grid.Column="0" Grid.Row="1">Client IP address</Label>
                     <Label Grid.Column="0" Grid.Row="2">Drone SSID</Label>
                     <Label Grid.Column="0" Grid.Row="3">Pair to computer</Label>
+                    <Label Grid.Column="0" Grid.Row="4">Max translation speed</Label>
+                    <Label Grid.Column="0" Grid.Row="5">Max rotation speed</Label>
+                    <Label Grid.Column="0" Grid.Row="6">Max elevation speed</Label>
                     <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding DroneIPAddress}"/>
                     <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding ClientIPAddress}"/>
                     <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding DroneSSID}"/>
                     <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding DroneIsPaired}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-				</Grid>
+                    <Slider Grid.Column="1" Grid.Row="4" Value="{Binding TranslationSpeed}" Minimum="0.05" Maximum="1" TickFrequency="0.025" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Margin="0,0,35,0"/>
+                    <Slider Grid.Column="1" Grid.Row="5" Value="{Binding RotationSpeed}" Minimum="0.05" Maximum="1" TickFrequency="0.025" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Margin="0,0,35,0"/>
+                    <Slider Grid.Column="1" Grid.Row="6" Value="{Binding ElevationSpeed}" Minimum="0.05" Maximum="1" TickFrequency="0.025" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Margin="0,0,35,0"/>
+                    <TextBlock Grid.Column="1" Grid.Row="4" Text ="{Binding TranslationSpeedString}" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="1" Grid.Row="5" Text ="{Binding RotationSpeedString}" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="1" Grid.Row="6" Text ="{Binding ElevationSpeedString}" HorizontalAlignment="Right"/>
+                </Grid>
             </GroupBox>
         </StackPanel>
     </DockPanel>

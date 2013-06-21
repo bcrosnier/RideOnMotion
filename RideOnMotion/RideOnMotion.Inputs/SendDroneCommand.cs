@@ -12,6 +12,7 @@ namespace RideOnMotion.Inputs
 		public double DroneOriginalOrientation;
 		public double DroneCurrentOrientation;
 		public bool RelativeDirection;
+		DroneSpeeds _droneSpeeds;
 
 		internal double DroneOrientationDifference
 		{
@@ -26,6 +27,18 @@ namespace RideOnMotion.Inputs
 			set
 			{
 				this._drone = value;
+			}
+		}
+
+		public DroneSpeeds DroneSpeeds
+		{
+			get
+			{
+				return _droneSpeeds;
+			}
+			set
+			{
+				_droneSpeeds = value;
 			}
 		}
 		public void Process( RideOnMotion.Inputs.InputState inputState )
@@ -51,13 +64,13 @@ namespace RideOnMotion.Inputs
 			if ( inputState.SpecialAction )
 				_drone.PlayLED();
 
-			float roll = inputState.Roll / 3.0f;
+			float roll = inputState.Roll / ( 1 / _droneSpeeds.DroneTranslationSpeed );
             inputState.Roll = roll;
-			float pitch = inputState.Pitch / 3.0f;
+			float pitch = inputState.Pitch / ( 1 / _droneSpeeds.DroneTranslationSpeed );
             inputState.Pitch = pitch;
-			float yaw = inputState.Yaw / 2.0f;
+			float yaw = inputState.Yaw / ( 1 / _droneSpeeds.DroneRotationSpeed );
             inputState.Yaw = yaw;
-			float gaz = inputState.Gaz / 3.0f;
+			float gaz = inputState.Gaz / ( 1 / _droneSpeeds.DroneElevationSpeed );
             inputState.Gaz = gaz;
 			RelativeDirection = true;
 			float roll2;

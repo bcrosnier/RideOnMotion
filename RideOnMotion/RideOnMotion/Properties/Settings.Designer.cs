@@ -58,5 +58,41 @@ namespace RideOnMotion.UI.Properties {
                 this["DroneSSID"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.15")]
+        public float DefaultTanslationSpeed {
+            get {
+                return ((float)(this["DefaultTanslationSpeed"]));
+            }
+            set {
+                this["DefaultTanslationSpeed"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.25")]
+        public float DefaultRotationSpeed {
+            get {
+                return ((float)(this["DefaultRotationSpeed"]));
+            }
+            set {
+                this["DefaultRotationSpeed"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.25")]
+        public float DefaultElevationSpeed {
+            get {
+                return ((float)(this["DefaultElevationSpeed"]));
+            }
+            set {
+                this["DefaultElevationSpeed"] = value;
+            }
+        }
     }
 }
