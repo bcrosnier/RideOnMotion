@@ -53,25 +53,49 @@ namespace RideOnMotion.Inputs
 		public void Process( RideOnMotion.Inputs.InputState inputState )
 		{
 			if ( inputState.Land && _drone.CanLand )
+			{
 				_drone.Land();
+				_logger.Info( "Drone is landing" );
+			}
 			else if ( inputState.TakeOff && _drone.CanTakeoff )
+			{
 				_drone.Takeoff();
+				_logger.Info( "Drone is taking off" );
+			}
 
 			if ( inputState.Hover && _drone.CanEnterHoverMode )
+			{
 				_drone.EnterHoverMode();
+				_logger.Info( "Drone is Hovering" );
+			}
 			else if ( inputState.Hover && _drone.CanLeaveHoverMode )
+			{
 				_drone.LeaveHoverMode();
+				_logger.Info( "Drone is not Hovering anymore" );
+			}
 
 			if ( inputState.CameraSwap )
+			{
 				_drone.ChangeCamera();
+				_logger.Info( "Drone chanched what he can see" );
+			}
 
 			if ( inputState.Emergency )
+			{
 				_drone.Emergency();
+				_logger.Info( "Drone took his time to crash while you read that" );
+			}
 			else if ( inputState.FlatTrim )
+			{
 				_drone.FlatTrim();
+				_logger.Info( "Flat trim done" );
+			}
 
 			if ( inputState.SpecialAction )
+			{
 				_drone.PlayLED();
+				_logger.Info( "I can see the lights, it burns *.*" );
+			}
 
 			float roll = inputState.Roll / ( 1 / _droneSpeeds.DroneTranslationSpeed );
             inputState.Roll = roll;
@@ -98,8 +122,6 @@ namespace RideOnMotion.Inputs
 
 				inputState.Roll = roll2;
 				inputState.Pitch = pitch2;
-				// for debugging purpose
-                //_logger.Trace("Navigate with : roll2 : " + roll2 + " , pitch2 : " + pitch2);
 			}
 			_drone.Navigate( roll2, pitch2, yaw, gaz );
             _logger.Trace( inputState.ToString() );
