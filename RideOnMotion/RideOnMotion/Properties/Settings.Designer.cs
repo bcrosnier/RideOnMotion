@@ -71,10 +71,9 @@ namespace RideOnMotion.UI.Properties {
             }
         }
         
-        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.15")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.3")]
         public float DefaultTanslationSpeed {
             get {
                 return ((float)(this["DefaultTanslationSpeed"]));
@@ -83,11 +82,10 @@ namespace RideOnMotion.UI.Properties {
                 this["DefaultTanslationSpeed"] = value;
             }
         }
-
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.25")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
         public float DefaultRotationSpeed {
             get {
                 return ((float)(this["DefaultRotationSpeed"]));
@@ -99,7 +97,7 @@ namespace RideOnMotion.UI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.25")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.35")]
         public float DefaultElevationSpeed {
             get {
                 return ((float)(this["DefaultElevationSpeed"]));
