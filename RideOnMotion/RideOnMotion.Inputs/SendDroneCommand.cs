@@ -19,7 +19,7 @@ namespace RideOnMotion.Inputs
         public SendDroneCommand(IActivityLogger parentLogger)
         {
             _logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "SendDroneCommand" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Application" );
             _logger.Output.BridgeTo( parentLogger );
         }
 

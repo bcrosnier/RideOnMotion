@@ -457,7 +457,7 @@ namespace RideOnMotion.UI
             _logItems = new ObservableCollection<ListBoxItem>();
 
             _logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "MainWindow" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Application" );
             _logger.Filter = Settings.Default.LogLevelFilter;
 
             _logClient = new ListBoxItemCollectionLoggerClient( _logItems, MAX_LOG_ENTRIES );

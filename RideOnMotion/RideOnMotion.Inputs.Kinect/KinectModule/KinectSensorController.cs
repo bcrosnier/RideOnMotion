@@ -379,7 +379,7 @@ namespace RideOnMotion.Inputs.Kinect
         public KinectSensorController(IActivityLogger parentLogger)
         {
             this._logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "KinectSensorController" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Kinect" );
             _logger.Output.BridgeTo( parentLogger );
 
             this.DepthImageEnabled = true;

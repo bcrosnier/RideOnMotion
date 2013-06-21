@@ -94,7 +94,7 @@ namespace RideOnMotion.Inputs.Kinect
         public KinectSensorControllerUI(IActivityLogger parentLogger, KinectSensorController controller)
         {
             _logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "KinectSensorControllerUI" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Kinect" );
             _logger.Output.BridgeTo( parentLogger );
 
             this._controller = controller;

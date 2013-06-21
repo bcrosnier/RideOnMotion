@@ -60,7 +60,7 @@ namespace RideOnMotion
         public DroneInitializer( IActivityLogger parentLogger, DroneConfig config )
         {
             _logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "DroneInitializer" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Drone" );
             _logger.Output.BridgeTo( parentLogger );
 
             _currentDroneConfig = config;
