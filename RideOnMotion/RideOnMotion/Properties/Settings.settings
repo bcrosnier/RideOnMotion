@@ -11,6 +11,9 @@
     <Setting Name="DroneSSID" Type="System.String" Scope="User">
       <Value Profile="(Default)">ardrone_006431</Value>
     </Setting>
+    <Setting Name="LogLevelFilter" Type="CK.Core.LogLevelFilter" Scope="User">
+      <Value Profile="(Default)">Info</Value>
+    </Setting>
     <Setting Name="DefaultTanslationSpeed" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0.15</Value>
     </Setting>

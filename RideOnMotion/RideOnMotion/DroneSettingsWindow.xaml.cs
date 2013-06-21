@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using RideOnMotion.UI.Properties;
+using CK.Core;
 
 namespace RideOnMotion.UI
 {
@@ -25,7 +26,7 @@ namespace RideOnMotion.UI
         private DroneSettingsWindowViewModel _viewModel;
         public event EventHandler<DroneSettingsEventArgs> DroneConfigAvailable;
 
-        public DroneSettingsWindow(DroneConfig config, bool droneIsPaired, DroneSpeeds DroneSpeeds)
+        public DroneSettingsWindow(IActivityLogger parentLogger, DroneConfig config, bool droneIsPaired, DroneSpeeds DroneSpeeds)
         {
             if ( config == null )
             {
@@ -47,7 +48,7 @@ namespace RideOnMotion.UI
                 TimeoutValue = config.TimeoutValue
             };
 
-            _viewModel = new DroneSettingsWindowViewModel( newConfig , DroneSpeeds);
+            _viewModel = new DroneSettingsWindowViewModel( parentLogger, newConfig, DroneSpeeds );
 
 			_viewModel.DroneIsPaired = droneIsPaired;
             this.DataContext = _viewModel;
@@ -120,6 +121,7 @@ namespace RideOnMotion.UI
         private DroneConfig _droneConfig;
         private bool _droneIsPaired;
 		private DroneSpeeds _droneSpeeds;
+        private IActivityLogger _logger;
 		String _elevation;
 		String _rotation;
 		String _translation;
@@ -283,12 +285,17 @@ namespace RideOnMotion.UI
 		}
         #endregion Properties
 
-        public DroneSettingsWindowViewModel( DroneConfig config , DroneSpeeds DroneSpeeds)
+        public DroneSettingsWindowViewModel( IActivityLogger parentLogger, DroneConfig config, DroneSpeeds DroneSpeeds )
         {
             if ( config == null )
             {
                 throw new ArgumentNullException( "Config cannot be null." );
             }
+
+            _logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "DroneSettingsWindow" );
+            _logger.Output.BridgeTo( parentLogger );
+
             this._droneConfig = config;
 			this._droneSpeeds = DroneSpeeds;
 
@@ -304,7 +311,7 @@ namespace RideOnMotion.UI
             Settings.Default.DroneSSID = this.DroneSSID;
 
             Settings.Default.Save();
-            RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Saved settings." );
+            _logger.Info("Saved settings");
         }
     }
 

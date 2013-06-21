@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CK.Core;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -10,6 +11,7 @@ namespace RideOnMotion.Inputs.Kinect
 	{
 		private static int _controlNumber = 2;
 		private bool[] _currentInputState = new bool[_controlNumber];
+        private IActivityLogger _logger;
 
 		public bool[] CurrentInputState
 		{
@@ -46,13 +48,16 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 			else
 			{
-				Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Array out of bound in commands attribution" );
+                _logger.Error( "Array out of bound in commands attribution" );
 				return false;
 			}
 		}
 
-		public InputState()
-		{
+		public InputState( IActivityLogger parentLogger )
+        {
+            _logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "InputState" );
+            _logger.Output.BridgeTo( parentLogger );
 		}
 	}
 }

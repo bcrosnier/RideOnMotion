@@ -12,11 +12,14 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using CK.Core;
 
 namespace RideOnMotion
 {
 	public class DroneInitializer
     {
+        private IActivityLogger _logger;
+
 		private DispatcherTimer _timerVideoUpdate;
 		private DispatcherTimer _timerStatusUpdate;
 
@@ -54,11 +57,15 @@ namespace RideOnMotion
 		public event EventHandler<DroneFrameReadyEventArgs> DroneFrameReady;
 		public event EventHandler<DroneDataReadyEventArgs> DroneDataReady;
 
-        public DroneInitializer( DroneConfig config )
+        public DroneInitializer( IActivityLogger parentLogger, DroneConfig config )
         {
+            _logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "DroneInitializer" );
+            _logger.Output.BridgeTo( parentLogger );
+
             _currentDroneConfig = config;
             _droneControl = new DroneControl( _currentDroneConfig );
-            _droneCommand = new DroneCommand( _droneControl );
+            _droneCommand = new DroneCommand( _logger, _droneControl );
 
             _droneControl.Error += droneControl_Error;
             _droneControl.ConnectionStateChanged += droneControl_ConnectionStateChanged;
@@ -120,11 +127,11 @@ namespace RideOnMotion
 		{
 			if( e.Connected )
 			{
-				Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "ARDrone is connected" );
+                _logger.Info( "ARDrone is connected" );
 			}
 			else
-			{
-				Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "ARDrone is disconnected" );
+            {
+                _logger.Info( "ARDrone is disconnected" );
             }
 
             if ( this.ConnectionStateChanged != null )
@@ -134,8 +141,9 @@ namespace RideOnMotion
 		}
 
 		private void droneControl_Error( object sender, DroneErrorEventArgs e )
-		{
-			Logger.Instance.NewEntry( CKLogLevel.Error, CKTraitTags.ARDrone, "DroneControl : "+ e.CausingException.Message );
+        {
+            _logger.Error( "DroneControl error" );
+            _logger.Error( e.CausingException );
 		}
 
 		private void timerVideoUpdate_Tick( object sender, EventArgs e )

@@ -61,6 +61,19 @@ namespace RideOnMotion.UI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Info")]
+        public global::CK.Core.LogLevelFilter LogLevelFilter {
+            get {
+                return ((global::CK.Core.LogLevelFilter)(this["LogLevelFilter"]));
+            }
+            set {
+                this["LogLevelFilter"] = value;
+            }
+        }
+        
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0.15")]
         public float DefaultTanslationSpeed {
             get {
@@ -70,6 +83,7 @@ namespace RideOnMotion.UI.Properties {
                 this["DefaultTanslationSpeed"] = value;
             }
         }
+
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

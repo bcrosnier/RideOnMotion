@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CK.Core;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -37,6 +38,8 @@ namespace RideOnMotion.Inputs.Kinect
         private Task _alertTask;
         private bool _alertIsPersistent;
         private int _alertFixedTime;
+
+        private IActivityLogger _logger;
 
         private static readonly int ALERT_BLINK_TIME = 500; // Time between alert visibility toggles, in ms.
         private static readonly int ALERT_BLINK_COUNT = 5; // Number of times the alert goes on and off.
@@ -88,8 +91,12 @@ namespace RideOnMotion.Inputs.Kinect
             }
         }
 
-        public KinectSensorControllerUI(KinectSensorController controller)
+        public KinectSensorControllerUI(IActivityLogger parentLogger, KinectSensorController controller)
         {
+            _logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "KinectSensorControllerUI" );
+            _logger.Output.BridgeTo( parentLogger );
+
             this._controller = controller;
             this.DataContext = this;
 
@@ -254,12 +261,12 @@ namespace RideOnMotion.Inputs.Kinect
 			if ( this._rightHandPoint.Y != -1.0 && _handsVisibility == Visibility.Collapsed )
 			{
 				_handsVisibility = Visibility.Visible;
-				Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.User, "Hands visible" );
+                _logger.Trace("Hands visible");
 			}
 			else if ( this._rightHandPoint.Y == -1.0 && _handsVisibility == Visibility.Visible )
 			{
-				_handsVisibility = Visibility.Collapsed;
-				Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.User, "Hands not visible" );
+                _handsVisibility = Visibility.Collapsed;
+                _logger.Trace( "Hands not visible" );
 			}
 
             this.OnNotifyPropertyChange( "LeftHandX" );

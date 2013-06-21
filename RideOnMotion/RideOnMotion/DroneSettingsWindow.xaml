@@ -8,8 +8,8 @@
         </DockPanel.Background>
         <StackPanel DockPanel.Dock="Bottom" Height="Auto" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
             <Button Height="Auto" Width="48" Content="Apply" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="ButtonApply_Click"/>
-            <Button Height="Auto" Width="48" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonCancel_Click" />
-            <Button Height="Auto" Width="48" Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonOK_Click" />
+            <Button IsCancel="True" Height="Auto" Width="48" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonCancel_Click" />
+            <Button IsDefault="True" Height="Auto" Width="48" Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonOK_Click" />
         </StackPanel>
 
         <StackPanel Margin="3">
@@ -35,10 +35,10 @@
                     <Label Grid.Column="0" Grid.Row="4">Max translation speed</Label>
                     <Label Grid.Column="0" Grid.Row="5">Max rotation speed</Label>
                     <Label Grid.Column="0" Grid.Row="6">Max elevation speed</Label>
-                    <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding DroneIPAddress}"/>
-                    <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding ClientIPAddress}"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding DroneSSID}"/>
-                    <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding DroneIsPaired}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding DroneIPAddress, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding ClientIPAddress, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding DroneSSID, UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Grid.Column="1" Grid.Row="3" IsChecked="{Binding DroneIsPaired, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     <Slider Grid.Column="1" Grid.Row="4" Value="{Binding TranslationSpeed}" Minimum="0.05" Maximum="1" TickFrequency="0.025" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Margin="0,0,35,0"/>
                     <Slider Grid.Column="1" Grid.Row="5" Value="{Binding RotationSpeed}" Minimum="0.05" Maximum="1" TickFrequency="0.025" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Margin="0,0,35,0"/>
                     <Slider Grid.Column="1" Grid.Row="6" Value="{Binding ElevationSpeed}" Minimum="0.05" Maximum="1" TickFrequency="0.025" TickPlacement="BottomRight" IsSnapToTickEnabled="True" Margin="0,0,35,0"/>

@@ -1,7 +1,4 @@
-﻿using RideOnMotion.Inputs.Keyboard;
-using RideOnMotion.Inputs.Xbox360Gamepad;
-using RideOnMotion.UI.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,7 +9,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using CK.Core;
 using RideOnMotion.Inputs;
+using RideOnMotion.Inputs.Keyboard;
+using RideOnMotion.Inputs.Xbox360Gamepad;
+using RideOnMotion.UI.Properties;
+using RideOnMotion.Utilities;
 
 namespace RideOnMotion.UI
 {
@@ -22,6 +24,7 @@ namespace RideOnMotion.UI
     class MainWindowViewModel : IViewModel, INotifyPropertyChanged
     {
         private readonly int MAX_LOG_ENTRIES = 50; // Maximum number of log entries in the collection
+
 
         public static ARDrone.Control.DroneConfig DefaultDroneConfig = new ARDrone.Control.DroneConfig()
         {
@@ -42,12 +45,15 @@ namespace RideOnMotion.UI
         /// </summary>
         private IDroneInputController _inputController;
         private KeyboardController _keyboardController;
-		private Xbox360GamepadController _Xbox360Gamepad;
+        private Xbox360GamepadController _Xbox360Gamepad;
         private DroneInitializer _droneInit;
 
 		DroneSpeeds _droneSpeeds = new DroneSpeeds( Properties.Settings.Default.DefaultTanslationSpeed, Properties.Settings.Default.DefaultRotationSpeed, Properties.Settings.Default.DefaultElevationSpeed );
 
         #region Values
+        private IActivityLogger _logger;
+        private IActivityLoggerClient _logClient;
+
         private ImageSource _droneImageSource;
         private ImageSource _inputImageSource;
         private Control _inputControlUI;
@@ -63,27 +69,27 @@ namespace RideOnMotion.UI
 
         private List<Type> InputTypes { get; set; }
 
-		private string _inputStatusInfo = String.Empty;
-        
-        private ObservableCollection<String> _logStrings;
+        private string _inputStatusInfo = String.Empty;
 
-		internal bool Konami = false;
+        private ObservableCollection<ListBoxItem> _logItems;
 
-		private System.Windows.Media.MediaPlayer mp1 = new System.Windows.Media.MediaPlayer();
-		private System.Windows.Media.MediaPlayer mp2 = new System.Windows.Media.MediaPlayer();
-		private System.Windows.Media.MediaPlayer mp3 = new System.Windows.Media.MediaPlayer();
-		private System.Windows.Media.MediaPlayer mp4 = new System.Windows.Media.MediaPlayer();
+        internal bool Konami = false;
+
+        private System.Windows.Media.MediaPlayer mp1 = new System.Windows.Media.MediaPlayer();
+        private System.Windows.Media.MediaPlayer mp2 = new System.Windows.Media.MediaPlayer();
+        private System.Windows.Media.MediaPlayer mp3 = new System.Windows.Media.MediaPlayer();
+        private System.Windows.Media.MediaPlayer mp4 = new System.Windows.Media.MediaPlayer();
 
         internal event EventHandler<MenuItem> InputMenuChanged;
 
         private delegate void AddLogStringDelegate( String s );
 
-		InputState _lastKeyboardInput;
-		InputState _lastGamepadInput;
+        InputState _lastKeyboardInput;
+        InputState _lastGamepadInput;
         InputState _lastKinectInput;
 
-		SendDroneCommand _sendDroneCommand;
-		public bool DroneOriginalOrientationSet;
+        SendDroneCommand _sendDroneCommand;
+        public bool DroneOriginalOrientationSet;
 
         #endregion Values
 
@@ -128,33 +134,148 @@ namespace RideOnMotion.UI
                 {
                     this._inputImageSource = value;
                     this.OnNotifyPropertyChange( "InputImageSource" );
-					if ( IsActive == true  && Konami == true)
-					{
-						TimeSpan timeZero =  new TimeSpan( 0 );
-						if ( mp1.Position == mp1.NaturalDuration.TimeSpan || mp1.Position == timeZero)
-						{
-						mp1.Position = new TimeSpan( 0 );
-						mp1.Play();
-						}
-						else if ( mp2.Position == mp2.NaturalDuration.TimeSpan || mp2.Position == timeZero )
-						{
-							mp2.Position = new TimeSpan( 0 );
-							mp2.Play();
-						}
-						else if ( mp3.Position == mp3.NaturalDuration.TimeSpan || mp3.Position == timeZero )
-						{
-							mp3.Position = new TimeSpan( 0 );
-							mp3.Play();
-						}
-						else if ( mp4.Position == mp4.NaturalDuration.TimeSpan || mp4.Position == timeZero )
-						{
-							mp4.Position = new TimeSpan( 0 );
-							mp4.Play();
-						}
-					}
+                    if ( IsActive == true && Konami == true )
+                    {
+                        TimeSpan timeZero = new TimeSpan( 0 );
+                        if ( mp1.Position == mp1.NaturalDuration.TimeSpan || mp1.Position == timeZero )
+                        {
+                            mp1.Position = new TimeSpan( 0 );
+                            mp1.Play();
+                        }
+                        else if ( mp2.Position == mp2.NaturalDuration.TimeSpan || mp2.Position == timeZero )
+                        {
+                            mp2.Position = new TimeSpan( 0 );
+                            mp2.Play();
+                        }
+                        else if ( mp3.Position == mp3.NaturalDuration.TimeSpan || mp3.Position == timeZero )
+                        {
+                            mp3.Position = new TimeSpan( 0 );
+                            mp3.Play();
+                        }
+                        else if ( mp4.Position == mp4.NaturalDuration.TimeSpan || mp4.Position == timeZero )
+                        {
+                            mp4.Position = new TimeSpan( 0 );
+                            mp4.Play();
+                        }
+                    }
                 }
             }
         }
+
+        #region LogLevels
+        private LogLevelFilter LogLevelFilter
+        {
+            get
+            {
+                return _logger.Filter;
+            }
+
+            set
+            {
+                if ( _logger.Filter != value )
+                {
+                    _logger.Filter = value;
+                    Settings.Default.LogLevelFilter = value;
+                    Settings.Default.Save();
+                    this.OnNotifyPropertyChange( "LogLevelFilter" );
+                }
+            }
+        }
+
+        public Boolean LogLevelIsFatal
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Fatal;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Fatal;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        public Boolean LogLevelIsError
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Error;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Error;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        public Boolean LogLevelIsWarn
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Warn;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Warn;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        public Boolean LogLevelIsInfo
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Info;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Info;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        public Boolean LogLevelIsTrace
+        {
+            get
+            {
+                return LogLevelFilter == CK.Core.LogLevelFilter.Trace;
+            }
+
+            set
+            {
+                if ( value )
+                {
+                    LogLevelFilter = CK.Core.LogLevelFilter.Trace;
+                    NotifyLogLevels();
+                }
+            }
+        }
+
+        private void NotifyLogLevels()
+        {
+            this.OnNotifyPropertyChange( "LogLevelIsFatal" );
+            this.OnNotifyPropertyChange( "LogLevelIsError" );
+            this.OnNotifyPropertyChange( "LogLevelIsWarn" );
+            this.OnNotifyPropertyChange( "LogLevelIsInfo" );
+            this.OnNotifyPropertyChange( "LogLevelIsTrace" );
+        }
+        #endregion LogLevels
 
         public ImageSource DroneImageSource
         {
@@ -173,18 +294,18 @@ namespace RideOnMotion.UI
             }
         }
 
-        public ObservableCollection<String> LogData
+        public ObservableCollection<ListBoxItem> LogData
         {
             get
             {
-                return this._logStrings;
+                return this._logItems;
             }
 
-            set
+            private set
             {
-                if ( this._logStrings != value )
+                if ( this._logItems != value )
                 {
-                    this._logStrings = value;
+                    this._logItems = value;
                     this.OnNotifyPropertyChange( "LogData" );
                 }
             }
@@ -252,7 +373,7 @@ namespace RideOnMotion.UI
                 }
                 else
                 {
-                    return "AR Drone: Disconnected"; 
+                    return "AR Drone: Disconnected";
                 }
             }
         }
@@ -280,7 +401,9 @@ namespace RideOnMotion.UI
                 if ( this._inputController.InputStatus == DroneInputStatus.Ready )
                 {
                     return Visibility.Visible;
-                } else {
+                }
+                else
+                {
                     return Visibility.Collapsed;
                 }
             }
@@ -294,15 +417,15 @@ namespace RideOnMotion.UI
             }
         }
 
-		public bool IsActive
-		{
-			get
-			{
-				return _inputController.IsActive;
-			}
-		}
+        public bool IsActive
+        {
+            get
+            {
+                return _inputController.IsActive;
+            }
+        }
 
-		DispatcherTimer DroneOrderTimer = new DispatcherTimer();
+        DispatcherTimer DroneOrderTimer = new DispatcherTimer();
         #endregion GettersSetters
 
         #region INotifyPropertyChanged utilities
@@ -331,62 +454,78 @@ namespace RideOnMotion.UI
         /// </summary>
         public MainWindowViewModel()
         {
+            _logItems = new ObservableCollection<ListBoxItem>();
+
+            _logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "MainWindow" );
+            _logger.Filter = Settings.Default.LogLevelFilter;
+
+            _logClient = new ListBoxItemCollectionLoggerClient( _logItems, MAX_LOG_ENTRIES );
+            _logger.Output.RegisterClient( _logClient );
+
+            // Log testing.
+            _logger.Fatal( "Fatal test" );
+            _logger.Error( "Error test" );
+            _logger.Warn( "Warn test" );
+            _logger.Info( "Info test" );
+            _logger.Trace( "Trace test" );
+
             CreateDroneCommands();
 
             InputTypes = new List<Type>();
-			InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
+            InputTypes.Add( typeof( RideOnMotion.Inputs.Kinect.KinectSensorController ) );
 
-            _logStrings = new ObservableCollection<string>();
 
-			loadInputType( InputTypes[0] );
+            loadInputType( InputTypes[0] );
 
-			mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
-			mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
-			mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
-			mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
+            mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
+            mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
+            mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
+            mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
 
-            initializeBindings();
-
-			_lastKeyboardInput = new InputState();
-			_lastGamepadInput = new InputState();
+            _lastKeyboardInput = new InputState();
+            _lastGamepadInput = new InputState();
             _lastKinectInput = new InputState();
-            _keyboardController = new KeyboardController();
-			_Xbox360Gamepad = new Xbox360GamepadController();
-			_Xbox360Gamepad.Start();
-			_Xbox360Gamepad.StartMappingForDrone();
-            ConnectDrone(this._currentDroneConfig); // At this point, should be default config.
-			DroneOrderTimer.Interval = new TimeSpan( 0, 0, 0,0,30 );
-			DroneOrderTimer.Tick += new EventHandler( OrderTheDrone );
-			DroneOrderTimer.Start();
 
+            _keyboardController = new KeyboardController();
+            _Xbox360Gamepad = new Xbox360GamepadController();
+
+            _Xbox360Gamepad.Start();
+            _Xbox360Gamepad.StartMappingForDrone();
+
+            ConnectDrone( this._currentDroneConfig ); // At this point, should be default config.
+
+            DroneOrderTimer.Interval = new TimeSpan( 0, 0, 0, 0, 30 );
+            DroneOrderTimer.Tick += new EventHandler( OrderTheDrone );
+            DroneOrderTimer.Start();
         }
 
-		private void OrderTheDrone( object sender, EventArgs e )
-		{
-			InputState newKeyboardInput = _keyboardController.GetCurrentControlInput(_lastKeyboardInput);
-            InputState newKinectInput = ((RideOnMotion.Inputs.Kinect.KinectSensorController)_inputController).GetCurrentControlInput(_lastKinectInput);
-			InputState newGamepadInput = _Xbox360Gamepad.GetCurrentControlInput( _lastGamepadInput );
-			if ( newGamepadInput != null || newKeyboardInput != null || newKinectInput != null)
-			{
-				if ( newKeyboardInput != null )
-				{
-					_lastKeyboardInput = newKeyboardInput;
-				}
-				if ( newGamepadInput != null )
-				{
-					_lastGamepadInput = newGamepadInput;
-				}
+        private void OrderTheDrone( object sender, EventArgs e )
+        {
+            InputState newKeyboardInput = _keyboardController.GetCurrentControlInput( _lastKeyboardInput );
+            InputState newKinectInput = ( (RideOnMotion.Inputs.Kinect.KinectSensorController)_inputController ).GetCurrentControlInput( _lastKinectInput );
+            InputState newGamepadInput = _Xbox360Gamepad.GetCurrentControlInput( _lastGamepadInput );
+            if ( newGamepadInput != null || newKeyboardInput != null || newKinectInput != null )
+            {
+                if ( newKeyboardInput != null )
+                {
+                    _lastKeyboardInput = newKeyboardInput;
+                }
+                if ( newGamepadInput != null )
+                {
+                    _lastGamepadInput = newGamepadInput;
+                }
                 if ( newKinectInput != null )
                 {
                     _lastKinectInput = newKinectInput;
                 }
-				InputState MixedInput = MixInputs.MixInput( _lastKeyboardInput, _lastGamepadInput, _lastKinectInput );
-				if ( MixedInput != null )
-				{
-					_sendDroneCommand.Process( MixedInput );
-				}
-			}
-		}
+                InputState MixedInput = MixInputs.MixInput( _lastKeyboardInput, _lastGamepadInput, _lastKinectInput );
+                if ( MixedInput != null )
+                {
+                    _sendDroneCommand.Process( MixedInput );
+                }
+            }
+        }
 
         void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
         {
@@ -412,14 +551,6 @@ namespace RideOnMotion.UI
             this.DroneImageSource = e.Frame;
         }
 
-        /// <summary>
-        /// Creates the event bindings with the model.
-        /// </summary>
-        private void initializeBindings()
-        {
-            Logger.Instance.NewLogStringReady += OnLogStringReceived;
-        }
-
         private void OnInputStatusChanged( object sender, DroneInputStatus e )
         {
             _inputStatusInfo = _inputController.InputStatusString;
@@ -430,18 +561,6 @@ namespace RideOnMotion.UI
         private void OnInputBitmapSourceChanged( object sender, BitmapSource s )
         {
             InputImageSource = s;
-        }
-
-        private void OnLogStringReceived( object sender, String e )
-        {
-            Invoke( () =>
-            {
-                if ( _logStrings.Count >= MAX_LOG_ENTRIES )
-                {
-                    _logStrings.RemoveAt( 0 );
-                }
-                _logStrings.Add( e );
-            } );
         }
 
         internal void OnPreviewKeyDown( KeyEventArgs e )
@@ -460,12 +579,12 @@ namespace RideOnMotion.UI
             }
         }
 
-        private void loadInputType(Type t)
+        private void loadInputType( Type t )
         {
-            if (t != null && t.GetInterface( "RideOnMotion.IDroneInputController", true ) != null )
+            if ( t != null && t.GetInterface( "RideOnMotion.IDroneInputController", true ) != null )
             {
 
-                IDroneInputController controller = (IDroneInputController) Activator.CreateInstance(t);
+                IDroneInputController controller = (IDroneInputController)Activator.CreateInstance( t, _logger );
 
                 clearInputController();
 
@@ -496,7 +615,7 @@ namespace RideOnMotion.UI
             {
                 _inputController.InputImageSourceChanged -= OnInputBitmapSourceChanged;
                 _inputController.InputStatusChanged -= OnInputStatusChanged;
-				_inputController.ControllerActivity -= OnControllerActivity;
+                _inputController.ControllerActivity -= OnControllerActivity;
                 _inputStatusInfo = "";
                 this.OnNotifyPropertyChange( "InputStatusInfo" );
                 this._inputController = null;
@@ -510,16 +629,16 @@ namespace RideOnMotion.UI
 
             // Bind sensor status and set once
             _inputController.InputStatusChanged += OnInputStatusChanged;
-			_inputStatusInfo = _inputController.InputStatusString;
+            _inputStatusInfo = _inputController.InputStatusString;
 
-			// Bind activity
-			_inputController.ControllerActivity += OnControllerActivity;
+            // Bind activity
+            _inputController.ControllerActivity += OnControllerActivity;
         }
 
-		public void OnControllerActivity(object sender, bool e)
-		{
-			this.OnNotifyPropertyChange( "IsActive" );
-		}
+        public void OnControllerActivity( object sender, bool e )
+        {
+            this.OnNotifyPropertyChange( "IsActive" );
+        }
 
         internal void Stop()
         {
@@ -528,10 +647,10 @@ namespace RideOnMotion.UI
                 _droneSettingsWindow.Close();
             }
             this._inputController.Stop();
-			this._Xbox360Gamepad.StopMappingForDrone();
-			this._Xbox360Gamepad.Stop();
+            this._Xbox360Gamepad.StopMappingForDrone();
+            this._Xbox360Gamepad.Stop();
 
-            DisconnectDrone(this._droneInit);
+            DisconnectDrone( this._droneInit );
         }
 
         private void ConnectDrone( ARDrone.Control.DroneConfig config )
@@ -541,12 +660,21 @@ namespace RideOnMotion.UI
             {
                 paired = _droneInit.DroneCommand.IsDronePaired;
             }
-            _droneInit = new DroneInitializer( config );
+            try
+            {
+                _droneInit = new DroneInitializer( _logger, config );
+            }
+            catch ( Exception e )
+            {
+                // Breaks on no wifi service/card
+                _logger.Error( e );
+                return;
+            }
 
             _droneInit.NetworkConnectionStateChanged += OnNetworkConnectionStateChanged;
             _droneInit.ConnectionStateChanged += OnConnectionStateChanged;
             _droneInit.DroneDataReady += OnDroneDataReady;
-			_droneInit.DroneDataReady += OnOrientationChange;
+            _droneInit.DroneDataReady += OnOrientationChange;
             // Bind front drone camera
             _droneInit.DroneFrameReady += OnDroneFrameReady;
 
@@ -554,8 +682,8 @@ namespace RideOnMotion.UI
             _droneInit.StartDrone();
 
 
-			_sendDroneCommand = new SendDroneCommand();
-			_sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
+            _sendDroneCommand = new SendDroneCommand(_logger);
+            _sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
 			_sendDroneCommand.DroneSpeeds = DroneSpeeds;
 
             _Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
@@ -563,30 +691,33 @@ namespace RideOnMotion.UI
             ( (RideOnMotion.Inputs.Kinect.KinectSensorController)_inputController ).ActiveDrone = _droneInit.DroneCommand;
         }
 
-		void OnOrientationChange( object sender, DroneDataReadyEventArgs e )
-		{
-			if ( !DroneOriginalOrientationSet && e.Data.psi != 0)
-			{
-				_sendDroneCommand.DroneOriginalOrientation = e.Data.psi;
-				DroneOriginalOrientationSet = true;
-			}
-			else
-			{
-				_sendDroneCommand.DroneCurrentOrientation = e.Data.psi;
-			}
-		}
+        void OnOrientationChange( object sender, DroneDataReadyEventArgs e )
+        {
+            if ( !DroneOriginalOrientationSet && e.Data.psi != 0 )
+            {
+                _sendDroneCommand.DroneOriginalOrientation = e.Data.psi;
+                DroneOriginalOrientationSet = true;
+            }
+            else
+            {
+                _sendDroneCommand.DroneCurrentOrientation = e.Data.psi;
+            }
+        }
 
         private void DisconnectDrone( DroneInitializer init )
         {
+            // Do nothing if drone was never connected.
+            if ( init != null )
+            {
+                init.NetworkConnectionStateChanged -= OnNetworkConnectionStateChanged;
+                init.ConnectionStateChanged -= OnConnectionStateChanged;
+                init.DroneDataReady -= OnDroneDataReady;
+                init.DroneDataReady -= OnOrientationChange;
+                // Bind front drone camera
+                init.DroneFrameReady -= OnDroneFrameReady;
 
-            init.NetworkConnectionStateChanged -= OnNetworkConnectionStateChanged;
-            init.ConnectionStateChanged -= OnConnectionStateChanged;
-			init.DroneDataReady -= OnDroneDataReady;
-			init.DroneDataReady -= OnOrientationChange;
-            // Bind front drone camera
-            init.DroneFrameReady -= OnDroneFrameReady;
-
-            init.EndDrone();
+                init.EndDrone();
+            }
         }
 
         private void ReconnectDrone()
@@ -639,45 +770,53 @@ namespace RideOnMotion.UI
             }
             else
             {
-                bool isPaired = this._droneInit.DroneCommand.IsDronePaired;
-
-                EventHandler<DroneSettingsEventArgs> newDroneConfigDelegate = ( sender, e ) =>
+                // Do nothing if drone could not be initialized.
+                if ( this._droneInit != null )
                 {
-                    isPaired = this._droneInit.DroneCommand.IsDronePaired;
+                    bool isPaired = this._droneInit.DroneCommand.IsDronePaired;
+
+                    EventHandler<DroneSettingsEventArgs> newDroneConfigDelegate = ( sender, e ) =>
+                    {
+                        isPaired = this._droneInit.DroneCommand.IsDronePaired;
 					this._currentDroneConfig = e.DroneConfig;
 					SetDroneSpeeds(e.DroneSpeeds );
 
-                    if ( isPaired != e.IsPaired )
+                        if ( isPaired != e.IsPaired )
+                        {
+                            if ( e.IsPaired )
+                            {
+                                _logger.Info( "Pairing drone" );
+                                this._droneInit.DroneCommand.Pair();
+                            }
+                            else
+                            {
+                                _logger.Info( "Unpairing drone" );
+                                this._droneInit.DroneCommand.Unpair();
+                            }
+                        }
+
+                        ReconnectDrone();
+
+                    };
+
+                DroneSettingsWindow window = new DroneSettingsWindow( _logger, this._currentDroneConfig, isPaired, DroneSpeeds);
+
+                    window.DroneConfigAvailable += newDroneConfigDelegate;
+
+                    _droneSettingsWindow = window;
+
+                    _droneSettingsWindow.Closed += ( object sender, EventArgs args ) =>
                     {
-                        if ( e.IsPaired )
-                        {
-                            RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Pairing drone." );
-                            this._droneInit.DroneCommand.Pair();
-                        }
-                        else
-                        {
-                            RideOnMotion.Logger.Instance.NewEntry( CK.Core.LogLevel.Info, CKTraitTags.ARDrone, "Unpairing drone." );
-                            this._droneInit.DroneCommand.Unpair();
-                        }
-                    }
+                        _droneSettingsWindow = null;
+                        window.DroneConfigAvailable -= newDroneConfigDelegate;
+                    };
 
-                    ReconnectDrone();
-
-                };
-
-                DroneSettingsWindow window = new DroneSettingsWindow( this._currentDroneConfig, isPaired, DroneSpeeds);
-
-                window.DroneConfigAvailable += newDroneConfigDelegate;
-
-                _droneSettingsWindow = window;
-
-                _droneSettingsWindow.Closed += ( object sender, EventArgs args ) =>
+                    _droneSettingsWindow.Show();
+                }
+                else
                 {
-                    _droneSettingsWindow = null;
-                    window.DroneConfigAvailable -= newDroneConfigDelegate;
-                };
-
-                _droneSettingsWindow.Show();
+                    _logger.Error( "Can't open settings: Drone connection was never initialized." );
+                }
             }
         }
 
@@ -721,51 +860,38 @@ namespace RideOnMotion.UI
 
         #region Utilities
 
-        private static void Invoke( Action action )
-        {
-            Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
-            if ( dispatchObject == null || dispatchObject.CheckAccess() )
-            {
-                action();
-            }
-            else
-            {
-                dispatchObject.Invoke( action );
-            }
-        }
-
         public class RelayCommand : ICommand
         {
             #region Fields
 
             readonly Action<object> _execute;
-            readonly Predicate<object> _canExecute;        
+            readonly Predicate<object> _canExecute;
 
             #endregion // Fields
 
             #region Constructors
 
-            public RelayCommand(Action<object> execute)
-            : this(execute, null)
+            public RelayCommand( Action<object> execute )
+                : this( execute, null )
             {
             }
 
-            public RelayCommand(Action<object> execute, Predicate<object> canExecute)
+            public RelayCommand( Action<object> execute, Predicate<object> canExecute )
             {
-                if (execute == null)
-                    throw new ArgumentNullException("execute");
+                if ( execute == null )
+                    throw new ArgumentNullException( "execute" );
 
                 _execute = execute;
-                _canExecute = canExecute;           
+                _canExecute = canExecute;
             }
             #endregion // Constructors
 
             #region ICommand Members
 
             [System.Diagnostics.DebuggerStepThrough]
-            public bool CanExecute(object parameter)
+            public bool CanExecute( object parameter )
             {
-                return _canExecute == null ? true : _canExecute(parameter);
+                return _canExecute == null ? true : _canExecute( parameter );
             }
 
             public event EventHandler CanExecuteChanged
@@ -774,17 +900,15 @@ namespace RideOnMotion.UI
                 remove { CommandManager.RequerySuggested -= value; }
             }
 
-            public void Execute(object parameter)
+            public void Execute( object parameter )
             {
-                _execute(parameter);
+                _execute( parameter );
             }
 
             #endregion // ICommand Members
         }
         #endregion Utilities
 
-
-	}
-
+    }
 
 }

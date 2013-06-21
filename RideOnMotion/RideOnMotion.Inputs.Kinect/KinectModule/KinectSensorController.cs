@@ -15,6 +15,7 @@ using System.ComponentModel;
 using Microsoft.Kinect.Toolkit.Interaction;
 using System.Windows.Threading;
 using System.Collections.Generic;
+using CK.Core;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -40,6 +41,9 @@ namespace RideOnMotion.Inputs.Kinect
         Point _rightHand = new Point (-1, -1);
         DispatcherTimer ReleaseLeftHand = new DispatcherTimer();
         DispatcherTimer ReleaseRightHand = new DispatcherTimer();
+
+        private IActivityLogger _logger;
+
 		/// <summary>
         /// A user-friendly input name!
         /// </summary>
@@ -372,8 +376,12 @@ namespace RideOnMotion.Inputs.Kinect
         /// Kinect sensor input controller.
         /// Handles drone control through a Kinect sensor.
         /// </summary>
-        public KinectSensorController()
+        public KinectSensorController(IActivityLogger parentLogger)
         {
+            this._logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "KinectSensorController" );
+            _logger.Output.BridgeTo( parentLogger );
+
             this.DepthImageEnabled = true;
             SetSkeletonSmoothingEnabled( false );
 
@@ -395,9 +403,9 @@ namespace RideOnMotion.Inputs.Kinect
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
 
-			this._inputState = new InputState();
+			this._inputState = new InputState(_logger);
 
-            this.InputUIControl = new KinectSensorControllerUI( this );
+            this.InputUIControl = new KinectSensorControllerUI( _logger, this );
             ReleaseLeftHand.Interval = new TimeSpan( 0, 0, 2 );
             ReleaseLeftHand.Tick += new EventHandler( OnReleaseLeftHand );
             ReleaseRightHand.Interval = new TimeSpan( 0, 0, 2 );
@@ -603,13 +611,13 @@ namespace RideOnMotion.Inputs.Kinect
                 }
                 catch ( System.IO.IOException e )
                 {
-                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Kinect is already in use by another process. Error:" );
-                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, e.Message );
+                    _logger.Error( "Kinect is already in use by another process" );
+                    _logger.Error( e );
                 }
                 catch ( Exception e )
                 {
-                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Unexpected Kinect API error:" );
-                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, e.Message );
+                    _logger.Error( "Unexpected Kinect API error" );
+                    _logger.Error( e );
                 }
             }
 
@@ -894,8 +902,8 @@ namespace RideOnMotion.Inputs.Kinect
 				else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeChanged( this, 3 );
+					MapInput();
 					_canTakeOff = false;
-                    MapInput();
 				}
 			}
 		}
@@ -914,15 +922,13 @@ namespace RideOnMotion.Inputs.Kinect
 						SecurityModeChanged( this, 1 );
                         _operatorLost = true;
                         MapInput();
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-							"Safety mode enabled due to hands no longer being tracked" );
+                        _logger.Warn( "Safety mode enabled due to hands no longer being tracked" );
 					}
 
 					if( _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
 					{
 						_timerToLand.Start();
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-							"Safety mode : 3 seconds remaining before automatic landing" );
+                        _logger.Warn( "Safety mode : 3 seconds remaining before automatic landing" );
 					}
 				}
 				else if( _timerToLand.IsEnabled == true &&
@@ -933,8 +939,7 @@ namespace RideOnMotion.Inputs.Kinect
 					SecurityModeChanged( this, 0 );
                     _operatorLost = false;
                     MapInput();
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-						"Safety mode no longer required, restoring manual control" );
+                    _logger.Warn( "Safety mode no longer required, restoring manual control" );
 					_safetyLandingtriggered = false;
 				}
 				else if( ( curUser.HandPointers[0].IsInteractive
@@ -951,15 +956,13 @@ namespace RideOnMotion.Inputs.Kinect
 					SecurityModeChanged( this, 1 );
                     _operatorLost = true;
                     MapInput();
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-						"Safety mode enabled due to hands no longer being tracked" );
+                    _logger.Warn( "Safety mode enabled due to hands no longer being tracked" );
 				}
 
 				if( _timerToLand.IsEnabled == false )
 				{
-					_timerToLand.Start();
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-						"Safety mode : 3 seconds remaining before automatic landing" );
+                    _timerToLand.Start();
+                    _logger.Warn( "Safety mode : 3 seconds remaining before automatic landing" );
 				}
 			}
 		}
@@ -970,8 +973,7 @@ namespace RideOnMotion.Inputs.Kinect
 			{
 				SecurityModeChanged( this, 2 );
                 MapInput();
-				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-					"Security mode will now process to land the drone" );
+                _logger.Warn( "Security mode will now process to land the drone" );
 				_timerToLand.Stop();
 				_safetyLandingtriggered = true;
 			}
@@ -985,7 +987,7 @@ namespace RideOnMotion.Inputs.Kinect
         {
             if ( e.Sensor != null )
             {
-                Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.Kinect, "Status: " + e.Status.ToString() );
+                _logger.Trace( "Status: " + e.Status.ToString() );
             }
 
             if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
@@ -1088,7 +1090,7 @@ namespace RideOnMotion.Inputs.Kinect
             else
             {
                 // Prepare and open window
-                this._deviceSettingsWindow = new KinectDeviceSettings( this );
+                this._deviceSettingsWindow = new KinectDeviceSettings( _logger, this );
                 _deviceSettingsWindow.Closed += deviceSettingsWindow_Closed;
                 _deviceSettingsWindow.Show();
             }
@@ -1229,7 +1231,7 @@ namespace RideOnMotion.Inputs.Kinect
             {
                 land = true;
             }
-            if (_rightGrip && !_leftGrip && ActiveDrone.CanTakeoff)
+			if( _canTakeOff && _rightGrip && !_leftGrip && ActiveDrone.CanTakeoff )
             {
                 takeOff = true;
 			}

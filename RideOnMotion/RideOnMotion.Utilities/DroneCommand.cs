@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RideOnMotion.Utilities;
+using CK.Core;
 
 namespace RideOnMotion
 {
@@ -14,6 +15,7 @@ namespace RideOnMotion
 	public class DroneCommand
 	{
 		private DroneControl _droneControl;
+        private IActivityLogger _logger;
 		bool _isDronePaired = false;
 
 		public bool CanTakeoff
@@ -57,8 +59,12 @@ namespace RideOnMotion
 			}
 		}
 
-		public DroneCommand( DroneControl droneControl )
-		{
+		public DroneCommand( IActivityLogger parentLogger, DroneControl droneControl )
+        {
+            _logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "DroneCommand" );
+            _logger.Output.BridgeTo( parentLogger );
+
 			_droneControl = droneControl;
 		}
 
@@ -66,14 +72,14 @@ namespace RideOnMotion
 		{
 			_droneControl.ConnectToDrone();
 
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Connect" );
+            _logger.Info( "Command : Connect" );
 		}
 
 		public void Disconnect()
 		{
 			_droneControl.Disconnect();
 
-			Logger.Instance.NewEntry( CKLogLevel.Info, CKTraitTags.ARDrone, "Command : Disconnect" );
+            _logger.Info( "Command : Disconnect" );
 		}
 
 		public void ChangeCamera()

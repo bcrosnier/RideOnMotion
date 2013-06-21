@@ -9,8 +9,8 @@
         </DockPanel.Background>
         <StackPanel DockPanel.Dock="Bottom" Height="Auto" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
             <Button Height="Auto" Width="48" Content="Apply" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="ButtonApply_Click"/>
-            <Button Height="Auto" Width="48" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonCancel_Click" />
-            <Button Height="Auto" Width="48" Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonOK_Click" />
+            <Button IsCancel="True" Height="Auto" Width="48" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonCancel_Click" />
+            <Button IsDefault="True" Height="Auto" Width="48" Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,0,0" Click="ButtonOK_Click" />
         </StackPanel>
         <StackPanel Margin="3">
             <GroupBox Header="Elevation angle" Padding="3">
