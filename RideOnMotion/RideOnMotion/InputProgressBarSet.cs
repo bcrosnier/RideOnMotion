@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -56,18 +57,18 @@ namespace RideOnMotion.UI
             private set;
         }
 
-        public InputProgressBarSet( double thickness, Brush color)
+        public InputProgressBarSet( double thickness, Brush color, VerticalAlignment verticalAlign)
         {
-            this.PositivePitchProgressBar = new RulerProgressBar() { Fill = color };
-            this.NegativePitchProgressBar = new RulerProgressBar() { Fill = color };
-            this.PositiveRollProgressBar = new RulerProgressBar() { Fill = color };
-            this.NegativeRollProgressBar = new RulerProgressBar() { Fill = color };
+            this.PositivePitchProgressBar = new RulerProgressBar() { Fill = color, BarVerticalAlignment = verticalAlign };
+            this.NegativePitchProgressBar = new RulerProgressBar() { Fill = color, BarVerticalAlignment = verticalAlign };
+            this.PositiveRollProgressBar = new RulerProgressBar() { Fill = color, BarVerticalAlignment = verticalAlign };
+            this.NegativeRollProgressBar = new RulerProgressBar() { Fill = color, BarVerticalAlignment = verticalAlign };
 
-            this.PositiveGazProgressBar = new RulerProgressBar() { Fill = color };
-            this.NegativeGazProgressBar = new RulerProgressBar() { Fill = color };
+            this.PositiveGazProgressBar = new RulerProgressBar() { Fill = color, BarVerticalAlignment = verticalAlign };
+            this.NegativeGazProgressBar = new RulerProgressBar() { Fill = color, BarVerticalAlignment = verticalAlign };
 
-            this.PositiveYawProgressBar = new RulerProgressBar() { Fill = color };
-            this.NegativeYawProgressBar = new RulerProgressBar() { Fill = color };
+            this.PositiveYawProgressBar = new RulerProgressBar() { Fill = color, BarVerticalAlignment = verticalAlign };
+            this.NegativeYawProgressBar = new RulerProgressBar() { Fill = color, BarVerticalAlignment = verticalAlign };
 
             UpdateMaxSpeeds();
             ResetState();

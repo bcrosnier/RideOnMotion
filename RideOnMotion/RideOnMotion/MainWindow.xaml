@@ -91,71 +91,73 @@
                 <ContentPresenter Content="{Binding InputControl}" Visibility="{Binding InputControlVisibility}"/>
             </Viewbox>
 
-            <!-- Main panel - Input bars controls -->
-            <Grid Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*" />
-                </Grid.ColumnDefinitions>
+            <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
+                <!-- Main panel - Input bars controls -->
+                <Grid Width="640" Height="480">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
 
-                <local:DirectionDisplayControl
-                Grid.Column="0"
-                LeftRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativeRollProgressBar}"
-                RightRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositiveRollProgressBar}"
-                UpRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativePitchProgressBar}"
-                DownRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositivePitchProgressBar}"
-                CenterHeight="80"
-                CenterWidth="80"
-                />
-                <local:DirectionDisplayControl
-                Grid.Column="1"
-                LeftRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativeYawProgressBar}"
-                RightRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositiveYawProgressBar}"
-                UpRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositiveGazProgressBar}"
-                DownRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativeGazProgressBar}"
-                CenterHeight="80"
-                CenterWidth="80"
-                />
+                    <local:DirectionDisplayControl
+                        Grid.Column="0"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativeRollProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositiveRollProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativePitchProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositivePitchProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
+                    <local:DirectionDisplayControl
+                        Grid.Column="1"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativeYawProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositiveYawProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositiveGazProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativeGazProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
 
-                <local:DirectionDisplayControl
-                Grid.Column="0"
-                LeftRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeRollProgressBar}"
-                RightRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveRollProgressBar}"
-                UpRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativePitchProgressBar}"
-                DownRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositivePitchProgressBar}"
-                CenterHeight="80"
-                CenterWidth="80"
-                />
-                <local:DirectionDisplayControl
-                Grid.Column="1"
-                LeftRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeYawProgressBar}"
-                RightRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveYawProgressBar}"
-                UpRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveGazProgressBar}"
-                DownRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeGazProgressBar}"
-                CenterHeight="80"
-                CenterWidth="80"
-                />
+                    <local:DirectionDisplayControl
+                        Grid.Column="0"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeRollProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveRollProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativePitchProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositivePitchProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
+                    <local:DirectionDisplayControl
+                        Grid.Column="1"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeYawProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveYawProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveGazProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeGazProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
 
-                <local:DirectionDisplayControl
-                Grid.Column="0"
-                LeftRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativeRollProgressBar}"
-                RightRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositiveRollProgressBar}"
-                UpRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativePitchProgressBar}"
-                DownRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositivePitchProgressBar}"
-                CenterHeight="80"
-                CenterWidth="80"
-                />
-                <local:DirectionDisplayControl
-                Grid.Column="1"
-                LeftRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativeYawProgressBar}"
-                RightRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositiveYawProgressBar}"
-                UpRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositiveGazProgressBar}"
-                DownRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativeGazProgressBar}"
-                CenterHeight="80"
-                CenterWidth="80"
-                />
+                    <local:DirectionDisplayControl
+                        Grid.Column="0"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativeRollProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositiveRollProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativePitchProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositivePitchProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
+                    <local:DirectionDisplayControl
+                        Grid.Column="1"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativeYawProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositiveYawProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositiveGazProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativeGazProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
 
-            </Grid>
+                </Grid>
+            </Viewbox>
 
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >
                 <ListBox x:Name="LogListBox" ItemsSource="{Binding LogData}" VirtualizingPanel.ScrollUnit="Pixel"

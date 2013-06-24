@@ -30,6 +30,12 @@ namespace RideOnMotion.UI
             DependencyProperty.Register( "BarNumber", typeof( Int32 ), typeof( RulerProgressBar ), new UIPropertyMetadata( (Int32)9 ) );
 
         /// <summary>
+        /// Vertical alignment of the bars.
+        /// </summary>
+        public static readonly DependencyProperty BarVerticalAlignmentProperty =
+            DependencyProperty.Register( "BarVerticalAlignment", typeof( VerticalAlignment ), typeof( RulerProgressBar ), new UIPropertyMetadata( VerticalAlignment.Bottom ) );
+
+        /// <summary>
         /// Color of the progress bar.
         /// </summary>
         public Brush Fill
@@ -54,6 +60,15 @@ namespace RideOnMotion.UI
         {
             get { return (Int32)base.GetValue( BarNumberProperty ); }
             set { base.SetValue( BarNumberProperty, value ); }
+        }
+
+        /// <summary>
+        /// Number of bars to show, excluding the first and the last.
+        /// </summary>
+        public VerticalAlignment BarVerticalAlignment
+        {
+            get { return (VerticalAlignment)base.GetValue( BarVerticalAlignmentProperty ); }
+            set { base.SetValue( BarVerticalAlignmentProperty, value ); }
         }
 
         /// <summary>
@@ -91,10 +106,29 @@ namespace RideOnMotion.UI
         /// <param name="drawingContext"></param>
         protected override void OnRender( DrawingContext drawingContext )
         {
+            // Current width of the shape, with this value.
             double shapeWidth = this.ActualWidth * ( ( Value - Minimum ) / ( Maximum - Minimum ) );
+
+            // Space between each bar.
             double barSpacing = ActualWidth / ( BarNumber + 1 );
 
-            Rect baseRect = new Rect( 0, this.ActualHeight - Thickness, shapeWidth, Thickness );
+
+            double baseY = 0;
+            if ( this.BarVerticalAlignment == System.Windows.VerticalAlignment.Bottom )
+            {
+                baseY = ActualHeight - Thickness;
+            }
+            else if ( this.BarVerticalAlignment == System.Windows.VerticalAlignment.Top )
+            {
+                baseY = 0;
+            }
+            else
+            {
+                baseY = ( ActualHeight - Thickness ) / 2;
+            }
+
+            // Base
+            Rect baseRect = new Rect( 0, baseY, shapeWidth, Thickness );
             drawingContext.DrawRectangle( Fill, null, baseRect );
 
             if ( Value > Minimum )
@@ -102,19 +136,34 @@ namespace RideOnMotion.UI
                 // First bar
                 drawingContext.DrawRectangle( Fill, null, new Rect( 0, 0, Thickness, ActualHeight ) );
             }
-
             if ( Value >= Maximum )
             {
                 // Last bar
                 drawingContext.DrawRectangle( Fill, null, new Rect( ActualWidth - Thickness, 0, Thickness, ActualHeight ) );
             }
 
-            for ( double pos = barSpacing; pos <= shapeWidth && pos < ActualWidth; pos += barSpacing )
+            // Bars
+            double barHeight = ActualHeight / 3.0;
+            double barY = 0;
+            if ( this.BarVerticalAlignment == System.Windows.VerticalAlignment.Bottom )
+            {
+                barY = ActualHeight - barHeight;
+            }
+            else if ( this.BarVerticalAlignment == System.Windows.VerticalAlignment.Top )
+            {
+                barY = 0;
+            }
+            else
+            {
+                barY = ( ActualHeight - barHeight ) / 2;
+            }
+
+            for ( int i = 1; i <= BarNumber; i++ )
             {
                 // Every other bar
-                var x = pos - ( Thickness / 2 );
-                var y = ActualHeight - (ActualHeight / 3);
-                drawingContext.DrawRectangle( Fill, null, new Rect( x, y, Thickness, ActualHeight / 3 ) );
+                double barX = i * barSpacing - ( Thickness / 2 );
+                if( barX <= shapeWidth )
+                    drawingContext.DrawRectangle( Fill, null, new Rect( barX, barY, Thickness, barHeight ) );
             }
 
             // Call method of base class.
