@@ -44,6 +44,7 @@ namespace RideOnMotion.UI
             get;
             private set;
         }
+
         public RangeBase PositiveYawProgressBar
         {
             get;
@@ -55,7 +56,7 @@ namespace RideOnMotion.UI
             private set;
         }
 
-        public InputProgressBarSet( double thickness, Brush color )
+        public InputProgressBarSet( double thickness, Brush color, DroneSpeeds droneSpeeds )
         {
             this.PositivePitchProgressBar = new ProgressBar();
             this.NegativePitchProgressBar = new ProgressBar();
@@ -64,26 +65,9 @@ namespace RideOnMotion.UI
 
             this.PositiveGazProgressBar = new ProgressBar();
             this.NegativeGazProgressBar = new ProgressBar();
+
             this.PositiveYawProgressBar = new ProgressBar();
             this.NegativeYawProgressBar = new ProgressBar();
-
-            this.PositivePitchProgressBar.Minimum = 0.0;
-            this.NegativePitchProgressBar.Minimum = 0.0;
-            this.PositiveRollProgressBar.Minimum = 0.0;
-            this.NegativeRollProgressBar.Minimum = 0.0;
-            this.PositiveGazProgressBar.Minimum = 0.0;
-            this.NegativeGazProgressBar.Minimum = 0.0;
-            this.PositiveYawProgressBar.Minimum = 0.0;
-            this.NegativeYawProgressBar.Minimum = 0.0;
-
-            this.PositivePitchProgressBar.Maximum = 1.0;
-            this.NegativePitchProgressBar.Maximum = 1.0;
-            this.PositiveRollProgressBar.Maximum = 1.0;
-            this.NegativeRollProgressBar.Maximum = 1.0;
-            this.PositiveGazProgressBar.Maximum = 1.0;
-            this.NegativeGazProgressBar.Maximum = 1.0;
-            this.PositiveYawProgressBar.Maximum = 1.0;
-            this.NegativeYawProgressBar.Maximum = 1.0;
 
             ResetState();
         }
@@ -103,6 +87,7 @@ namespace RideOnMotion.UI
 
                 this.PositiveGazProgressBar.Value = newInputState.Gaz;
                 this.NegativeGazProgressBar.Value = -newInputState.Gaz;
+
                 this.NegativeYawProgressBar.Value = -newInputState.Yaw;
                 this.PositiveYawProgressBar.Value = newInputState.Yaw;
             }
@@ -117,8 +102,35 @@ namespace RideOnMotion.UI
 
             this.PositiveGazProgressBar.Value = 0.0;
             this.NegativeGazProgressBar.Value = 0.0;
+
             this.NegativeYawProgressBar.Value = 0.0;
             this.PositiveYawProgressBar.Value = 0.0;
+        }
+
+        public void UpdateMaxSpeeds( DroneSpeeds droneSpeeds )
+        {
+
+            this.PositivePitchProgressBar.Minimum = 0.0;
+            this.NegativePitchProgressBar.Minimum = 0.0;
+            this.PositiveRollProgressBar.Minimum = 0.0;
+            this.NegativeRollProgressBar.Minimum = 0.0;
+
+            this.PositiveGazProgressBar.Minimum = 0.0;
+            this.NegativeGazProgressBar.Minimum = 0.0;
+
+            this.PositiveYawProgressBar.Minimum = 0.0;
+            this.NegativeYawProgressBar.Minimum = 0.0;
+
+            this.PositivePitchProgressBar.Maximum = droneSpeeds.DroneTranslationSpeed;
+            this.NegativePitchProgressBar.Maximum = droneSpeeds.DroneTranslationSpeed;
+            this.PositiveRollProgressBar.Maximum = droneSpeeds.DroneTranslationSpeed;
+            this.NegativeRollProgressBar.Maximum = droneSpeeds.DroneTranslationSpeed;
+
+            this.PositiveGazProgressBar.Maximum = droneSpeeds.DroneElevationSpeed;
+            this.NegativeGazProgressBar.Maximum = droneSpeeds.DroneElevationSpeed;
+
+            this.PositiveYawProgressBar.Maximum = droneSpeeds.DroneRotationSpeed;
+            this.NegativeYawProgressBar.Maximum = droneSpeeds.DroneRotationSpeed;
         }
     }
 }

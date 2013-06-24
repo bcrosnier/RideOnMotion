@@ -455,7 +455,7 @@ namespace RideOnMotion.UI
         /// </summary>
         public MainWindowViewModel()
         {
-            _progressBars = new InputProgressBarsWrapper( 4 );
+            _progressBars = new InputProgressBarsWrapper( 4, _droneSpeeds );
 
             _logItems = new ObservableCollection<ListBoxItem>();
 
@@ -742,6 +742,7 @@ namespace RideOnMotion.UI
         {
 			_droneSpeeds = DroneSpeeds;
 			_sendDroneCommand.DroneSpeeds = DroneSpeeds;
+            _progressBars.UpdateSpeeds( DroneSpeeds );
         }
 
         /// <summary>
