@@ -56,20 +56,20 @@ namespace RideOnMotion.UI
             private set;
         }
 
-        public InputProgressBarSet( double thickness, Brush color, DroneSpeeds droneSpeeds )
+        public InputProgressBarSet( double thickness, Brush color)
         {
-            this.PositivePitchProgressBar = new ProgressBar();
-            this.NegativePitchProgressBar = new ProgressBar();
-            this.PositiveRollProgressBar = new ProgressBar();
-            this.NegativeRollProgressBar = new ProgressBar();
+            this.PositivePitchProgressBar = new RulerProgressBar() { Fill = color };
+            this.NegativePitchProgressBar = new RulerProgressBar() { Fill = color };
+            this.PositiveRollProgressBar = new RulerProgressBar() { Fill = color };
+            this.NegativeRollProgressBar = new RulerProgressBar() { Fill = color };
 
-            this.PositiveGazProgressBar = new ProgressBar();
-            this.NegativeGazProgressBar = new ProgressBar();
+            this.PositiveGazProgressBar = new RulerProgressBar() { Fill = color };
+            this.NegativeGazProgressBar = new RulerProgressBar() { Fill = color };
 
-            this.PositiveYawProgressBar = new ProgressBar();
-            this.NegativeYawProgressBar = new ProgressBar();
+            this.PositiveYawProgressBar = new RulerProgressBar() { Fill = color };
+            this.NegativeYawProgressBar = new RulerProgressBar() { Fill = color };
 
-            UpdateMaxSpeeds( droneSpeeds );
+            UpdateMaxSpeeds();
             ResetState();
         }
 
@@ -108,7 +108,7 @@ namespace RideOnMotion.UI
             this.PositiveYawProgressBar.Value = 0.0;
         }
 
-        public void UpdateMaxSpeeds( DroneSpeeds droneSpeeds )
+        public void UpdateMaxSpeeds()
         {
 
             this.PositivePitchProgressBar.Minimum = 0.0;
@@ -122,16 +122,16 @@ namespace RideOnMotion.UI
             this.PositiveYawProgressBar.Minimum = 0.0;
             this.NegativeYawProgressBar.Minimum = 0.0;
 
-            this.PositivePitchProgressBar.Maximum = droneSpeeds.DroneTranslationSpeed;
-            this.NegativePitchProgressBar.Maximum = droneSpeeds.DroneTranslationSpeed;
-            this.PositiveRollProgressBar.Maximum = droneSpeeds.DroneTranslationSpeed;
-            this.NegativeRollProgressBar.Maximum = droneSpeeds.DroneTranslationSpeed;
+            this.PositivePitchProgressBar.Maximum = 1.0;
+            this.NegativePitchProgressBar.Maximum = 1.0;
+            this.PositiveRollProgressBar.Maximum = 1.0;
+            this.NegativeRollProgressBar.Maximum = 1.0;
 
-            this.PositiveGazProgressBar.Maximum = droneSpeeds.DroneElevationSpeed;
-            this.NegativeGazProgressBar.Maximum = droneSpeeds.DroneElevationSpeed;
+            this.PositiveGazProgressBar.Maximum = 1.0;
+            this.NegativeGazProgressBar.Maximum = 1.0;
 
-            this.PositiveYawProgressBar.Maximum = droneSpeeds.DroneRotationSpeed;
-            this.NegativeYawProgressBar.Maximum = droneSpeeds.DroneRotationSpeed;
+            this.PositiveYawProgressBar.Maximum = 1.0;
+            this.NegativeYawProgressBar.Maximum = 1.0;
         }
     }
 }

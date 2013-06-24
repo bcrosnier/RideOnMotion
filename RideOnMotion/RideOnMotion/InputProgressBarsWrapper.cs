@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace RideOnMotion.UI
 {
@@ -33,11 +34,11 @@ namespace RideOnMotion.UI
             private set;
         }
 
-        internal InputProgressBarsWrapper( double thickness, DroneSpeeds droneSpeeds, double centerWidth, double centerHeight )
+        internal InputProgressBarsWrapper( double thickness)
         {
-            GamepadProgressBarSet = new InputProgressBarSet( thickness, null, droneSpeeds );
-            KeyboardProgressBarSet = new InputProgressBarSet( thickness, null, droneSpeeds );
-            KinectProgressBarSet = new InputProgressBarSet( thickness, null, droneSpeeds );
+            GamepadProgressBarSet = new InputProgressBarSet( thickness, Brushes.Red);
+            KeyboardProgressBarSet = new InputProgressBarSet( thickness, Brushes.Yellow);
+            KinectProgressBarSet = new InputProgressBarSet( thickness, Brushes.Yellow);
         }
 
         public void UpdateInputStates( InputState gamepadState, InputState keyboardState, InputState kinectState )
@@ -47,11 +48,11 @@ namespace RideOnMotion.UI
             KinectProgressBarSet.UpdateInputState( kinectState );
         }
 
-        internal void UpdateSpeeds( DroneSpeeds DroneSpeeds )
+        internal void UpdateSpeeds()
         {
-            GamepadProgressBarSet.UpdateMaxSpeeds( DroneSpeeds );
-            KeyboardProgressBarSet.UpdateMaxSpeeds( DroneSpeeds );
-            KinectProgressBarSet.UpdateMaxSpeeds( DroneSpeeds );
+            GamepadProgressBarSet.UpdateMaxSpeeds();
+            KeyboardProgressBarSet.UpdateMaxSpeeds();
+            KinectProgressBarSet.UpdateMaxSpeeds();
         }
     }
 }
