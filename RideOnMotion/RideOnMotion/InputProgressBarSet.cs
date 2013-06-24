@@ -69,6 +69,7 @@ namespace RideOnMotion.UI
             this.PositiveYawProgressBar = new ProgressBar();
             this.NegativeYawProgressBar = new ProgressBar();
 
+            UpdateMaxSpeeds( droneSpeeds );
             ResetState();
         }
 

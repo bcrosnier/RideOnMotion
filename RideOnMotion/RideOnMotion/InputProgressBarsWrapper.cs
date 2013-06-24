@@ -33,7 +33,7 @@ namespace RideOnMotion.UI
             private set;
         }
 
-        internal InputProgressBarsWrapper( double thickness, DroneSpeeds droneSpeeds )
+        internal InputProgressBarsWrapper( double thickness, DroneSpeeds droneSpeeds, double centerWidth, double centerHeight )
         {
             GamepadProgressBarSet = new InputProgressBarSet( thickness, null, droneSpeeds );
             KeyboardProgressBarSet = new InputProgressBarSet( thickness, null, droneSpeeds );

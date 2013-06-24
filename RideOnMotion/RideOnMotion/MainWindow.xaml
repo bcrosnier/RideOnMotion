@@ -91,6 +91,17 @@
                 <ContentPresenter Content="{Binding InputControl}" Visibility="{Binding InputControlVisibility}"/>
             </Viewbox>
 
+            <!-- Main panel - Input bars controls -->
+            <local:DirectionDisplayControl
+                Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
+                LeftRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeRollProgressBar}"
+                RightRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveRollProgressBar}"
+                UpRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativePitchProgressBar}"
+                DownRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositivePitchProgressBar}"
+                CenterHeight="80"
+                CenterWidth="80"
+                />
+
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >
                 <ListBox x:Name="LogListBox" ItemsSource="{Binding LogData}" VirtualizingPanel.ScrollUnit="Pixel"
                          FontFamily="Consolas, DejaVu Sans Mono, Terminus, System" FontSize="10pt">

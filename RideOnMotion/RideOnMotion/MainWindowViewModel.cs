@@ -15,6 +15,7 @@ using RideOnMotion.Inputs.Keyboard;
 using RideOnMotion.Inputs.Xbox360Gamepad;
 using RideOnMotion.UI.Properties;
 using RideOnMotion.Utilities;
+using RideOnMotion.Inputs.Kinect;
 
 namespace RideOnMotion.UI
 {
@@ -85,9 +86,9 @@ namespace RideOnMotion.UI
 
         private delegate void AddLogStringDelegate( String s );
 
-        InputState _lastKeyboardInput;
-        InputState _lastGamepadInput;
-        InputState _lastKinectInput;
+        Inputs.InputState _lastKeyboardInput;
+        Inputs.InputState _lastGamepadInput;
+        Inputs.InputState _lastKinectInput;
 
         SendDroneCommand _sendDroneCommand;
         public bool DroneOriginalOrientationSet;
@@ -196,6 +197,23 @@ namespace RideOnMotion.UI
                 {
                     LogLevelFilter = CK.Core.LogLevelFilter.Fatal;
                     NotifyLogLevels();
+                }
+            }
+        }
+
+        public InputProgressBarsWrapper InputProgressBarsWrapper
+        {
+            get
+            {
+                return _progressBars;
+            }
+
+            set
+            {
+                if ( value != _progressBars )
+                {
+                    _progressBars = value;
+                    OnNotifyPropertyChange( "InputProgressBarsWrapper" );
                 }
             }
         }
@@ -455,7 +473,7 @@ namespace RideOnMotion.UI
         /// </summary>
         public MainWindowViewModel()
         {
-            _progressBars = new InputProgressBarsWrapper( 4, _droneSpeeds );
+            _progressBars = new InputProgressBarsWrapper( 4, _droneSpeeds, KinectSensorController.TRIGGER_BUTTON_WIDTH, KinectSensorController.TRIGGER_BUTTON_WIDTH );
 
             _logItems = new ObservableCollection<ListBoxItem>();
 
@@ -486,9 +504,9 @@ namespace RideOnMotion.UI
             mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
             mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
 
-            _lastKeyboardInput = new InputState();
-            _lastGamepadInput = new InputState();
-            _lastKinectInput = new InputState();
+            _lastKeyboardInput = new Inputs.InputState();
+            _lastGamepadInput = new Inputs.InputState();
+            _lastKinectInput = new Inputs.InputState();
 
             _keyboardController = new KeyboardController();
             _Xbox360Gamepad = new Xbox360GamepadController();
@@ -505,9 +523,9 @@ namespace RideOnMotion.UI
 
         private void OrderTheDrone( object sender, EventArgs e )
         {
-            InputState newKeyboardInput = _keyboardController.GetCurrentControlInput( _lastKeyboardInput );
-            InputState newKinectInput = ( (RideOnMotion.Inputs.Kinect.KinectSensorController)_inputController ).GetCurrentControlInput( _lastKinectInput );
-            InputState newGamepadInput = _Xbox360Gamepad.GetCurrentControlInput( _lastGamepadInput );
+            Inputs.InputState newKeyboardInput = _keyboardController.GetCurrentControlInput( _lastKeyboardInput );
+            Inputs.InputState newKinectInput = ( (RideOnMotion.Inputs.Kinect.KinectSensorController)_inputController ).GetCurrentControlInput( _lastKinectInput );
+            Inputs.InputState newGamepadInput = _Xbox360Gamepad.GetCurrentControlInput( _lastGamepadInput );
 
             if ( newGamepadInput != null || newKeyboardInput != null || newKinectInput != null )
             {
@@ -523,14 +541,15 @@ namespace RideOnMotion.UI
                 {
                     _lastKinectInput = newKinectInput;
                 }
-                InputState MixedInput = MixInputs.MixInput( _lastKeyboardInput, _lastGamepadInput, _lastKinectInput );
+                Inputs.InputState MixedInput = MixInputs.MixInput( _lastKeyboardInput, _lastGamepadInput, _lastKinectInput );
                 if ( MixedInput != null )
                 {
                     _sendDroneCommand.Process( MixedInput );
                 }
+
+                _progressBars.UpdateInputStates( _lastGamepadInput, _lastKeyboardInput, _lastKinectInput );
             }
 
-            _progressBars.UpdateInputStates( newGamepadInput, newKeyboardInput, newKinectInput );
         }
 
         void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
