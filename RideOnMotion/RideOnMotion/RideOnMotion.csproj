@@ -86,6 +86,8 @@
     <Compile Include="DroneSettingsWindow.xaml.cs">
       <DependentUpon>DroneSettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="InputProgressBarSet.cs" />
+    <Compile Include="InputProgressBarsWrapper.cs" />
     <Compile Include="KeyboardSettingsWindow.xaml.cs">
       <DependentUpon>KeyboardSettingsWindow.xaml</DependentUpon>
     </Compile>

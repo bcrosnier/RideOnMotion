@@ -63,6 +63,7 @@ namespace RideOnMotion.UI
         private ImageSource _inputImageSource;
         private Control _inputControlUI;
         private MenuItem _inputMenu;
+        private InputProgressBarsWrapper _progressBars;
 
         private Window _droneSettingsWindow;
         private Window _keyboardSettingsWindow;
@@ -451,6 +452,8 @@ namespace RideOnMotion.UI
         /// </summary>
         public MainWindowViewModel()
         {
+            _progressBars = new InputProgressBarsWrapper( 4 );
+
             _logItems = new ObservableCollection<ListBoxItem>();
 
             _logger = new DefaultActivityLogger();
@@ -502,6 +505,7 @@ namespace RideOnMotion.UI
             InputState newKeyboardInput = _keyboardController.GetCurrentControlInput( _lastKeyboardInput );
             InputState newKinectInput = ( (RideOnMotion.Inputs.Kinect.KinectSensorController)_inputController ).GetCurrentControlInput( _lastKinectInput );
             InputState newGamepadInput = _Xbox360Gamepad.GetCurrentControlInput( _lastGamepadInput );
+
             if ( newGamepadInput != null || newKeyboardInput != null || newKinectInput != null )
             {
                 if ( newKeyboardInput != null )
@@ -522,6 +526,8 @@ namespace RideOnMotion.UI
                     _sendDroneCommand.Process( MixedInput );
                 }
             }
+
+            _progressBars.UpdateInputStates( newGamepadInput, newKeyboardInput, newKinectInput );
         }
 
         void OnDroneDataReady( object sender, DroneDataReadyEventArgs e )
