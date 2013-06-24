@@ -62,7 +62,7 @@ namespace RideOnMotion
 		public DroneCommand( IActivityLogger parentLogger, DroneControl droneControl )
         {
             _logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "DroneCommand" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Drone" );
             _logger.Output.BridgeTo( parentLogger );
 
 			_droneControl = droneControl;

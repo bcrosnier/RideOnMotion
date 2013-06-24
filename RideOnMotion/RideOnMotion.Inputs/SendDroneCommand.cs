@@ -14,11 +14,12 @@ namespace RideOnMotion.Inputs
 		public double DroneOriginalOrientation;
 		public double DroneCurrentOrientation;
 		public bool RelativeDirection;
+		DroneSpeeds _droneSpeeds;
 
         public SendDroneCommand(IActivityLogger parentLogger)
         {
             _logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "SendDroneCommand" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Application" );
             _logger.Output.BridgeTo( parentLogger );
         }
 
@@ -37,36 +38,72 @@ namespace RideOnMotion.Inputs
 				this._drone = value;
 			}
 		}
+
+		public DroneSpeeds DroneSpeeds
+		{
+			get
+			{
+				return _droneSpeeds;
+			}
+			set
+			{
+				_droneSpeeds = value;
+			}
+		}
 		public void Process( RideOnMotion.Inputs.InputState inputState )
 		{
 			if ( inputState.Land && _drone.CanLand )
+			{
 				_drone.Land();
+				_logger.Info( "Drone is landing" );
+			}
 			else if ( inputState.TakeOff && _drone.CanTakeoff )
+			{
 				_drone.Takeoff();
+				_logger.Info( "Drone is taking off" );
+			}
 
 			if ( inputState.Hover && _drone.CanEnterHoverMode )
+			{
 				_drone.EnterHoverMode();
+				_logger.Info( "Drone is Hovering" );
+			}
 			else if ( inputState.Hover && _drone.CanLeaveHoverMode )
+			{
 				_drone.LeaveHoverMode();
+				_logger.Info( "Drone is not Hovering anymore" );
+			}
 
 			if ( inputState.CameraSwap )
+			{
 				_drone.ChangeCamera();
+				_logger.Info( "Drone chanched what he can see" );
+			}
 
 			if ( inputState.Emergency )
+			{
 				_drone.Emergency();
+				_logger.Info( "Drone took his time to crash while you read that" );
+			}
 			else if ( inputState.FlatTrim )
+			{
 				_drone.FlatTrim();
+				_logger.Info( "Flat trim done" );
+			}
 
 			if ( inputState.SpecialAction )
+			{
 				_drone.PlayLED();
+				_logger.Info( "I can see the lights, it burns *.*" );
+			}
 
-			float roll = inputState.Roll / 3.0f;
+			float roll = inputState.Roll / ( 1 / _droneSpeeds.DroneTranslationSpeed );
             inputState.Roll = roll;
-			float pitch = inputState.Pitch / 3.0f;
+			float pitch = inputState.Pitch / ( 1 / _droneSpeeds.DroneTranslationSpeed );
             inputState.Pitch = pitch;
-			float yaw = inputState.Yaw / 2.0f;
+			float yaw = inputState.Yaw / ( 1 / _droneSpeeds.DroneRotationSpeed );
             inputState.Yaw = yaw;
-			float gaz = inputState.Gaz / 3.0f;
+			float gaz = inputState.Gaz / ( 1 / _droneSpeeds.DroneElevationSpeed );
             inputState.Gaz = gaz;
 			RelativeDirection = true;
 			float roll2;
@@ -85,8 +122,6 @@ namespace RideOnMotion.Inputs
 
 				inputState.Roll = roll2;
 				inputState.Pitch = pitch2;
-				// for debugging purpose
-                //_logger.Trace("Navigate with : roll2 : " + roll2 + " , pitch2 : " + pitch2);
 			}
 			_drone.Navigate( roll2, pitch2, yaw, gaz );
             _logger.Trace( inputState.ToString() );

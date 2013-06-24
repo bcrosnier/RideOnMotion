@@ -71,7 +71,7 @@ namespace RideOnMotion.Inputs.Kinect
         public KinectDeviceSettingsViewModel( IActivityLogger parentLogger, Inputs.Kinect.KinectSensorController controller )
         {
             _logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "KinectDeviceSettings" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Settings" );
             _logger.Output.BridgeTo( parentLogger );
 
             this._controller = controller;

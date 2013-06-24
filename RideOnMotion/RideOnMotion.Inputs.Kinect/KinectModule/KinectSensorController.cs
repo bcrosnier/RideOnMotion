@@ -379,7 +379,7 @@ namespace RideOnMotion.Inputs.Kinect
         public KinectSensorController(IActivityLogger parentLogger)
         {
             this._logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "KinectSensorController" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Kinect" );
             _logger.Output.BridgeTo( parentLogger );
 
             this.DepthImageEnabled = true;
@@ -813,11 +813,17 @@ namespace RideOnMotion.Inputs.Kinect
 				_positionTrackerController.NotifyPositionTrackers( curUser );
 
 				if( HandsPointReady != null )
-                {
-                    Point left = WindowPointFromHandPointer( curUser.HandPointers[0] );
-                    Point right = WindowPointFromHandPointer( curUser.HandPointers[1] );
-                    _leftHand = left;
-                    _rightHand = right;
+				{
+					Point left = new System.Windows.Point( -1, -1 );
+					Point right = new System.Windows.Point( -1, -1 );
+					if ( curUser.HandPointers[0].IsActive
+					|| curUser.HandPointers[1].IsActive )
+					{
+						left = WindowPointFromHandPointer( curUser.HandPointers[0] );
+						right = WindowPointFromHandPointer( curUser.HandPointers[1] );
+					}
+					_leftHand = left;
+					_rightHand = right;
                     MapInput();
 
 					OnHandsPointReady( left, right );
@@ -1169,12 +1175,23 @@ namespace RideOnMotion.Inputs.Kinect
                     if (_leftHand.X <= DEPTH_FRAME_WIDTH / 2 && _leftHand.X != -1)
                     {
                         roll = (float)((_leftHand.X / (DEPTH_FRAME_WIDTH / 4)) - 1);
-                    }
+					}
+					else if ( _leftHand.X == -1 )
+					{
+						roll = 0;
+					}
                     else
                     {
                         roll = 1f;
                     }
-                    pitch = (float)((_leftHand.Y / (DEPTH_FRAME_HEIGHT / 2)) - 1);
+					if ( _leftHand.Y != -1 )
+					{
+						pitch = (float)( ( _leftHand.Y / ( DEPTH_FRAME_HEIGHT / 2 ) ) - 1 );
+					}
+					else if ( _leftHand.Y == -1 )
+					{
+						pitch = 0;
+					}
                 }
                 if (!InputState[1])
                 {
@@ -1182,11 +1199,22 @@ namespace RideOnMotion.Inputs.Kinect
                     {
                         yaw = (float)(((_rightHand.X - (DEPTH_FRAME_WIDTH / 2)) / (DEPTH_FRAME_WIDTH / 4)) - 1);
                     }
-                    else
-                    {
-                        yaw = -1f;
-                    }
-                    gaz = (float)-((_rightHand.Y / (DEPTH_FRAME_HEIGHT / 2)) - 1);
+					else if ( _rightHand.X == -1 )
+					{
+						yaw = 0;
+					}
+					else
+					{
+						yaw = -1f;
+					}
+					if ( _rightHand.Y != -1 )
+					{
+						gaz = (float)-( ( _rightHand.Y / ( DEPTH_FRAME_HEIGHT / 2 ) ) - 1 );
+					}
+					else if ( _rightHand.Y == -1)
+					{
+						gaz = 0;
+					}
                 }
             }
             if (_operatorLost && !_lastOperatorLost)

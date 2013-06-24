@@ -26,7 +26,7 @@ namespace RideOnMotion.UI
         private DroneSettingsWindowViewModel _viewModel;
         public event EventHandler<DroneSettingsEventArgs> DroneConfigAvailable;
 
-        public DroneSettingsWindow(IActivityLogger parentLogger, DroneConfig config, bool droneIsPaired)
+        public DroneSettingsWindow(IActivityLogger parentLogger, DroneConfig config, bool droneIsPaired, DroneSpeeds DroneSpeeds)
         {
             if ( config == null )
             {
@@ -48,7 +48,7 @@ namespace RideOnMotion.UI
                 TimeoutValue = config.TimeoutValue
             };
 
-            _viewModel = new DroneSettingsWindowViewModel( parentLogger, newConfig );
+            _viewModel = new DroneSettingsWindowViewModel( parentLogger, newConfig, DroneSpeeds );
 
 			_viewModel.DroneIsPaired = droneIsPaired;
             this.DataContext = _viewModel;
@@ -78,7 +78,7 @@ namespace RideOnMotion.UI
         {
             if ( DroneConfigAvailable != null )
             {
-                DroneConfigAvailable( this, new DroneSettingsEventArgs(_viewModel.DroneConfig, _viewModel.DroneIsPaired) );
+                DroneConfigAvailable( this, new DroneSettingsEventArgs(_viewModel.DroneConfig, _viewModel.DroneIsPaired, _viewModel.DroneSpeeds) );
             }
         }
     }
@@ -120,7 +120,11 @@ namespace RideOnMotion.UI
 
         private DroneConfig _droneConfig;
         private bool _droneIsPaired;
+		private DroneSpeeds _droneSpeeds;
         private IActivityLogger _logger;
+		String _elevation;
+		String _rotation;
+		String _translation;
 
         #endregion Members
 
@@ -142,6 +146,11 @@ namespace RideOnMotion.UI
         {
             get { return this._droneConfig; }
         }
+
+		public DroneSpeeds DroneSpeeds
+		{
+			get { return this._droneSpeeds; }
+		}
 
 
         public bool DroneIsPaired
@@ -179,9 +188,104 @@ namespace RideOnMotion.UI
                 }
             }
         }
+
+		public String TranslationSpeedString
+		{
+			get
+			{
+				return _translation;
+			}
+			set
+			{
+				if ( value != _translation )
+				{
+					_translation = value + " %";
+					RaisePropertyChanged();
+				}
+			}
+		}
+		public String ElevationSpeedString
+		{
+			get
+			{
+				return _elevation;
+			}
+			set
+			{
+				if ( value != _elevation )
+				{
+					_elevation = value + " %";
+					RaisePropertyChanged();
+				}
+			}
+		}
+		public String RotationSpeedString
+		{
+			get
+			{
+				return _rotation;
+			}
+			set
+			{
+				if ( value != _rotation )
+				{
+					_rotation = value + " %";
+					RaisePropertyChanged();
+				}
+			}
+		}
+
+		public float TranslationSpeed
+		{
+			get
+			{
+				return _droneSpeeds.DroneTranslationSpeed;
+			}
+			set
+			{
+				if ( value != _droneSpeeds.DroneTranslationSpeed )
+				{
+					_droneSpeeds.DroneTranslationSpeed = value;
+					TranslationSpeedString = (_droneSpeeds.DroneTranslationSpeed*100).ToString();
+					RaisePropertyChanged();
+				}
+			}
+		}
+		public float RotationSpeed
+		{
+			get
+			{
+				return _droneSpeeds.DroneRotationSpeed;
+			}
+			set
+			{
+				if ( value != _droneSpeeds.DroneRotationSpeed )
+				{
+					_droneSpeeds.DroneRotationSpeed = value;
+					RotationSpeedString = (_droneSpeeds.DroneRotationSpeed*100).ToString();
+					RaisePropertyChanged();
+				}
+			}
+		}
+		public float ElevationSpeed
+		{
+			get
+			{
+				return _droneSpeeds.DroneElevationSpeed;
+			}
+			set
+			{
+				if ( value != _droneSpeeds.DroneElevationSpeed )
+				{
+					_droneSpeeds.DroneElevationSpeed = value;
+					ElevationSpeedString = (_droneSpeeds.DroneElevationSpeed*100).ToString();
+					RaisePropertyChanged();
+				}
+			}
+		}
         #endregion Properties
 
-        public DroneSettingsWindowViewModel( IActivityLogger parentLogger, DroneConfig config )
+        public DroneSettingsWindowViewModel( IActivityLogger parentLogger, DroneConfig config, DroneSpeeds DroneSpeeds )
         {
             if ( config == null )
             {
@@ -189,10 +293,15 @@ namespace RideOnMotion.UI
             }
 
             _logger = new DefaultActivityLogger();
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "DroneSettingsWindow" );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Settings" );
             _logger.Output.BridgeTo( parentLogger );
 
             this._droneConfig = config;
+			this._droneSpeeds = DroneSpeeds;
+
+			TranslationSpeedString = (_droneSpeeds.DroneTranslationSpeed*100).ToString();
+			RotationSpeedString = (_droneSpeeds.DroneRotationSpeed*100).ToString();
+			ElevationSpeedString = (_droneSpeeds.DroneElevationSpeed*100).ToString();
         }
 
         internal void SaveSettings()
@@ -219,10 +328,18 @@ namespace RideOnMotion.UI
             private set;
         }
 
-        public DroneSettingsEventArgs( DroneConfig newConfig, bool isPaired )
+		public DroneSpeeds DroneSpeeds
+		{
+			get;
+			private set;
+		}
+
+        public DroneSettingsEventArgs( DroneConfig newConfig, bool isPaired , DroneSpeeds droneSpeeds)
         {
             this.DroneConfig = newConfig;
             this.IsPaired = isPaired;
+			this.DroneSpeeds = droneSpeeds;
         }
-    }
+
+	}
 }
