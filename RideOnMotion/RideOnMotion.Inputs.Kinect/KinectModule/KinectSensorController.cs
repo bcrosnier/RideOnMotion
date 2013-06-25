@@ -1168,51 +1168,18 @@ namespace RideOnMotion.Inputs.Kinect
 
             if (_handsVisible)
             {
+                int offset;
                 if (!InputState[0])
                 {
-                    if (_leftHand.X <= DEPTH_FRAME_WIDTH / 2 && _leftHand.X != -1)
-                    {
-                        roll = (float)((_leftHand.X / (DEPTH_FRAME_WIDTH / 4)) - 1);
-					}
-					else if ( _leftHand.X == -1 )
-					{
-						roll = 0;
-					}
-                    else
-                    {
-                        roll = 1f;
-                    }
-					if ( _leftHand.Y != -1 )
-					{
-						pitch = (float)( ( _leftHand.Y / ( DEPTH_FRAME_HEIGHT / 2 ) ) - 1 );
-					}
-					else if ( _leftHand.Y == -1 )
-					{
-						pitch = 0;
-					}
+                    offset = 0;
+                    roll = HandsPositionX(_leftHand.X, offset);
+                    pitch = HandsPositionY(_leftHand.Y, false);
                 }
                 if (!InputState[1])
                 {
-                    if (_rightHand.X >= DEPTH_FRAME_WIDTH / 2 && _rightHand.X != -1)
-                    {
-                        yaw = (float)(((_rightHand.X - (DEPTH_FRAME_WIDTH / 2)) / (DEPTH_FRAME_WIDTH / 4)) - 1);
-                    }
-					else if ( _rightHand.X == -1 )
-					{
-						yaw = 0;
-					}
-					else
-					{
-						yaw = -1f;
-					}
-					if ( _rightHand.Y != -1 )
-					{
-						gaz = (float)-( ( _rightHand.Y / ( DEPTH_FRAME_HEIGHT / 2 ) ) - 1 );
-					}
-					else if ( _rightHand.Y == -1)
-					{
-						gaz = 0;
-					}
+                    offset = - (DEPTH_FRAME_WIDTH / 2);
+                    yaw = HandsPositionX(_rightHand.X, offset);
+                    gaz = HandsPositionY(_rightHand.Y,true);
                 }
             }
             if (_operatorLost && !_lastOperatorLost)
@@ -1233,6 +1200,106 @@ namespace RideOnMotion.Inputs.Kinect
             {
                 takeOff = true;
 			}
+        }
+
+        float HandsPositionX(double hand, int offset)
+        {
+            float xValue;
+            if (hand != -1)
+            {
+                hand += offset;
+            }
+            if ((hand >= (DEPTH_FRAME_WIDTH / 4) - TRIGGER_BUTTON_WIDTH / 2 && hand <= (DEPTH_FRAME_WIDTH / 4) + TRIGGER_BUTTON_WIDTH / 2) || hand == -1)
+            {
+                xValue = 0;
+            }
+            else if (hand < (DEPTH_FRAME_WIDTH / 4) - TRIGGER_BUTTON_WIDTH / 2)
+            {
+                double transition = (double)((hand - (DEPTH_FRAME_WIDTH / 4 - TRIGGER_BUTTON_WIDTH / 2)) / (DEPTH_FRAME_WIDTH / 4 - TRIGGER_BUTTON_WIDTH / 2));
+                if (transition < 0)
+                {
+                    xValue = (float)-(Math.Pow(-transition, 1.7) * 1.1);
+                }
+                else
+                {
+                    xValue = (float)(Math.Pow(transition, 1.7) * 1.1);
+                }
+                if (xValue < -1)
+                {
+                    xValue = -1f;
+                }
+                if (xValue > 1)
+                {
+                    xValue = 1f;
+                }
+            }
+            else if (hand > (DEPTH_FRAME_WIDTH / 4) + TRIGGER_BUTTON_WIDTH / 2)
+            {
+                xValue = (float)(Math.Pow((double)((hand - (DEPTH_FRAME_WIDTH / 4 + TRIGGER_BUTTON_WIDTH / 2)) / (DEPTH_FRAME_WIDTH / 4 - TRIGGER_BUTTON_WIDTH / 2)), 1.7) * 1.1);
+                if (xValue > 1)
+                {
+                    xValue = 1f;
+                }
+            }
+            else
+            {
+                xValue = 0;
+            }
+            return xValue;
+        }
+
+        float HandsPositionY(double hand, bool up)
+        {
+            float yValue;
+            if ((hand >= (DEPTH_FRAME_HEIGHT / 2) - TRIGGER_BUTTON_HEIGHT / 2 && hand <= (DEPTH_FRAME_HEIGHT / 2) + TRIGGER_BUTTON_HEIGHT / 2) || hand == -1)
+            {
+                yValue = 0;
+            }
+            else if (hand < (DEPTH_FRAME_HEIGHT / 2) - TRIGGER_BUTTON_HEIGHT / 2)
+            {
+                double transition = (double)((hand - (DEPTH_FRAME_HEIGHT / 2 - TRIGGER_BUTTON_HEIGHT / 2)) / (DEPTH_FRAME_HEIGHT / 2 - TRIGGER_BUTTON_HEIGHT / 2));
+                if (transition < 0)
+                {
+                    yValue = (float)(Math.Pow(-transition, 1.7) * 1.1);
+                }
+                else
+                {
+                    yValue = (float)(Math.Pow(transition, 1.7) * 1.1);
+                }
+                if (yValue < -1)
+                {
+                    yValue = -1f;
+                }
+                if (yValue > 1)
+                {
+                    yValue = 1f;
+                }
+                if (!up)
+                {
+                    yValue = -yValue;
+                }
+            }
+            else if (hand > (DEPTH_FRAME_HEIGHT / 2) + TRIGGER_BUTTON_HEIGHT / 2)
+            {
+                yValue = (float)-(Math.Pow((double)((hand - (DEPTH_FRAME_HEIGHT / 2 + TRIGGER_BUTTON_HEIGHT / 2)) / (DEPTH_FRAME_HEIGHT / 2 - TRIGGER_BUTTON_HEIGHT / 2)), 1.7) * 1.1);
+                if (yValue < -1)
+                {
+                    yValue = -1f;
+                }
+                if (yValue > 1)
+                {
+                    yValue = 1f;
+                }
+                if (!up)
+                {
+                    yValue = -yValue;
+                }
+            }
+            else
+            {
+                yValue = 0;
+            }
+            return yValue;
         }
     }
 
