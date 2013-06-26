@@ -36,6 +36,7 @@ namespace RideOnMotion.Inputs.Kinect
         bool emergency = false;
         bool flatTrim = false;
 		bool specialActionButton = false;
+		bool _flatTrimReaction;
         RideOnMotion.Inputs.InputState _lastInputState = new RideOnMotion.Inputs.InputState();
         Point _leftHand = new Point (-1, -1);
         Point _rightHand = new Point (-1, -1);
@@ -897,6 +898,7 @@ namespace RideOnMotion.Inputs.Kinect
 					}
 					_leftGrip = false;
 					_rightGrip = false;
+					_flatTrimReaction = true;
 				}
 				else if ( _canTakeOff && curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 				{
@@ -937,7 +939,7 @@ namespace RideOnMotion.Inputs.Kinect
 				}
 				else if( _timerToLand.IsEnabled &&
 					 ( curUser.HandPointers[0].IsActive
-					&& curUser.HandPointers[1].IsActive ) && !_safetyLandingtriggered == false )
+					&& curUser.HandPointers[1].IsActive ) && !_safetyLandingtriggered )
 				{
 					_timerToLand.Stop();
 					SecurityModeChanged( this, 0 );
@@ -948,7 +950,7 @@ namespace RideOnMotion.Inputs.Kinect
 				}
 				else if( ( curUser.HandPointers[0].IsInteractive
 					&& curUser.HandPointers[1].IsInteractive )
-					&& _safetyLandingtriggered == true )
+					&& _safetyLandingtriggered)
 				{
 					_safetyLandingtriggered = false;
 				}
@@ -1191,12 +1193,12 @@ namespace RideOnMotion.Inputs.Kinect
             if (_operatorLost && !_lastOperatorLost)
             {
                 hover = true;
-                _lastOperatorLost = true;
+				_lastOperatorLost = true;
             }
             else if (!_operatorLost && _lastOperatorLost)
             {
                 hover = true;
-                _lastOperatorLost = false;
+				_lastOperatorLost = false;
             }
 			if ( ( _leftGrip && !_rightGrip && ActiveDrone.CanLand ) || _safetyLandingtriggered )
             {
@@ -1205,6 +1207,11 @@ namespace RideOnMotion.Inputs.Kinect
 			if( _canTakeOff && _rightGrip && !_leftGrip && ActiveDrone.CanTakeoff )
             {
                 takeOff = true;
+			}
+			if ( _flatTrimReaction )
+			{
+				flatTrim = true;
+				_flatTrimReaction = false;
 			}
         }
 
@@ -1307,7 +1314,6 @@ namespace RideOnMotion.Inputs.Kinect
             }
             return yValue;
         }
-
 	}
 
 	public class InteractionClient : IInteractionClient

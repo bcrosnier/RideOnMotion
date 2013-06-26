@@ -209,11 +209,11 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 			{
 				cameraSwap = true;
 			}
-            if ( ConvertStringToBoolMapping( Properties.Settings.Default.TakeOff ) && ActiveDrone.CanTakeoff )
+            if ( ConvertStringToBoolMapping( Properties.Settings.Default.TakeOff ) )
 			{
 				takeOff = true;
 			}
-            if ( ConvertStringToBoolMapping( Properties.Settings.Default.Land ) && ActiveDrone.CanLand )
+            if ( ConvertStringToBoolMapping( Properties.Settings.Default.Land ) )
 			{
 				land = true;
 			}
