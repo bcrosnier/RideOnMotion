@@ -35,7 +35,7 @@ namespace RideOnMotion.Inputs.Kinect
         bool hover = false;
         bool emergency = false;
         bool flatTrim = false;
-        bool specialActionButton = false;
+		bool specialActionButton = false;
         RideOnMotion.Inputs.InputState _lastInputState = new RideOnMotion.Inputs.InputState();
         Point _leftHand = new Point (-1, -1);
         Point _rightHand = new Point (-1, -1);
@@ -824,13 +824,14 @@ namespace RideOnMotion.Inputs.Kinect
 					}
 					_leftHand = left;
 					_rightHand = right;
-                    MapInput();
 
 					OnHandsPointReady( left, right );
 
 					SafetyModeCheck( curUser );
 
 					TestTakeOffCapabitility( curUser );
+
+                    MapInput();
 				}
 			}
 			else if( _handsVisible == true )
@@ -886,6 +887,7 @@ namespace RideOnMotion.Inputs.Kinect
 			if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
 				|| curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 			{
+				_logger.Trace("Can Take Off : "+ _canTakeOff.ToString());
 				if( !_canTakeOff && ( _leftGrip && _rightGrip ) )
 				{
 					_canTakeOff = true;
@@ -893,17 +895,19 @@ namespace RideOnMotion.Inputs.Kinect
 					{
 						ControlAcquired( this, null );
 					}
+					_leftGrip = false;
+					_rightGrip = false;
 				}
-				else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+				else if ( _canTakeOff && curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeChanged( this, 2 );
+					_canTakeOff = false;
                     MapInput();
 				}
 				else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeChanged( this, 3 );
 					MapInput();
-					_canTakeOff = false;
 				}
 			}
 		}
@@ -917,7 +921,7 @@ namespace RideOnMotion.Inputs.Kinect
 				if( !curUser.HandPointers[0].IsActive
 					&& !curUser.HandPointers[1].IsActive )
 				{
-					if( SecurityModeChanged != null && _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
+					if( SecurityModeChanged != null && !_timerToLand.IsEnabled && !_safetyLandingtriggered )
 					{
 						SecurityModeChanged( this, 1 );
                         _operatorLost = true;
@@ -925,22 +929,22 @@ namespace RideOnMotion.Inputs.Kinect
                         _logger.Warn( "Safety mode enabled due to hands no longer being tracked" );
 					}
 
-					if( _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
+					if( !_timerToLand.IsEnabled && !_safetyLandingtriggered )
 					{
 						_timerToLand.Start();
                         _logger.Warn( "Safety mode : 3 seconds remaining before automatic landing" );
 					}
 				}
-				else if( _timerToLand.IsEnabled == true &&
+				else if( _timerToLand.IsEnabled &&
 					 ( curUser.HandPointers[0].IsActive
-					&& curUser.HandPointers[1].IsActive ) && _safetyLandingtriggered == false )
+					&& curUser.HandPointers[1].IsActive ) && !_safetyLandingtriggered == false )
 				{
 					_timerToLand.Stop();
 					SecurityModeChanged( this, 0 );
-                    _operatorLost = false;
+					_operatorLost = false;
+					_safetyLandingtriggered = false;
                     MapInput();
                     _logger.Warn( "Safety mode no longer required, restoring manual control" );
-					_safetyLandingtriggered = false;
 				}
 				else if( ( curUser.HandPointers[0].IsInteractive
 					&& curUser.HandPointers[1].IsInteractive )
@@ -951,7 +955,7 @@ namespace RideOnMotion.Inputs.Kinect
 			}
 			else
 			{
-				if( _timerToLand.IsEnabled == false && SecurityModeChanged != null )
+				if( !_timerToLand.IsEnabled && SecurityModeChanged != null )
 				{
 					SecurityModeChanged( this, 1 );
                     _operatorLost = true;
@@ -959,7 +963,7 @@ namespace RideOnMotion.Inputs.Kinect
                     _logger.Warn( "Safety mode enabled due to hands no longer being tracked" );
 				}
 
-				if( _timerToLand.IsEnabled == false )
+				if( !_timerToLand.IsEnabled )
 				{
                     _timerToLand.Start();
                     _logger.Warn( "Safety mode : 3 seconds remaining before automatic landing" );
@@ -972,10 +976,10 @@ namespace RideOnMotion.Inputs.Kinect
 			if( SecurityModeChanged != null )
 			{
 				SecurityModeChanged( this, 2 );
-                MapInput();
                 _logger.Warn( "Security mode will now process to land the drone" );
 				_timerToLand.Stop();
 				_safetyLandingtriggered = true;
+                MapInput();
 			}
 		}
 		#endregion
@@ -1194,7 +1198,7 @@ namespace RideOnMotion.Inputs.Kinect
                 hover = true;
                 _lastOperatorLost = false;
             }
-            if ( _leftGrip && !_rightGrip && ActiveDrone.CanLand )
+			if ( ( _leftGrip && !_rightGrip && ActiveDrone.CanLand ) || _safetyLandingtriggered )
             {
                 land = true;
             }
@@ -1303,7 +1307,8 @@ namespace RideOnMotion.Inputs.Kinect
             }
             return yValue;
         }
-    }
+
+	}
 
 	public class InteractionClient : IInteractionClient
 	{
