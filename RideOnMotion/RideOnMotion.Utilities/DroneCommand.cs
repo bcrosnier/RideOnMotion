@@ -25,6 +25,13 @@ namespace RideOnMotion
 				return _droneControl.CanTakeoff;
 			}
 		}
+		public bool CanSendFlatTrim
+		{
+			get
+			{
+				return (_droneControl.CanSendFlatTrim && !_droneControl.IsFlying);
+			}
+		}
 		public bool CanLand
 		{
 			get

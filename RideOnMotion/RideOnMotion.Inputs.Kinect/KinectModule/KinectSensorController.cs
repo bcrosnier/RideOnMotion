@@ -898,7 +898,14 @@ namespace RideOnMotion.Inputs.Kinect
 					}
 					_leftGrip = false;
 					_rightGrip = false;
-					_flatTrimReaction = true;
+					if ( ActiveDrone.CanSendFlatTrim )
+					{
+						_flatTrimReaction = true;
+					}
+					else
+					{
+						_flatTrimReaction = false;
+					}
 				}
 				else if ( _canTakeOff && curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 				{
