@@ -58,5 +58,53 @@ namespace RideOnMotion.UI.Properties {
                 this["DroneSSID"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Info")]
+        public global::CK.Core.LogLevelFilter LogLevelFilter {
+            get {
+                return ((global::CK.Core.LogLevelFilter)(this["LogLevelFilter"]));
+            }
+            set {
+                this["LogLevelFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.3")]
+        public float DefaultTanslationSpeed {
+            get {
+                return ((float)(this["DefaultTanslationSpeed"]));
+            }
+            set {
+                this["DefaultTanslationSpeed"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
+        public float DefaultRotationSpeed {
+            get {
+                return ((float)(this["DefaultRotationSpeed"]));
+            }
+            set {
+                this["DefaultRotationSpeed"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.35")]
+        public float DefaultElevationSpeed {
+            get {
+                return ((float)(this["DefaultElevationSpeed"]));
+            }
+            set {
+                this["DefaultElevationSpeed"] = value;
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:RideOnMotion.UI" x:Name="MainWindow1" x:Class="RideOnMotion.UI.MainWindow"
         Title="RideOn[Motion]" Height="600" Width="800"
         MinWidth="800" MinHeight="600"
-        Closing="MainWindow_Closing">
+        Closing="MainWindow_Closing" WindowStartupLocation="CenterScreen" WindowState="Maximized">
 
     <Window.CommandBindings>
     </Window.CommandBindings>
@@ -27,13 +27,25 @@
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.MenuBarColorKey}}"/>
             </Menu.Background>
             <MenuItem Header="File">
-                <MenuItem Header="Quit" Click="MenuItem_Quit_Click" />
+                <MenuItem Header="Quit" Click="MenuItem_Quit_Click">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/Resources/Close_16xLG.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Input settings">
-                <MenuItem Header="Keyboard Settings" Command="{Binding OpenKeyboardSettingsCommand}" />
+                <MenuItem Header="Keyboard Settings" Command="{Binding OpenKeyboardSettingsCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/Resources/ToggleOfficeKeyboardScheme_7508.ico" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="Drone">
-                <MenuItem Header="Settings" Command="{Binding OpenDroneSettingsCommand}" />
+                <MenuItem Header="Settings" Command="{Binding OpenDroneSettingsCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="pack://application:,,,/Resources/PropertyIcon.ico" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Reconnect" Command="{Binding ReconnectDroneCommand}" />
             </MenuItem>
         </Menu>
@@ -79,8 +91,95 @@
                 <ContentPresenter Content="{Binding InputControl}" Visibility="{Binding InputControlVisibility}"/>
             </Viewbox>
 
+            <Viewbox Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
+                <!-- Main panel - Input bars controls -->
+                <Grid Width="640" Height="480">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+
+                    <local:DirectionDisplayControl
+                        Grid.Column="0"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativeRollProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositiveRollProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativePitchProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositivePitchProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
+                    <local:DirectionDisplayControl
+                        Grid.Column="1"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativeYawProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositiveYawProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.PositiveGazProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.KinectProgressBarSet.NegativeGazProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
+
+                    <local:DirectionDisplayControl
+                        Grid.Column="0"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeRollProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveRollProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativePitchProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositivePitchProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
+                    <local:DirectionDisplayControl
+                        Grid.Column="1"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeYawProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveYawProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.PositiveGazProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.KeyboardProgressBarSet.NegativeGazProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
+
+                    <local:DirectionDisplayControl
+                        Grid.Column="0"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativeRollProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositiveRollProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativePitchProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositivePitchProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
+                    <local:DirectionDisplayControl
+                        Grid.Column="1"
+                        LeftRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativeYawProgressBar}"
+                        RightRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositiveYawProgressBar}"
+                        UpRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.PositiveGazProgressBar}"
+                        DownRange="{Binding Path=InputProgressBarsWrapper.GamepadProgressBarSet.NegativeGazProgressBar}"
+                        CenterHeight="106"
+                        CenterWidth="80"
+                        />
+
+                </Grid>
+            </Viewbox>
+
             <DockPanel x:Name="LogPanel"  Grid.Row="3" Grid.Column="2" >
-                <ListBox x:Name="LogListBox" ItemsSource="{Binding LogData}"></ListBox>
+                <ListBox x:Name="LogListBox" ItemsSource="{Binding LogData}" VirtualizingPanel.ScrollUnit="Pixel"
+                         FontFamily="Consolas, DejaVu Sans Mono, Terminus, System" FontSize="10pt">
+
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy" Click="Logger_CopyMenuItem_Click">
+                                <MenuItem.Icon>
+                                    <Image Source="pack://application:,,,/Resources/copy.ico" MaxWidth="16" MaxHeight="16" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Name="logFilterMenuItem" Header="Log level filter">
+                                <MenuItem Header="Fatal" IsCheckable="True" IsChecked="{Binding LogLevelIsFatal, Mode=TwoWay}" />
+                                <MenuItem Header="Error" IsCheckable="True" IsChecked="{Binding LogLevelIsError, Mode=TwoWay}" />
+                                <MenuItem Header="Warn" IsCheckable="True" IsChecked="{Binding LogLevelIsWarn, Mode=TwoWay}" />
+                                <MenuItem Header="Info" IsCheckable="True" IsChecked="{Binding LogLevelIsInfo, Mode=TwoWay}" />
+                                <MenuItem Header="Trace" IsCheckable="True" IsChecked="{Binding LogLevelIsTrace, Mode=TwoWay}" />
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
             </DockPanel>
 
             <GridSplitter Grid.Row="2" Grid.Column="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" ResizeDirection="Rows" />

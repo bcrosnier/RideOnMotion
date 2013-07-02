@@ -15,6 +15,7 @@ using System.ComponentModel;
 using Microsoft.Kinect.Toolkit.Interaction;
 using System.Windows.Threading;
 using System.Collections.Generic;
+using CK.Core;
 
 namespace RideOnMotion.Inputs.Kinect
 {
@@ -34,12 +35,16 @@ namespace RideOnMotion.Inputs.Kinect
         bool hover = false;
         bool emergency = false;
         bool flatTrim = false;
-        bool specialActionButton = false;
+		bool specialActionButton = false;
+		bool _flatTrimReaction;
         RideOnMotion.Inputs.InputState _lastInputState = new RideOnMotion.Inputs.InputState();
         Point _leftHand = new Point (-1, -1);
         Point _rightHand = new Point (-1, -1);
         DispatcherTimer ReleaseLeftHand = new DispatcherTimer();
         DispatcherTimer ReleaseRightHand = new DispatcherTimer();
+
+        private IActivityLogger _logger;
+
 		/// <summary>
         /// A user-friendly input name!
         /// </summary>
@@ -372,8 +377,12 @@ namespace RideOnMotion.Inputs.Kinect
         /// Kinect sensor input controller.
         /// Handles drone control through a Kinect sensor.
         /// </summary>
-        public KinectSensorController()
+        public KinectSensorController(IActivityLogger parentLogger)
         {
+            this._logger = new DefaultActivityLogger();
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "Kinect" );
+            _logger.Output.BridgeTo( parentLogger );
+
             this.DepthImageEnabled = true;
             SetSkeletonSmoothingEnabled( false );
 
@@ -395,9 +404,9 @@ namespace RideOnMotion.Inputs.Kinect
 
             KinectSensor.KinectSensors.StatusChanged += sensors_StatusChanged;
 
-			this._inputState = new InputState();
+			this._inputState = new InputState(_logger);
 
-            this.InputUIControl = new KinectSensorControllerUI( this );
+            this.InputUIControl = new KinectSensorControllerUI( _logger, this );
             ReleaseLeftHand.Interval = new TimeSpan( 0, 0, 2 );
             ReleaseLeftHand.Tick += new EventHandler( OnReleaseLeftHand );
             ReleaseRightHand.Interval = new TimeSpan( 0, 0, 2 );
@@ -603,13 +612,13 @@ namespace RideOnMotion.Inputs.Kinect
                 }
                 catch ( System.IO.IOException e )
                 {
-                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Kinect is already in use by another process. Error:" );
-                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, e.Message );
+                    _logger.Error( "Kinect is already in use by another process" );
+                    _logger.Error( e );
                 }
                 catch ( Exception e )
                 {
-                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, "Unexpected Kinect API error:" );
-                    Logger.Instance.NewEntry( CKLogLevel.Fatal, CKTraitTags.Kinect, e.Message );
+                    _logger.Error( "Unexpected Kinect API error" );
+                    _logger.Error( e );
                 }
             }
 
@@ -816,13 +825,14 @@ namespace RideOnMotion.Inputs.Kinect
 					}
 					_leftHand = left;
 					_rightHand = right;
-                    MapInput();
 
 					OnHandsPointReady( left, right );
 
 					SafetyModeCheck( curUser );
 
 					TestTakeOffCapabitility( curUser );
+
+                    MapInput();
 				}
 			}
 			else if( _handsVisible == true )
@@ -878,6 +888,7 @@ namespace RideOnMotion.Inputs.Kinect
 			if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip
 				|| curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 			{
+				_logger.Trace("Can Take Off : "+ _canTakeOff.ToString());
 				if( !_canTakeOff && ( _leftGrip && _rightGrip ) )
 				{
 					_canTakeOff = true;
@@ -885,17 +896,27 @@ namespace RideOnMotion.Inputs.Kinect
 					{
 						ControlAcquired( this, null );
 					}
+					_leftGrip = false;
+					_rightGrip = false;
+					if ( ActiveDrone.CanSendFlatTrim )
+					{
+						_flatTrimReaction = true;
+					}
+					else
+					{
+						_flatTrimReaction = false;
+					}
 				}
-				else if( curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
+				else if ( _canTakeOff && curUser.HandPointers[0].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeChanged( this, 2 );
+					_canTakeOff = false;
                     MapInput();
 				}
 				else if( _canTakeOff && curUser.HandPointers[1].HandEventType == InteractionHandEventType.Grip )
 				{
 					SecurityModeChanged( this, 3 );
-					_canTakeOff = false;
-                    MapInput();
+					MapInput();
 				}
 			}
 		}
@@ -909,57 +930,52 @@ namespace RideOnMotion.Inputs.Kinect
 				if( !curUser.HandPointers[0].IsActive
 					&& !curUser.HandPointers[1].IsActive )
 				{
-					if( SecurityModeChanged != null && _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
+					if( SecurityModeChanged != null && !_timerToLand.IsEnabled && !_safetyLandingtriggered )
 					{
 						SecurityModeChanged( this, 1 );
                         _operatorLost = true;
                         MapInput();
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-							"Safety mode enabled due to hands no longer being tracked" );
+                        _logger.Warn( "Safety mode enabled due to hands no longer being tracked" );
 					}
 
-					if( _timerToLand.IsEnabled == false && _safetyLandingtriggered == false )
+					if( !_timerToLand.IsEnabled && !_safetyLandingtriggered )
 					{
 						_timerToLand.Start();
-						Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-							"Safety mode : 3 seconds remaining before automatic landing" );
+                        _logger.Warn( "Safety mode : 3 seconds remaining before automatic landing" );
 					}
 				}
-				else if( _timerToLand.IsEnabled == true &&
+				else if( _timerToLand.IsEnabled &&
 					 ( curUser.HandPointers[0].IsActive
-					&& curUser.HandPointers[1].IsActive ) && _safetyLandingtriggered == false )
+					&& curUser.HandPointers[1].IsActive ) && !_safetyLandingtriggered )
 				{
 					_timerToLand.Stop();
 					SecurityModeChanged( this, 0 );
-                    _operatorLost = false;
-                    MapInput();
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-						"Safety mode no longer required, restoring manual control" );
+					_operatorLost = false;
 					_safetyLandingtriggered = false;
+                    MapInput();
+                    _logger.Warn( "Safety mode no longer required, restoring manual control" );
 				}
 				else if( ( curUser.HandPointers[0].IsInteractive
 					&& curUser.HandPointers[1].IsInteractive )
-					&& _safetyLandingtriggered == true )
+					&& _safetyLandingtriggered)
 				{
 					_safetyLandingtriggered = false;
 				}
 			}
 			else
 			{
-				if( _timerToLand.IsEnabled == false && SecurityModeChanged != null )
+				if( !_timerToLand.IsEnabled && SecurityModeChanged != null )
 				{
 					SecurityModeChanged( this, 1 );
                     _operatorLost = true;
                     MapInput();
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-						"Safety mode enabled due to hands no longer being tracked" );
+                    _logger.Warn( "Safety mode enabled due to hands no longer being tracked" );
 				}
 
-				if( _timerToLand.IsEnabled == false )
+				if( !_timerToLand.IsEnabled )
 				{
-					_timerToLand.Start();
-					Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-						"Safety mode : 3 seconds remaining before automatic landing" );
+                    _timerToLand.Start();
+                    _logger.Warn( "Safety mode : 3 seconds remaining before automatic landing" );
 				}
 			}
 		}
@@ -969,11 +985,10 @@ namespace RideOnMotion.Inputs.Kinect
 			if( SecurityModeChanged != null )
 			{
 				SecurityModeChanged( this, 2 );
-                MapInput();
-				Logger.Instance.NewEntry( CKLogLevel.Warn, CKTraitTags.Kinect,
-					"Security mode will now process to land the drone" );
+                _logger.Warn( "Security mode will now process to land the drone" );
 				_timerToLand.Stop();
 				_safetyLandingtriggered = true;
+                MapInput();
 			}
 		}
 		#endregion
@@ -985,7 +1000,7 @@ namespace RideOnMotion.Inputs.Kinect
         {
             if ( e.Sensor != null )
             {
-                Logger.Instance.NewEntry( CKLogLevel.Trace, CKTraitTags.Kinect, "Status: " + e.Status.ToString() );
+                _logger.Trace( "Status: " + e.Status.ToString() );
             }
 
             if ( ( e.Status == KinectStatus.Disconnected || e.Status == KinectStatus.NotPowered )
@@ -1088,7 +1103,7 @@ namespace RideOnMotion.Inputs.Kinect
             else
             {
                 // Prepare and open window
-                this._deviceSettingsWindow = new KinectDeviceSettings( this );
+                this._deviceSettingsWindow = new KinectDeviceSettings( _logger, this );
                 _deviceSettingsWindow.Closed += deviceSettingsWindow_Closed;
                 _deviceSettingsWindow.Show();
             }
@@ -1185,20 +1200,25 @@ namespace RideOnMotion.Inputs.Kinect
             if (_operatorLost && !_lastOperatorLost)
             {
                 hover = true;
-                _lastOperatorLost = true;
+				_lastOperatorLost = true;
             }
             else if (!_operatorLost && _lastOperatorLost)
             {
                 hover = true;
-                _lastOperatorLost = false;
+				_lastOperatorLost = false;
             }
-            if ( _leftGrip && !_rightGrip && ActiveDrone.CanLand )
+			if ( ( _leftGrip && !_rightGrip && ActiveDrone.CanLand ) || _safetyLandingtriggered )
             {
                 land = true;
             }
-            if (_rightGrip && !_leftGrip && ActiveDrone.CanTakeoff)
+			if( _canTakeOff && _rightGrip && !_leftGrip && ActiveDrone.CanTakeoff )
             {
                 takeOff = true;
+			}
+			if ( _flatTrimReaction )
+			{
+				flatTrim = true;
+				_flatTrimReaction = false;
 			}
         }
 
@@ -1301,7 +1321,7 @@ namespace RideOnMotion.Inputs.Kinect
             }
             return yValue;
         }
-    }
+	}
 
 	public class InteractionClient : IInteractionClient
 	{

@@ -12,8 +12,8 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 
 		readonly float MaxSpeed = 1f;
 		readonly int TriggerDeadZone = 4096;
-		readonly int TriggerReactionscale = 2048;
-		readonly float NumberOfScale = 14f;
+		readonly int TriggerReactionscale;
+		readonly float NumberOfScale = 1024f;
 
 		float roll = 0;
 		float pitch = 0;
@@ -38,6 +38,7 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 
 		public Xbox360GamepadController()
 		{
+			TriggerReactionscale = 28672/1024;
 		}
 
 		public void Start()
@@ -208,11 +209,11 @@ namespace RideOnMotion.Inputs.Xbox360Gamepad
 			{
 				cameraSwap = true;
 			}
-            if ( ConvertStringToBoolMapping( Properties.Settings.Default.TakeOff ) && ActiveDrone.CanTakeoff )
+            if ( ConvertStringToBoolMapping( Properties.Settings.Default.TakeOff ) )
 			{
 				takeOff = true;
 			}
-            if ( ConvertStringToBoolMapping( Properties.Settings.Default.Land ) && ActiveDrone.CanLand )
+            if ( ConvertStringToBoolMapping( Properties.Settings.Default.Land ) )
 			{
 				land = true;
 			}
