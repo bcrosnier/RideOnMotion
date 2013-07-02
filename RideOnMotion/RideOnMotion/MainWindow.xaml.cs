@@ -122,7 +122,7 @@ namespace RideOnMotion.UI
             if ( ( _konami == i ) )
             {
                 mainWindowViewModel.Konami = true;
-                string fileName = "..\\..\\Resources\\mad_duck.jpg";
+                string fileName = "Resources\\mad_duck.jpg";
                 System.Windows.Media.Imaging.BitmapImage image = new System.Windows.Media.Imaging.BitmapImage( new System.Uri( fileName, System.UriKind.Relative ) );
                 System.Windows.Media.ImageBrush brush = new System.Windows.Media.ImageBrush();
                 brush.ImageSource = image;
@@ -131,7 +131,7 @@ namespace RideOnMotion.UI
 
                 Viewbox v = new Viewbox();
                 MediaElement me = new MediaElement();
-                fileName = "..\\..\\Resources\\Star Wars Ducks.mp4";
+                fileName = "Resources\\Star Wars Ducks.mp4";
                 me.Source = new System.Uri( fileName, System.UriKind.Relative );
                 me.LoadedBehavior = MediaState.Manual;
                 me.MediaEnded += new RoutedEventHandler( delegate( object s, RoutedEventArgs re ) { me.Stop(); me.Play(); } );

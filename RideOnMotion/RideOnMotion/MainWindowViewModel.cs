@@ -508,10 +508,10 @@ namespace RideOnMotion.UI
 
             loadInputType( InputTypes[0] );
 
-            mp1.Open( new Uri( "..\\..\\Resources\\Quack.wav", UriKind.Relative ) );
-            mp2.Open( new Uri( "..\\..\\Resources\\Quack2.wav", UriKind.Relative ) );
-            mp3.Open( new Uri( "..\\..\\Resources\\Quack3.wav", UriKind.Relative ) );
-            mp4.Open( new Uri( "..\\..\\Resources\\Quack4.mp3", UriKind.Relative ) );
+            mp1.Open( new Uri( "Resources\\Quack.wav", UriKind.Relative ) );
+            mp2.Open( new Uri( "Resources\\Quack2.wav", UriKind.Relative ) );
+            mp3.Open( new Uri( "Resources\\Quack3.wav", UriKind.Relative ) );
+            mp4.Open( new Uri( "Resources\\Quack4.mp3", UriKind.Relative ) );
 
             _lastKeyboardInput = new Inputs.InputState();
             _lastGamepadInput = new Inputs.InputState();
