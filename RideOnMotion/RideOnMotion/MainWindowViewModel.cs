@@ -50,6 +50,7 @@ namespace RideOnMotion.UI
         private DroneInitializer _droneInit;
 
 		DroneSpeeds _droneSpeeds = new DroneSpeeds( Properties.Settings.Default.DefaultTanslationSpeed, Properties.Settings.Default.DefaultRotationSpeed, Properties.Settings.Default.DefaultElevationSpeed );
+		bool _absoluteControlMode;
 
         #region Values
         private IActivityLogger _logger;
@@ -102,6 +103,14 @@ namespace RideOnMotion.UI
 			get
 			{
 				return _droneSpeeds;
+			}
+		}
+
+		public bool AbsoluteControlMode
+		{
+			get
+			{
+				return _absoluteControlMode;
 			}
 		}
 
@@ -710,6 +719,7 @@ namespace RideOnMotion.UI
             _sendDroneCommand = new SendDroneCommand(_logger);
             _sendDroneCommand.ActiveDrone = _droneInit.DroneCommand;
 			_sendDroneCommand.DroneSpeeds = DroneSpeeds;
+			_sendDroneCommand.AbsoluteControlMode = AbsoluteControlMode;
 
             _Xbox360Gamepad.ActiveDrone = _droneInit.DroneCommand;
             _keyboardController.ActiveDrone = _droneInit.DroneCommand;
@@ -754,9 +764,7 @@ namespace RideOnMotion.UI
         /// <summary>
         /// Sets new maximum drone speeds the drone can reach when moving.
         /// </summary>
-        /// <param name="TranslationSpeed">(Between 0 and 1) Speed to move on the pitch and yaw axis. 0: No change.</param>
-        /// <param name="RotationSpeed">(Between 0 and 1) Speed to move on the roll axis. 0: No change.</param>
-        /// <param name="ElevationSpeed">(Between 0 and 1) Speed to raise or lower at. 0: No change.</param>
+        /// <param name="DroneSpeeds">object containing the 3 differents speeds</param>
         internal void SetDroneSpeeds( DroneSpeeds DroneSpeeds )
         {
 			_droneSpeeds = DroneSpeeds;
@@ -770,6 +778,12 @@ namespace RideOnMotion.UI
         {
 			_droneSpeeds = new DroneSpeeds( Properties.Settings.Default.DefaultTanslationSpeed, Properties.Settings.Default.DefaultRotationSpeed, Properties.Settings.Default.DefaultElevationSpeed );
         }
+
+		internal void SetAbsoluteMode( bool AbsoluteControlMode)
+		{
+			_absoluteControlMode = AbsoluteControlMode;
+			_sendDroneCommand.AbsoluteControlMode = AbsoluteControlMode;
+		}
 
         #endregion Contructor/initializers/event handlers
 
@@ -803,8 +817,9 @@ namespace RideOnMotion.UI
                     EventHandler<DroneSettingsEventArgs> newDroneConfigDelegate = ( sender, e ) =>
                     {
                         isPaired = this._droneInit.DroneCommand.IsDronePaired;
-					this._currentDroneConfig = e.DroneConfig;
-					SetDroneSpeeds(e.DroneSpeeds );
+						this._currentDroneConfig = e.DroneConfig;
+						SetDroneSpeeds(e.DroneSpeeds );
+						SetAbsoluteMode(e.AbsoluteControlMode);
 
                         if ( isPaired != e.IsPaired )
                         {
@@ -824,7 +839,7 @@ namespace RideOnMotion.UI
 
                     };
 
-                DroneSettingsWindow window = new DroneSettingsWindow( _logger, this._currentDroneConfig, isPaired, DroneSpeeds);
+                DroneSettingsWindow window = new DroneSettingsWindow( _logger, this._currentDroneConfig, isPaired, DroneSpeeds, AbsoluteControlMode);
 
                     window.DroneConfigAvailable += newDroneConfigDelegate;
 

@@ -26,7 +26,7 @@ namespace RideOnMotion.UI
         private DroneSettingsWindowViewModel _viewModel;
         public event EventHandler<DroneSettingsEventArgs> DroneConfigAvailable;
 
-        public DroneSettingsWindow(IActivityLogger parentLogger, DroneConfig config, bool droneIsPaired, DroneSpeeds DroneSpeeds)
+        public DroneSettingsWindow(IActivityLogger parentLogger, DroneConfig config, bool droneIsPaired, DroneSpeeds DroneSpeeds, bool absoluteControlMode)
         {
             if ( config == null )
             {
@@ -51,6 +51,7 @@ namespace RideOnMotion.UI
             _viewModel = new DroneSettingsWindowViewModel( parentLogger, newConfig, DroneSpeeds );
 
 			_viewModel.DroneIsPaired = droneIsPaired;
+			_viewModel.AbsoluteControlMode = absoluteControlMode;
             this.DataContext = _viewModel;
 
             InitializeComponent();
@@ -78,7 +79,7 @@ namespace RideOnMotion.UI
         {
             if ( DroneConfigAvailable != null )
             {
-                DroneConfigAvailable( this, new DroneSettingsEventArgs(_viewModel.DroneConfig, _viewModel.DroneIsPaired, _viewModel.DroneSpeeds) );
+                DroneConfigAvailable( this, new DroneSettingsEventArgs(_viewModel.DroneConfig, _viewModel.DroneIsPaired, _viewModel.DroneSpeeds, _viewModel.AbsoluteControlMode) );
             }
         }
     }
@@ -118,10 +119,11 @@ namespace RideOnMotion.UI
 
         #region Members
 
-        private DroneConfig _droneConfig;
-        private bool _droneIsPaired;
-		private DroneSpeeds _droneSpeeds;
-        private IActivityLogger _logger;
+		DroneConfig _droneConfig;
+		bool _droneIsPaired;
+		bool _absoluteControlMode;
+		DroneSpeeds _droneSpeeds;
+        IActivityLogger _logger;
 		String _elevation;
 		String _rotation;
 		String _translation;
@@ -153,15 +155,25 @@ namespace RideOnMotion.UI
 		}
 
 
-        public bool DroneIsPaired
-        {
-            get { return this._droneIsPaired; }
-            set
-            {
-                _droneIsPaired = value;
-                RaisePropertyChanged();
-            }
-        }
+		public bool DroneIsPaired
+		{
+			get { return this._droneIsPaired; }
+			set
+			{
+				_droneIsPaired = value;
+				RaisePropertyChanged();
+			}
+		}
+
+		public bool AbsoluteControlMode
+		{
+			get { return this._absoluteControlMode; }
+			set
+			{
+				_absoluteControlMode = value;
+				RaisePropertyChanged();
+			}
+		}
 
         public string ClientIPAddress
         {
@@ -334,11 +346,18 @@ namespace RideOnMotion.UI
 			private set;
 		}
 
-        public DroneSettingsEventArgs( DroneConfig newConfig, bool isPaired , DroneSpeeds droneSpeeds)
+		public bool AbsoluteControlMode
+		{
+			get;
+			private set;
+		}
+
+        public DroneSettingsEventArgs( DroneConfig newConfig, bool isPaired , DroneSpeeds droneSpeeds, bool absoluteControlMode)
         {
             this.DroneConfig = newConfig;
             this.IsPaired = isPaired;
 			this.DroneSpeeds = droneSpeeds;
+			this.AbsoluteControlMode = absoluteControlMode;
         }
 
 	}

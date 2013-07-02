@@ -23,6 +23,7 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -35,6 +36,7 @@
                     <Label Grid.Column="0" Grid.Row="4">Max translation speed</Label>
                     <Label Grid.Column="0" Grid.Row="5">Max rotation speed</Label>
                     <Label Grid.Column="0" Grid.Row="6">Max elevation speed</Label>
+                    <Label Grid.Column="0" Grid.Row="7">Absolute control mode</Label>
                     <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding DroneIPAddress, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding ClientIPAddress, UpdateSourceTrigger=PropertyChanged}"/>
                     <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding DroneSSID, UpdateSourceTrigger=PropertyChanged}"/>
@@ -45,6 +47,7 @@
                     <TextBlock Grid.Column="1" Grid.Row="4" Text ="{Binding TranslationSpeedString}" HorizontalAlignment="Right"/>
                     <TextBlock Grid.Column="1" Grid.Row="5" Text ="{Binding RotationSpeedString}" HorizontalAlignment="Right"/>
                     <TextBlock Grid.Column="1" Grid.Row="6" Text ="{Binding ElevationSpeedString}" HorizontalAlignment="Right"/>
+                    <CheckBox Grid.Column="1" Grid.Row="7" IsChecked="{Binding AbsoluteControlMode, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </Grid>
             </GroupBox>
         </StackPanel>

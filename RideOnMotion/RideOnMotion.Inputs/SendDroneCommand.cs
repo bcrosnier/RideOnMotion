@@ -13,7 +13,7 @@ namespace RideOnMotion.Inputs
 		DroneCommand _drone;
 		public double DroneOriginalOrientation;
 		public double DroneCurrentOrientation;
-		public bool RelativeDirection;
+		public bool AbsoluteControlMode;
 		DroneSpeeds _droneSpeeds;
 
         public SendDroneCommand(IActivityLogger parentLogger)
@@ -105,15 +105,10 @@ namespace RideOnMotion.Inputs
             inputState.Yaw = yaw;
 			float gaz = inputState.Gaz / ( 1 / _droneSpeeds.DroneElevationSpeed );
             inputState.Gaz = gaz;
-			RelativeDirection = true;
+			AbsoluteControlMode = true;
 			float roll2;
 			float pitch2;
-			if ( RelativeDirection )
-			{
-				roll2 = roll;
-				pitch2 = pitch;
-			}
-			else
+			if ( AbsoluteControlMode )
 			{
 				roll2 = (( (float)Math.Cos( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * roll ) 
 					+ (( (float)Math.Sin( ( Math.PI / 180 ) * DroneOrientationDifference ) ) * -pitch );
@@ -122,6 +117,11 @@ namespace RideOnMotion.Inputs
 
 				inputState.Roll = roll2;
 				inputState.Pitch = pitch2;
+			}
+			else
+			{
+				roll2 = roll;
+				pitch2 = pitch;
 			}
 			_drone.Navigate( roll2, pitch2, yaw, gaz );
             _logger.Trace( inputState.ToString() );
