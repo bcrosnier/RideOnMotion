@@ -494,11 +494,11 @@ namespace RideOnMotion.UI
             _logger.Output.RegisterClient( _logClient );
 
             // Log testing.
-            _logger.Fatal( "Fatal test" );
-            _logger.Error( "Error test" );
-            _logger.Warn( "Warn test" );
-            _logger.Info( "Info test" );
-            _logger.Trace( "Trace test" );
+			//_logger.Fatal( "Fatal test" );
+			//_logger.Error( "Error test" );
+			//_logger.Warn( "Warn test" );
+			//_logger.Info( "Info test" );
+			//_logger.Trace( "Trace test" );
 
             CreateDroneCommands();
 

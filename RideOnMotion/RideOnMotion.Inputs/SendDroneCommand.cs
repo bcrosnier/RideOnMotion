@@ -77,13 +77,13 @@ namespace RideOnMotion.Inputs
 			if ( inputState.CameraSwap )
 			{
 				_drone.ChangeCamera();
-				_logger.Info( "Drone chanched what he can see" );
+				_logger.Info( "Camera changed" );
 			}
 
 			if ( inputState.Emergency )
 			{
 				_drone.Emergency();
-				_logger.Info( "Drone took his time to crash while you read that" );
+				_logger.Info( "Emergency mode triggered, motors stopped" );
 			}
 			else if ( inputState.FlatTrim )
 			{
@@ -94,7 +94,7 @@ namespace RideOnMotion.Inputs
 			if ( inputState.SpecialAction )
 			{
 				_drone.PlayLED();
-				_logger.Info( "I can see the lights, it burns *.*" );
+				_logger.Info( "Special action triggered" );
 			}
 
 			float roll = inputState.Roll / ( 1 / _droneSpeeds.DroneTranslationSpeed );
