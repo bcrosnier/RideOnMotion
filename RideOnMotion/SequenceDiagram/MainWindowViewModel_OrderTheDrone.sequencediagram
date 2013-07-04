@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<SequenceDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" dslVersion="1.0.0.0" Id="cce7dbf9-309b-431f-9324-c397a43fe745" name="MainWindowViewModel_OrderTheMotherfuckingDrone" mode="DotNet" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner">
+<SequenceDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" dslVersion="1.0.0.0" Id="cce7dbf9-309b-431f-9324-c397a43fe745" name="MainWindowViewModel_OrderTheDrone" mode="DotNet" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner">
   <packagedElements>
     <packageHasNamedElement>
-      <interaction Id="87cbb987-1489-4541-bf25-fb472fcafc2c" name="MainWindowViewModel_OrderTheMotherfuckingDrone" collapseFragmentsFlag="false" isActiveClass="false" isAbstract="false" isLeaf="false" isReentrant="false">
+      <interaction Id="87cbb987-1489-4541-bf25-fb472fcafc2c" name="MainWindowViewModel_OrderTheDrone" collapseFragmentsFlag="false" isActiveClass="false" isAbstract="false" isLeaf="false" isReentrant="false">
         <fragments>
           <behaviorExecutionSpecification Id="018e9537-c579-4b2d-b72a-02438e60dac2" name="BehaviorExecutionSpecification">
             <coveredLifelines>
@@ -144,12 +144,12 @@
               <lifelineMoniker Id="9dfda40d-3c66-4ee6-96c0-1aac834c7966" LastKnownName="this._inputController : InputController" />
             </covered>
           </operandOccurrenceSpecification>
-          <lostFoundTarget Id="e7b054d8-d353-4336-a7dc-c1c97db49eea" name="LostFoundTarget" />
           <messageOccurrenceSpecification Id="51f578af-4f1b-48b6-bd7a-9e6c010edb8e" name="MessageOccurrenceSpecification">
             <covered>
               <lifelineMoniker Id="9dfda40d-3c66-4ee6-96c0-1aac834c7966" LastKnownName="this._inputController : InputController" />
             </covered>
           </messageOccurrenceSpecification>
+          <lostFoundTarget Id="e7b054d8-d353-4336-a7dc-c1c97db49eea" name="LostFoundTarget" />
           <operandOccurrenceSpecification Id="ce1a1188-218c-46a7-b5ac-80929ebc792d" name="OperandOccurrenceSpecification">
             <covered>
               <lifelineMoniker Id="9dfda40d-3c66-4ee6-96c0-1aac834c7966" LastKnownName="this._inputController : InputController" />
@@ -469,14 +469,14 @@
               <lifelineMoniker Id="d03ab06c-d99a-472d-a885-3b73b0790c19" LastKnownName="MixInputs" />
             </covered>
           </operandOccurrenceSpecification>
-          <messageOccurrenceSpecification Id="6f39a224-4527-479c-ae6b-c51383dac038" name="MessageOccurrenceSpecification">
-            <covered>
-              <lifelineMoniker Id="d03ab06c-d99a-472d-a885-3b73b0790c19" LastKnownName="MixInputs" />
-            </covered>
-          </messageOccurrenceSpecification>
           <messageOccurrenceSpecification Id="0dfe32eb-2320-4046-bbef-165bb3bc6a5a" name="MessageOccurrenceSpecification">
             <covered>
               <lifelineMoniker Id="88465a09-97ef-4057-9144-d58ae3e7ccbc" LastKnownName="this : MainWindowViewModel" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="6f39a224-4527-479c-ae6b-c51383dac038" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="d03ab06c-d99a-472d-a885-3b73b0790c19" LastKnownName="MixInputs" />
             </covered>
           </messageOccurrenceSpecification>
           <executionOccurrenceSpecification Id="6b144703-e453-42c0-a401-9628852f16c4" name="ExecutionOccurrenceSpecification">
