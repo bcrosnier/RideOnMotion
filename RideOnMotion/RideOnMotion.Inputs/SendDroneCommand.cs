@@ -105,7 +105,6 @@ namespace RideOnMotion.Inputs
             inputState.Yaw = yaw;
 			float gaz = inputState.Gaz / ( 1 / _droneSpeeds.DroneElevationSpeed );
             inputState.Gaz = gaz;
-			AbsoluteControlMode = true;
 			float roll2;
 			float pitch2;
 			if ( AbsoluteControlMode )

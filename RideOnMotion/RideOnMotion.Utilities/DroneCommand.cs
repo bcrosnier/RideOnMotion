@@ -54,6 +54,13 @@ namespace RideOnMotion
 			}
 		}
 
+		public bool IsFlying
+		{
+			get
+			{
+				return _droneControl.IsFlying;
+			}
+		}
 		public bool IsDronePaired
         {
             get

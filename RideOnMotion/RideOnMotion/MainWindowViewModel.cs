@@ -758,6 +758,7 @@ namespace RideOnMotion.UI
         private void ReconnectDrone()
         {
             DisconnectDrone( this._droneInit );
+			DroneOriginalOrientationSet = false;
             ConnectDrone( this._currentDroneConfig );
         }
 

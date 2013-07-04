@@ -37,6 +37,7 @@ namespace RideOnMotion.Inputs.Kinect
         bool flatTrim = false;
 		bool specialActionButton = false;
 		bool _flatTrimReaction;
+		bool _operatorLostWhileNotFlying;
         RideOnMotion.Inputs.InputState _lastInputState = new RideOnMotion.Inputs.InputState();
         Point _leftHand = new Point (-1, -1);
         Point _rightHand = new Point (-1, -1);
@@ -924,7 +925,8 @@ namespace RideOnMotion.Inputs.Kinect
 		#region Security
 		public void SafetyModeCheck( UserInfo curUser )
 		{
-			if( curUser != null & _skeletonFound && ( curUser.HandPointers[0].IsTracked
+			bool IsDroneFlying = ActiveDrone.IsFlying;
+			if ( IsDroneFlying && curUser != null && _skeletonFound && ( curUser.HandPointers[0].IsTracked
 					&& curUser.HandPointers[1].IsTracked ) )
 			{
 				if( !curUser.HandPointers[0].IsActive
@@ -962,20 +964,44 @@ namespace RideOnMotion.Inputs.Kinect
 					_safetyLandingtriggered = false;
 				}
 			}
+			else if ( curUser != null && _skeletonFound && ( curUser.HandPointers[0].IsTracked
+					&& curUser.HandPointers[1].IsTracked ) )
+			{
+				if ( !curUser.HandPointers[0].IsActive
+					&& !curUser.HandPointers[1].IsActive )
+				{
+					if ( SecurityModeChanged != null && !_operatorLostWhileNotFlying )
+					{
+						SecurityModeChanged( this, 1 );
+						_operatorLostWhileNotFlying = true;
+					}
+				}
+				else if ( ( curUser.HandPointers[0].IsActive
+					&& curUser.HandPointers[1].IsActive ) )
+				{
+					_operatorLostWhileNotFlying = false;
+				}
+			}
 			else
 			{
-				if( !_timerToLand.IsEnabled && SecurityModeChanged != null )
+				if ( !_timerToLand.IsEnabled )
 				{
-					SecurityModeChanged( this, 1 );
-                    _operatorLost = true;
-                    MapInput();
-                    _logger.Warn( "Safety mode enabled due to hands no longer being tracked" );
-				}
+					//warn the user that he is lost
+					if ( SecurityModeChanged != null && !_operatorLostWhileNotFlying)
+					{
+						SecurityModeChanged( this, 1 );
+						_operatorLostWhileNotFlying = true;
+					}
 
-				if( !_timerToLand.IsEnabled )
-				{
-                    _timerToLand.Start();
-                    _logger.Warn( "Safety mode : 3 seconds remaining before automatic landing" );
+					//only if the drone is flying
+					if ( IsDroneFlying )
+					{
+						_operatorLost = true;
+						MapInput();
+						_logger.Warn( "Safety mode enabled due to hands no longer being tracked" );
+						_timerToLand.Start();
+						_logger.Warn( "Safety mode : 3 seconds remaining before automatic landing" );
+					}
 				}
 			}
 		}
@@ -1210,6 +1236,10 @@ namespace RideOnMotion.Inputs.Kinect
 			if ( ( _leftGrip && !_rightGrip && ActiveDrone.CanLand ) || _safetyLandingtriggered )
             {
                 land = true;
+				if ( !ActiveDrone.IsFlying )
+				{
+					_safetyLandingtriggered = false;
+				}
             }
 			if( _canTakeOff && _rightGrip && !_leftGrip && ActiveDrone.CanTakeoff )
             {

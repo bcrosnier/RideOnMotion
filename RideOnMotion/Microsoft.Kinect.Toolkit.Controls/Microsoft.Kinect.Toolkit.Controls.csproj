@@ -96,11 +96,9 @@
   <ItemGroup>
     <Content Include="$(KINECT_TOOLKIT_DIR)Redist\x86\KinectInteraction170_32.dll">
       <Link>KinectInteraction170_32.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="$(KINECT_TOOLKIT_DIR)Redist\amd64\KinectInteraction170_64.dll">
       <Link>KinectInteraction170_64.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
