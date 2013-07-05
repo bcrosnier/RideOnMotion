@@ -37,7 +37,6 @@ namespace RideOnMotion.Inputs.Kinect
         bool flatTrim = false;
 		bool specialActionButton = false;
 		bool _flatTrimReaction;
-		bool _operatorLostWhileNotFlying;
         RideOnMotion.Inputs.InputState _lastInputState = new RideOnMotion.Inputs.InputState();
         Point _leftHand = new Point (-1, -1);
         Point _rightHand = new Point (-1, -1);
@@ -964,33 +963,14 @@ namespace RideOnMotion.Inputs.Kinect
 					_safetyLandingtriggered = false;
 				}
 			}
-			else if ( curUser != null && _skeletonFound && ( curUser.HandPointers[0].IsTracked
-					&& curUser.HandPointers[1].IsTracked ) )
-			{
-				if ( !curUser.HandPointers[0].IsActive
-					&& !curUser.HandPointers[1].IsActive )
-				{
-					if ( SecurityModeChanged != null && !_operatorLostWhileNotFlying )
-					{
-						SecurityModeChanged( this, 1 );
-						_operatorLostWhileNotFlying = true;
-					}
-				}
-				else if ( ( curUser.HandPointers[0].IsActive
-					&& curUser.HandPointers[1].IsActive ) )
-				{
-					_operatorLostWhileNotFlying = false;
-				}
-			}
 			else
 			{
-				if ( !_timerToLand.IsEnabled )
+				if (IsDroneFlying &&  !_timerToLand.IsEnabled )
 				{
 					//warn the user that he is lost
-					if ( SecurityModeChanged != null && !_operatorLostWhileNotFlying)
+					if ( SecurityModeChanged != null)
 					{
 						SecurityModeChanged( this, 1 );
-						_operatorLostWhileNotFlying = true;
 					}
 
 					//only if the drone is flying
